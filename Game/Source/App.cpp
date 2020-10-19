@@ -158,6 +158,14 @@ void App::PrepareUpdate()
 void App::FinishUpdate()
 {
 	// This is a good place to call Load / Save functions
+	if (loadGameRequested)
+	{
+		LoadGame();
+	}
+	if (saveGameRequested)
+	{
+		SaveGame();
+	}
 }
 
 // Call modules before each loop iteration
@@ -268,4 +276,76 @@ const char* App::GetOrganization() const
 	return organization.GetString();
 }
 
+// Loads the game from an xml file
+bool App::LoadGame()
+{
+	bool ret = false;
 
+	pugi::xml_document data;
+	pugi::xml_node root;
+
+	//Load savegame.xml file using load_file() method from the xml_document class
+	pugi::xml_parse_result result = data.load_file(loadedGame.GetString());
+
+	//Check result for loading errors
+	if (result != NULL)
+	{
+		LOG("Loading game state from %s", loadedGame.GetString());
+
+		root = data.child("save_state");
+		ListItem<Module*>* item = modules.start;
+		ret = true;
+		while (item != NULL && ret == true)
+		{
+			ret = item->data->Load(root.child(item->data->name.GetString()));
+			item = item->next;
+		}
+	}
+	else
+	{
+		LOG("Could not load game state from %s. Pugi error: %s", loadedGame.GetString(), result.description());
+	}
+
+	loadGameRequested = false;
+
+	return ret;
+}
+
+// Saves the current game in an xml file
+bool App::SaveGame() const
+{
+	bool ret = true;
+
+	LOG("Saving game state to %s", savedGame.GetString());
+
+	pugi::xml_document data;
+	pugi::xml_node root;
+
+	root = data.append_child("save_state");
+
+	ListItem<Module*>* item = modules.start;
+
+	while (item != NULL && ret == true)
+	{
+		ret = item->data->Save(root.append_child(item->data->name.GetString()));
+		item = item->next;
+	}
+
+	if (ret == true) {
+		data.save_file(savedGame.GetString());
+	}
+	saveGameRequested = false;
+
+	return ret;
+}
+
+void App::LoadGameRequest(const char* fileName)
+{
+	loadGameRequested = true;
+	loadedGame.create(fileName);
+}
+void App::SaveGameRequest(const char* fileName) const
+{
+	saveGameRequested = true;
+	savedGame.create(fileName);
+}

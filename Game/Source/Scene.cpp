@@ -56,6 +56,14 @@ bool Scene::Update(float dt)
 	if(app->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		app->render->camera.x += 1;
 
+	// Saves the game when clicking F5
+	if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+		app->SaveGameRequest("savegame.xml");
+
+	// Loads the game when clicking F6
+	if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+		app->LoadGameRequest("savegame.xml");
+
 	app->render->DrawTexture(img, 380, 100);
 
 	return true;

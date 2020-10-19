@@ -45,6 +45,9 @@ public:
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
 
+	void LoadGameRequest(const char* fileName);
+	void SaveGameRequest(const char* fileName) const;
+
 private:
 
 	// Load config file
@@ -64,6 +67,9 @@ private:
 
 	// Call modules after each loop iteration
 	bool PostUpdate();
+
+	bool LoadGame();
+	bool SaveGame() const;
 
 public:
 
@@ -93,6 +99,11 @@ private:
 
 	uint frames;
 	float dt;
+
+	bool loadGameRequested;
+	mutable bool saveGameRequested;
+	mutable SString savedGame;
+	SString loadedGame;
 };
 
 extern App* app;
