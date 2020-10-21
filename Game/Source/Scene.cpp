@@ -22,8 +22,8 @@ Scene::~Scene()
 // Called before render is available
 bool Scene::Awake()
 {
-	LOG("Loading Scene");
 	bool ret = true;
+	LOG("Loading Scene");
 
 	return ret;
 }
@@ -31,11 +31,14 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	// L03: DONE: Load map
-	app->map->Load("hello2.tmx");
-	app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+	bool ret = false;
 
-	return true;
+	ret = app->map->Load("hello2.tmx");
+	ret = app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+
+	if (ret) loaded = true;
+
+	return ret;
 }
 
 // Called each loop iteration
@@ -47,7 +50,6 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-    // L02: DONE 3: Request Load / Save when pressing L/S
 	if(app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
 		app->LoadGameRequest();
 
@@ -66,12 +68,12 @@ bool Scene::Update(float dt)
 	if(app->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		app->render->camera.x += 1;
 
-	//app->render->DrawTexture(img, 380, 100); // Placeholder not needed any more
+	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+		debug = !debug;
 
 	// Draw map
 	app->map->Draw();
 
-	// L03: DONE 7: Set the window title with map/tileset info
 	SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
 				   app->map->data.width, app->map->data.height,
 				   app->map->data.tileWidth, app->map->data.tileHeight,

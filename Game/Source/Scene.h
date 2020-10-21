@@ -32,8 +32,11 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	//Public variables
+	bool loaded = false;
+
 private:
-	SDL_Texture* img;
+
 };
 
 #endif // __SCENE_H__

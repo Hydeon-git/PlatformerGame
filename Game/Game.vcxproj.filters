@@ -16,6 +16,10 @@
       <Filter>External\PugiXml</Filter>
     </ClCompile>
     <ClCompile Include="Source\Map.cpp" />
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Window.h" />
@@ -51,6 +55,13 @@
       <Filter>External\PugiXml</Filter>
     </ClInclude>
     <ClInclude Include="Source\Map.h" />
+    <ClInclude Include="Source\Player.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animation.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -61,6 +72,9 @@
     </Filter>
     <Filter Include="External\PugiXml">
       <UniqueIdentifier>{2855ff7f-53a1-413d-a75b-18b4ade921dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{4b3652b4-cc8f-462d-b12e-e523a7ced8d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

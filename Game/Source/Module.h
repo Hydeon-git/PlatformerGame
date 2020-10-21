@@ -71,6 +71,7 @@ public:
 
 	SString name;
 	bool active;
+	bool debug = false;
 
 };
 
