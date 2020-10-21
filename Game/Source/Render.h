@@ -30,12 +30,12 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Load / Save
+	bool LoadState(pugi::xml_node&);
+	bool SaveState(pugi::xml_node&) const;
+
 	void SetViewPort(const SDL_Rect& rect);
 	void ResetViewPort();
-
-	// Load/Save methods
-	bool Load(pugi::xml_node&);
-	bool Save(pugi::xml_node&) const;
 
 	// Drawing
 	bool DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX) const;

@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <save_state>
-	<input />
 	<window />
+	<input />
 	<textures />
 	<audio />
 	<scene />
+	<map />
 	<renderer>
-		<camera x="0" y="0" />
+		<camera x="-606" y="209" />
 	</renderer>
 </save_state>
