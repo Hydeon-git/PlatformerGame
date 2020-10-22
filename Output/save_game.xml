@@ -6,7 +6,11 @@
 	<audio />
 	<scene />
 	<map />
+	<collision />
+	<player>
+		<player x="476" y="4" />
+	</player>
 	<renderer>
-		<camera x="-606" y="209" />
+		<camera x="0" y="0" />
 	</renderer>
 </save_state>

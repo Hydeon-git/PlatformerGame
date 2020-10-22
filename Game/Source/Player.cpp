@@ -14,10 +14,10 @@ Player::Player() : Module()
 	idle.PushBack({ 0, 0, 32, 32 });
 	idle.speed = 1.0f;
 
-	walk.PushBack({ 32, 0, 32, 32 });
-	walk.PushBack({ 96, 0, 32, 32 });
-	walk.PushBack({ 64, 0, 32, 32 });
-	walk.PushBack({ 96, 0, 32, 32 });
+	walk.PushBack({ 0, 0, 32, 32 });
+	walk.PushBack({ 0, 0, 32, 32 });
+	walk.PushBack({ 0, 0, 32, 32 });
+	walk.PushBack({ 0, 0, 32, 32 });
 	walk.speed = 0.4f;
 
 	death.PushBack({ 0, 96, 32, 32 });
@@ -44,6 +44,7 @@ bool Player::Awake(pugi::xml_node& config)
 	life = config.child("propierties").attribute("life").as_int();
 	speed = config.child("propierties").attribute("speed").as_int();
 	gravity = config.child("propierties").attribute("gravity").as_float();
+	deathTimer_config = config.child("death").attribute("time").as_float();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
 	return ret;
@@ -55,6 +56,10 @@ bool Player::Start()
 	//Loading assets and propierties from config file
 	position = initialPos;
 	graphics = app->tex->Load(texPath.GetString());
+	LOG("creating player colliders");
+	r_collider = { position.x, position.y+16, 10, 16 };
+	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER);
+	colPlayerWalls = app->collision->AddCollider({position.x-1, position.y+14, 12, 2 }, COLLIDER_PLAYER);
 	return ret;
 }
 
@@ -101,6 +106,7 @@ bool Player::Update(float dt)
 				ResetStates();
 				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
 				{
+					LOG("Walking Left");
 					WallCollision(); //Detect horizontal collision
 					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 						status = PLAYER_JUMP;
@@ -109,6 +115,7 @@ bool Player::Update(float dt)
 
 				else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 				{
+					LOG("Walking Right");
 					WallCollision(); //Detect horizontal collision
 					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 						status = PLAYER_JUMP;
@@ -215,6 +222,7 @@ bool Player::Update(float dt)
 
 void Player::Draw(float dt)
 {
+	r = current_animation->GetCurrentFrame(dt);
 	if (graphics != nullptr) {
 		app->render->DrawTexture(graphics, position.x, position.y, &r, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
 	}

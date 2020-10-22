@@ -27,8 +27,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new Audio();
 	scene = new Scene();
 	map = new Map();
-	collision = new Collision();
 	player = new Player();
+	collision = new Collision();
+
 
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp

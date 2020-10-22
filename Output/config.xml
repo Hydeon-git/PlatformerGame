@@ -2,7 +2,7 @@
 <!-- L01: DONE 1: Create configuration file-->
 <config>
   <app>
-    <title>Game Development Testbed</title>
+    <title>Plataformer Game</title>
     <organization>UPC</organization>
   </app>
 
@@ -22,4 +22,10 @@
   <map>
     <folder>Assets/maps/</folder>
   </map>
+  <player>
+    <initialPos1 x="10" y="10"/>
+    <death time="4"/>
+    <propierties life="100" speed="2" gravity="0.25"/>
+    <path tex="Assets/textures/tempChar.png"/>
+  </player>
 </config>
