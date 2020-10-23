@@ -33,7 +33,7 @@ bool Scene::Start()
 {
 	bool ret = false;
 
-	ret = app->map->Load("hello2.tmx");
+	ret = app->map->Load("scifi_map.tmx");
 	ret = app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
 
 	if (ret) loaded = true;
