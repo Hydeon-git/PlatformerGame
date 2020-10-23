@@ -106,7 +106,6 @@ bool Player::Update(float dt)
 				ResetStates();
 				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
 				{
-					LOG("Walking Left");
 					WallCollision(); //Detect horizontal collision
 					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 						status = PLAYER_JUMP;
@@ -115,7 +114,6 @@ bool Player::Update(float dt)
 
 				else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 				{
-					LOG("Walking Right");
 					WallCollision(); //Detect horizontal collision
 					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 						status = PLAYER_JUMP;
