@@ -35,17 +35,18 @@ void Map::Draw()
 	if (mapLoaded == false) return;
 
 	// L04: TODO 5: Prepare the loop to draw all tilesets + DrawTexture()
-	ListItem<MapLayer*>* itemLayer = data.maplayers.start;
-	while (itemLayer != NULL)
+	ListItem<MapLayer*>* itemlayer = data.maplayers.start;
+	while (itemlayer != NULL)
 	{
-		MapLayer* l = itemLayer->data;
-		itemLayer = itemLayer->next;
+		MapLayer* l = itemlayer->data;
+		itemlayer = itemlayer->next;
 		for (int i = 0; i < l->width; i++)
 		{
 			for (int j = 0; j < l->height; j++)
 			{
 				if (l->data[l->Get(i, j)] != 0)
 				{
+					l->Get(i, j);
 					SDL_Texture* texture = data.tilesets.start->data->texture;
 					iPoint position = MapToWorld(i, j);
 					SDL_Rect sect = data.tilesets.start->data->GetTileRect(l->data[l->Get(i, j)]);
