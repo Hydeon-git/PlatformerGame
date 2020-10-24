@@ -81,16 +81,13 @@ bool Collision::PreUpdate()
 bool Collision::Update(float dt)
 {
 
-	DebugDraw();
+	if (app->debug) DebugDraw();
 
 	return true;
 }
 
 void Collision::DebugDraw()
 {
-	if (debug == false)
-		return;
-
 	Uint8 alpha = 80;
 	for (uint i = 0; i < MAX_COLLIDERS; ++i)
 	{

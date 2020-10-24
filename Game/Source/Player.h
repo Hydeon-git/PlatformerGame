@@ -39,7 +39,7 @@ public:
 	bool Update(float dt);
 
 	// Called each loop iteration
-	void Draw(float dt);
+	bool Draw(float dt);
 
 	// Called before quitting
 	bool CleanUp();
@@ -61,7 +61,7 @@ private:
 	bool ResetStates();
 
 	int life = 100;
-	int speed;
+	float speed;
 	float gravity;
 	float airTimer;
 	float deathTimer_config;
@@ -78,6 +78,7 @@ private:
 	SDL_Texture* graphics;
 
 	fPoint velocity;
+	fPoint positionf;
 	iPoint position;
 	iPoint initialPos;
 

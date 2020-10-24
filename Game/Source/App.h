@@ -3,6 +3,8 @@
 
 #include "Module.h"
 #include "List.h"
+#include "PerfTimer.h"
+#include "Timer.h"
 
 #include "PugiXml/src/pugixml.hpp"
 
@@ -54,6 +56,8 @@ public:
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
 	void SaveGameRequest() const;
+
+	bool debug = false;
 
 private:
 
@@ -108,8 +112,15 @@ private:
 	//pugi::xml_node config;
 	//pugi::xml_node configApp;
 
-	uint frames;
-	float dt;
+	PerfTimer			ptimer;
+	uint64				framecount = 0;
+	Timer				startuptime;
+	Timer				frametime;
+	Timer				lastsecframetime;
+	uint32				lastsecframecount = 0;
+	uint32				prevlastsecframecount = 0;
+	float				dt = 0.0f;
+	int					cappedms = -1;
 
 	mutable bool saveGameRequested;
 	bool loadGameRequested;

@@ -1,4 +1,3 @@
-
 #include "App.h"
 #include "Render.h"
 #include "Textures.h"
@@ -208,6 +207,24 @@ bool Map::Load(const char* filename)
 			LOG("Layer ----");
 			LOG("name: %s", l->name.GetString());
 			LOG("tile width: %d tile height: %d", l->width, l->height);
+
+			//Load collision layer
+			if (l->name == "Collision") {
+				for (int i = 0; i < l->width; i++)
+				{
+					for (int j = 0; j < l->height; j++)
+					{
+						if (l->data[l->Get(i, j)] != 0)
+						{
+							l->Get(i, j);
+							iPoint position = MapToWorld(i, j);
+							SDL_Rect sect = data.tilesets.start->data->GetTileRect(l->data[l->Get(i, j)]);
+
+							groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
+						}
+					}
+				}
+			}
 			itemLayer = itemLayer->next;
 		}
     }

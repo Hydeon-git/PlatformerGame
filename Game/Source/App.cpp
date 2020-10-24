@@ -18,7 +18,7 @@
 // Constructor
 App::App(int argc, char* args[]) : argc(argc), args(args)
 {
-	frames = 0;
+	framecount = 0;
 
 	win = new Window();
 	input = new Input();
@@ -163,6 +163,11 @@ pugi::xml_node App::LoadConfig(pugi::xml_document& configFile) const
 // ---------------------------------------------
 void App::PrepareUpdate()
 {
+	framecount++;
+	lastsecframecount++;
+
+	dt = frametime.ReadSec();
+	frametime.Start();
 }
 
 // ---------------------------------------------
@@ -171,6 +176,30 @@ void App::FinishUpdate()
 	// L02: DONE 1: This is a good place to call Load / Save methods
 	if (loadGameRequested == true) LoadGame();
 	if (saveGameRequested == true) SaveGame();
+
+	// Framerate calculations --
+
+	if (lastsecframetime.Read() > 1000)
+	{
+		lastsecframetime.Start();
+		prevlastsecframecount = lastsecframecount;
+		lastsecframecount = 0;
+	}
+
+	float avgfps = float(framecount) / startuptime.ReadSec();
+	float secondssincestartup = startuptime.ReadSec();
+	uint32 lastframems = frametime.Read();
+	uint32 framesonlastupdate = prevlastsecframecount;
+
+	if(debug)
+		LOG("Av.FPS: %.2f Last Frame Ms: %u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %lu ", 
+			avgfps, lastframems, framesonlastupdate, dt, secondssincestartup, framecount);
+
+	if (cappedms > 0 && lastframems < cappedms)
+	{
+		PerfTimer t;
+		SDL_Delay(cappedms - lastframems);
+	}
 }
 
 // Call modules before each loop iteration

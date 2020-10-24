@@ -12,12 +12,15 @@ Player::Player() : Module()
 
 	//animations
 	idle.PushBack({ 0, 0, 32, 32 });
-	idle.speed = 1.0f;
+	idle.PushBack({ 32, 0, 32, 32 });
+	idle.speed = 0.1f;
 
-	walk.PushBack({ 0, 0, 32, 32 });
-	walk.PushBack({ 0, 0, 32, 32 });
-	walk.PushBack({ 0, 0, 32, 32 });
-	walk.PushBack({ 0, 0, 32, 32 });
+	walk.PushBack({ 0, 32, 32, 32 });
+	walk.PushBack({ 32, 32, 32, 32 });
+	walk.PushBack({ 64, 32, 32, 32 });
+	walk.PushBack({ 96, 32, 32, 32 });
+	walk.PushBack({ 128, 32, 32, 32 });
+	walk.PushBack({ 160, 32, 32, 32 });
 	walk.speed = 0.4f;
 
 	death.PushBack({ 0, 96, 32, 32 });
@@ -27,6 +30,7 @@ Player::Player() : Module()
 	death.speed = 0.1f;
 	death.loop = false;
 
+	jump.PushBack({ 64, 0, 32, 32 });
 	jump.PushBack({ 96, 0, 32, 32 });
 	jump.speed = 1.0f;
 }
@@ -42,7 +46,7 @@ bool Player::Awake(pugi::xml_node& config)
 
 	texPath = config.child("path").attribute("tex").as_string();
 	life = config.child("propierties").attribute("life").as_int();
-	speed = config.child("propierties").attribute("speed").as_int();
+	speed = config.child("propierties").attribute("speed").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	deathTimer_config = config.child("death").attribute("time").as_float();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
@@ -66,16 +70,18 @@ bool Player::Start()
 // Unload assets
 bool Player::CleanUp()
 {
+	bool ret = false;
 	LOG("Unloading player");
-	app->tex->UnLoad(graphics);
-	return true;
+	ret = app->tex->UnLoad(graphics);
+	return ret;
 }
 
 bool Player::Disable() //Disable function for changing scene
 { 
-	app->tex->UnLoad(graphics);
-	app->audio->CleanUp();
-	return true;
+	bool ret = false;
+	ret = app->tex->UnLoad(graphics);
+	ret = app->audio->CleanUp();
+	return ret;
 }
 
 bool Player::ResetStates() //Reset all states before checking input
@@ -91,7 +97,7 @@ bool Player::ResetStates() //Reset all states before checking input
 
 bool Player::Update(float dt) 
 {
-
+	bool ret = false;
 	//Input
 	if (input) {
 		if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
@@ -130,22 +136,23 @@ bool Player::Update(float dt)
 				status = PLAYER_IN_AIR;
 			}
 		}
-		else { //Godmode input
+		else 
+		{ //Godmode input
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
 			{
-				position.x -= speed * 2;
+				positionf.x -= 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 			{
-				position.x += speed * 3;
+				positionf.x += 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
 			{
-				position.y -= speed * 2;
+				positionf.y -= 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
 			{
-				position.y += speed * 2;
+				positionf.y += 1;
 			}
 		}
 
@@ -201,8 +208,11 @@ bool Player::Update(float dt)
 	}
 
 	//Change position from velocityocity
-	position.x += velocity.x;
-	position.y += velocity.y;
+	positionf.x += velocity.x;
+	positionf.y += velocity.y;
+
+	position.x = positionf.x;
+	position.y = positionf.y;
 
 	//Collider position
 	if (velocity.y > 0) colPlayer->SetPos(position.x + 9, position.y + 18);
@@ -213,20 +223,23 @@ bool Player::Update(float dt)
 	r_collider.x = position.x + 9; r_collider.y = position.y + 18;
 
 	//Function to draw the player
-	Draw(dt);
+	ret = Draw(dt);
 
 	return true;
 }
 
-void Player::Draw(float dt)
+bool Player::Draw(float dt)
 {
+	bool ret = false;
 	r = current_animation->GetCurrentFrame(dt);
 	if (graphics != nullptr) {
-		app->render->DrawTexture(graphics, position.x, position.y, &r, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
+		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
 	}
+	else LOG("No available graphics to draw.");
 
 	r.x = position.x;
 	r.y = position.y;
+	return ret;
 }
 
 bool Player::OnGround() {

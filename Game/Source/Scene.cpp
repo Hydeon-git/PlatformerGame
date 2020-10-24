@@ -69,7 +69,7 @@ bool Scene::Update(float dt)
 		app->render->camera.x += 1;
 
 	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-		debug = !debug;
+		app->debug = !app->debug;
 
 	// Draw map
 	app->map->Draw();
