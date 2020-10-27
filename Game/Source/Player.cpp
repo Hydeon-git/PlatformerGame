@@ -49,6 +49,7 @@ bool Player::Awake(pugi::xml_node& config)
 	speed = config.child("propierties").attribute("speed").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	deathTimer_config = config.child("death").attribute("time").as_float();
+	deathLimit = config.child("death").attribute("height").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
 	return ret;
@@ -58,8 +59,8 @@ bool Player::Start()
 {
 	bool ret = true;
 	//Loading assets and propierties from config file
-	positionf.x = initialPos.x;
-	positionf.y = initialPos.y;
+	position.x = initialPos.x;
+	position.y = initialPos.y;
 	graphics = app->tex->Load(texPath.GetString());
 	LOG("creating player colliders");
 	r_collider = { position.x+11, position.y+17, 10, 15 };
@@ -89,7 +90,6 @@ bool Player::ResetStates() //Reset all states before checking input
 { 
 	velocity.y = 0;
 	jumpEnable = true;
-	airTimer = 3;
 
 	app->scene->loaded = false;
 
@@ -99,6 +99,16 @@ bool Player::ResetStates() //Reset all states before checking input
 bool Player::Update(float dt) 
 {
 	bool ret = false;
+	if (position.y > deathLimit || status == PLAYER_DEATH) {
+		if (!dead) {
+			velocity.x = 0;
+			death.Reset();
+			deathTimer = deathTimer_config;
+			status = PLAYER_DEATH;
+			input = false;
+			dead = true;
+		}
+	}
 	//Input
 	if (input) {
 		if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
@@ -111,49 +121,48 @@ bool Player::Update(float dt)
 			if (OnGround()) 
 			{
 				ResetStates();
-				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
-				{
-					WallCollision(); //Detect horizontal collision
-					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-						status = PLAYER_JUMP;
-					else status = PLAYER_BACKWARD;
-				}
 
-				else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
-				{
-					WallCollision(); //Detect horizontal collision
-					if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
-						status = PLAYER_JUMP;
-					else status = PLAYER_FORWARD;
-				}
-
-				else if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
 					status = PLAYER_JUMP;
 
 				else status = PLAYER_IDLE;
 			}
-			else {
-				WallCollision(); //Detect horizontal collision
-				status = PLAYER_IN_AIR;
+			else 
+			{
+				velocity.y += gravity;
 			}
+
+			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+			{
+				status = PLAYER_BACKWARD;
+				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+					status = PLAYER_JUMP;
+			}
+			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+			{
+				status = PLAYER_FORWARD;
+				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+					status = PLAYER_JUMP;
+			}
+			WallCollision(); //Detect horizontal collision
 		}
 		else 
 		{ //Godmode input
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
 			{
-				positionf.x -= 1;
+				position.x -= 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 			{
-				positionf.x += 1;
+				position.x += 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
 			{
-				positionf.y -= 1;
+				position.y -= 1;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
 			{
-				positionf.y += 1;
+				position.y += 1;
 			}
 		}
 
@@ -184,12 +193,6 @@ bool Player::Update(float dt)
 			// Sound
 		}
 		break;
-	case PLAYER_IN_AIR:
-		velocity.y += gravity;
-		if (airTimer <= 0) velocity.x = 0;
-		else airTimer -= 0.1f;
-
-		break;
 	case PLAYER_DEATH:
 		//Death animation
 		current_animation = &death;
@@ -208,22 +211,19 @@ bool Player::Update(float dt)
 		break;
 	}
 
-	//Change position from velocityocity
-	positionf.x += velocity.x;
-	positionf.y += velocity.y;
-
-	position.x = positionf.x;
-	position.y = positionf.y;
+	//Change position from velocity
+	position.x += velocity.x;
+	position.y += velocity.y;
 
 	//Collider position
-	if (velocity.y > 0) colPlayer->SetPos(position.x + 11, position.y + 18);
+	if (velocity.y > 0) colPlayer->SetPos(position.x + 11, position.y + 17);
 	else colPlayer->SetPos(position.x + 11, position.y + 17);
 
 	if (velocity.x > 0) 	colPlayerWalls->SetPos(position.x + 11, position.y + 15);
 	else if (velocity.x < 0) 	colPlayerWalls->SetPos(position.x + 9, position.y + 15);
 	else colPlayerWalls->SetPos(position.x + 10, position.y + 15);
 
-	r_collider.x = position.x + 9; r_collider.y = position.y + 18;
+	r_collider.x = position.x + 11; r_collider.y = position.y + 17;
 
 	//Function to draw the player
 	ret = Draw(dt);
@@ -253,11 +253,11 @@ bool Player::OnGround() {
 		ret = colPlayer->CheckCollision(app->map->groundCol.At(i)->data->rect);
 		if (ret) {
 			if (velocity.y > 0) {
-				positionf.y = app->map->groundCol.At(i)->data->rect.y - 32;
+				position.y = app->map->groundCol.At(i)->data->rect.y - 32;
 				velocity.x = 0;
 			}
 			else if (velocity.y < 0) {
-				positionf.y = app->map->groundCol.At(i)->data->rect.y + 1;
+				position.y = app->map->groundCol.At(i)->data->rect.y;
 				velocity.x = 0;
 			}
 			return ret;
@@ -274,17 +274,14 @@ bool Player::WallCollision() {
 		ret = colPlayerWalls->CheckCollision(app->map->groundCol.At(i)->data->rect);
 		if (ret) {
 			if (velocity.x > 0) {
-				if (airTimer < 3) velocity.x = 0;
-				positionf.x = app->map->groundCol.At(i)->data->rect.x - 23;
+				position.x = app->map->groundCol.At(i)->data->rect.x - 23;
 			}
 			else if (velocity.x < 0) {
-				if (airTimer < 3) velocity.x = 0;
-				positionf.x = app->map->groundCol.At(i)->data->rect.x + 8;
+				position.x = app->map->groundCol.At(i)->data->rect.x + 8;
 			}
 			break;
 		}
 	}
-
 	return ret;
 }
 

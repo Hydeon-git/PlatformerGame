@@ -63,9 +63,9 @@ private:
 	int life = 100;
 	float speed;
 	float gravity;
-	float airTimer;
 	float deathTimer_config;
 	float deathTimer;
+	int deathLimit;
 
 	bool input = true;
 	bool godmode = false;
@@ -78,7 +78,6 @@ private:
 	SDL_Texture* graphics;
 
 	fPoint velocity;
-	fPoint positionf;
 	iPoint position;
 	iPoint initialPos;
 

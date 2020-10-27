@@ -28,7 +28,6 @@ int Properties::GetProperty(const char *value, int defaultValue) const
 			if (strcmp(propertyList.At(i)->data->name, value) == 0) 
 			{
 				ret = propertyList.At(i)->data->value;
-				LOG("%i", ret);
 			}
 		}
 	}	
