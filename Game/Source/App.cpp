@@ -39,8 +39,8 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(scene);
 	AddModule(map);
-	AddModule(collision);
 	AddModule(player);
+	AddModule(collision);
 
 	// Render last to swap buffer
 	AddModule(render);

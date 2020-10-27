@@ -78,7 +78,6 @@ void Map::Draw()
 		}		
 	}
 	// L04: TODO 9: Complete the draw function
-
 }
 
 // L04: DONE 8: Create a method that translates x,y coordinates from map positions to world positions
@@ -241,7 +240,6 @@ bool Map::Load(const char* filename)
 			LOG("Layer ----");
 			LOG("name: %s", layer->name.GetString());
 			LOG("tile width: %d tile height: %d", layer->width, layer->height);
-						
 			itemLayer = itemLayer->next;
 		}
     }
