@@ -17,6 +17,24 @@ Map::Map() : Module(), mapLoaded(false)
 Map::~Map()
 {}
 
+// L06: TODO 7: Ask for the value of a custom property
+int Properties::GetProperty(const char *value, int defaultValue) const
+{
+	int ret = defaultValue;
+	if (propertyList.count() != 0)
+	{
+		for (int i = 0; i < propertyList.count() - 1; i++)
+		{
+			if (strcmp(propertyList.At(i)->data->name, value) == 0) 
+			{
+				ret = propertyList.At(i)->data->value;
+				LOG("%i", ret);
+			}
+		}
+	}	
+	return ret;
+}
+
 // Called before render is available
 bool Map::Awake(pugi::xml_node& config)
 {
@@ -34,26 +52,30 @@ void Map::Draw()
 	if (mapLoaded == false) return;
 
 	// L04: TODO 5: Prepare the loop to draw all tilesets + DrawTexture()
+	// L06: TODO 4: Make sure we draw all the layers and not just the first one
 	ListItem<MapLayer*>* itemlayer = data.maplayers.start;
 	while (itemlayer != NULL)
 	{
-		MapLayer* l = itemlayer->data;
+		MapLayer* layer = itemlayer->data;		
 		itemlayer = itemlayer->next;
-		for (int i = 0; i < l->width; i++)
+		if (layer->properties.GetProperty("Draw", 1) == 1)
 		{
-			for (int j = 0; j < l->height; j++)
+			for (int i = 0; i < layer->width; i++)
 			{
-				if (l->data[l->Get(i, j)] != 0)
+				for (int j = 0; j < layer->height; j++)
 				{
-					l->Get(i, j);
-					SDL_Texture* texture = data.tilesets.start->data->texture;
-					iPoint position = MapToWorld(i, j);
-					SDL_Rect sect = data.tilesets.start->data->GetTileRect(l->data[l->Get(i, j)]);
+					if (layer->data[layer->Get(i, j)] != 0)
+					{
+						layer->Get(i, j);
+						SDL_Texture* texture = data.tilesets.start->data->texture;
+						iPoint position = MapToWorld(i, j);
+						SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
 
-					app->render->DrawTexture(texture, position.x, position.y, &sect);
+						app->render->DrawTexture(texture, position.x, position.y, &sect);
+					}
 				}
 			}
-		}
+		}		
 	}
 	// L04: TODO 9: Complete the draw function
 }
@@ -81,6 +103,18 @@ iPoint Map::MapToWorld(int x, int y) const
 
 
 	return ret;
+}
+
+// L06: TODO 3: Pick the right Tileset based on a tile id
+TileSet* Map::GetTilesetFromTileId(int id) const
+{
+	ListItem<TileSet*>* item = data.tilesets.start;
+	TileSet* set = item->data;
+
+	if (id == (item->data->firstgid == 1)|| id == (item->data->firstgid == 65))
+	{
+		return set;
+	}	
 }
 
 // Get relative Tile rectangle
@@ -202,11 +236,10 @@ bool Map::Load(const char* filename)
 		ListItem<MapLayer*>* itemLayer = data.maplayers.start;
 		while (itemLayer != NULL)
 		{
-			MapLayer* l = itemLayer->data;
+			MapLayer* layer = itemLayer->data;
 			LOG("Layer ----");
-			LOG("name: %s", l->name.GetString());
-			LOG("tile width: %d tile height: %d", l->width, l->height);
-
+			LOG("name: %s", layer->name.GetString());
+			LOG("tile width: %d tile height: %d", layer->width, layer->height);
 			itemLayer = itemLayer->next;
 		}
     }
@@ -363,6 +396,7 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	layer->width = node.attribute("width").as_int();
 	layer->height = node.attribute("height").as_int();
 	layer->data = new uint[layer->width * layer->height];
+	LoadProperties(node.child("properties"), layer->properties);
 	//set->nav = layer.attribute("nav").as_int();
 
 	memset(layer->data, 0, layer->width * layer->height);
@@ -370,9 +404,46 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	pugi::xml_node tilesgid;
 	int i = 0;
 	for (tilesgid = node.child("data").child("tile"); tilesgid && ret; tilesgid = tilesgid.next_sibling("tile"))
-	{
+	{		
 		layer->data[i] = tilesgid.attribute("gid").as_uint();
 		i++;
 	}
+	//Load collision layer
+	if (layer->name == "collision")
+	{
+		for (int i = 0; i < layer->width; i++)
+		{
+			for (int j = 0; j < layer->height; j++)
+			{
+				if (layer->data[layer->Get(i, j)] != 0)
+				{
+					layer->Get(i, j);
+					iPoint position = MapToWorld(i, j);
+					SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
+
+					groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
+
+// L06: TODO 6: Load a group of properties from a node and fill a list with it
+bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
+{
+	bool ret = true;
+	pugi::xml_node& node1 = node;
+
+	for (node1 = node.child("property"); node1; node1 = node1.next_sibling("property"))
+	{
+		Properties::Property* p = new Properties::Property;
+		p->name = node1.attribute("name").as_string();
+		p->value = node1.attribute("value").as_int();
+		properties.propertyList.add(p);		
+	}
+	
 	return ret;
 }
