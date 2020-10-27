@@ -20,16 +20,19 @@ Map::~Map()
 // L06: TODO 7: Ask for the value of a custom property
 int Properties::GetProperty(const char *value, int defaultValue) const
 {
-	if (((value = Property().name) != NULL))
+	int ret = defaultValue;
+	if (propertyList.count() != 0)
 	{
-		defaultValue = Property().value;
-		return defaultValue;
-	}
-	else if ((value = Property().name) == NULL)
-	{
-		defaultValue = 0;
-		return defaultValue;
+		for (int i = 0; i < propertyList.count() - 1; i++)
+		{
+			if (strcmp(propertyList.At(i)->data->name, value) == 0) 
+			{
+				ret = propertyList.At(i)->data->value;
+				LOG("%i", ret);
+			}
+		}
 	}	
+	return ret;
 }
 
 // Called before render is available
@@ -55,22 +58,24 @@ void Map::Draw()
 	{
 		MapLayer* layer = itemlayer->data;		
 		itemlayer = itemlayer->next;
-		
-		for (int i = 0; i < layer->width; i++)
+		if (layer->properties.GetProperty("Draw", 1) == 1)
 		{
-			for (int j = 0; j < layer->height; j++)
+			for (int i = 0; i < layer->width; i++)
 			{
-				if (layer->data[layer->Get(i, j)] != 0)
+				for (int j = 0; j < layer->height; j++)
 				{
-					layer->Get(i, j);
-					SDL_Texture* texture = data.tilesets.start->data->texture;
-					iPoint position = MapToWorld(i, j);
-					SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
+					if (layer->data[layer->Get(i, j)] != 0)
+					{
+						layer->Get(i, j);
+						SDL_Texture* texture = data.tilesets.start->data->texture;
+						iPoint position = MapToWorld(i, j);
+						SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
 
-					app->render->DrawTexture(texture, position.x, position.y, &sect);
+						app->render->DrawTexture(texture, position.x, position.y, &sect);
+					}
 				}
 			}
-		}
+		}		
 	}
 	// L04: TODO 9: Complete the draw function
 
@@ -236,25 +241,7 @@ bool Map::Load(const char* filename)
 			LOG("Layer ----");
 			LOG("name: %s", layer->name.GetString());
 			LOG("tile width: %d tile height: %d", layer->width, layer->height);
-
-			//Load collision layer
-			if (layer->name == "collision") 
-			{
-				for (int i = 0; i < layer->width; i++)
-				{
-					for (int j = 0; j < layer->height; j++)
-					{
-						if (layer->data[layer->Get(i, j)] != 0)
-						{
-							layer->Get(i, j);
-							iPoint position = MapToWorld(i, j);
-							SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
-
-							groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
-						}
-					}
-				}
-			}
+						
 			itemLayer = itemLayer->next;
 		}
     }
@@ -419,10 +406,29 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	pugi::xml_node tilesgid;
 	int i = 0;
 	for (tilesgid = node.child("data").child("tile"); tilesgid && ret; tilesgid = tilesgid.next_sibling("tile"))
-	{
+	{		
 		layer->data[i] = tilesgid.attribute("gid").as_uint();
 		i++;
 	}
+	//Load collision layer
+	if (layer->name == "collision")
+	{
+		for (int i = 0; i < layer->width; i++)
+		{
+			for (int j = 0; j < layer->height; j++)
+			{
+				if (layer->data[layer->Get(i, j)] != 0)
+				{
+					layer->Get(i, j);
+					iPoint position = MapToWorld(i, j);
+					SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
+
+					groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
+				}
+			}
+		}
+	}
+
 	return ret;
 }
 
@@ -430,14 +436,16 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 // L06: TODO 6: Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
-	bool ret = false;	
-	
-	for (node = mapFile.child("property"); node && ret; node = node.next_sibling("property"))
+	bool ret = true;
+	pugi::xml_node& node1 = node;
+
+	for (node1 = node.child("property"); node1; node1 = node1.next_sibling("property"))
 	{
 		Properties::Property* p = new Properties::Property;
-		p->name = node.attribute("Navigation").as_string();
-		p->value = node.attribute("Draw").as_int();		
+		p->name = node1.attribute("name").as_string();
+		p->value = node1.attribute("value").as_int();
 		properties.propertyList.add(p);		
 	}
+	
 	return ret;
 }

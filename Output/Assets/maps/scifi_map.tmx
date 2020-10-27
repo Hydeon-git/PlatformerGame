@@ -1235,7 +1235,7 @@
  </layer>
  <layer id="8" name="collision" width="50" height="12">
   <properties>
-   <property name="Draw" type="int" value="1"/>
+   <property name="Draw" type="int" value="0"/>
    <property name="Navigation" type="int" value="1"/>
   </properties>
   <data>

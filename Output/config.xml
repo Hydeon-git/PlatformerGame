@@ -23,7 +23,7 @@
     <folder>Assets/maps/</folder>
   </map>
   <player>
-    <initialPos1 x="20" y="70"/>
+    <initialPos1 x="10" y="10"/>
     <death time="4"/>
     <propierties life="100" speed="0.1" gravity="0.25"/>
     <path tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
