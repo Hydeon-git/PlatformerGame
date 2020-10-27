@@ -17,6 +17,21 @@ Map::Map() : Module(), mapLoaded(false)
 Map::~Map()
 {}
 
+// L06: TODO 7: Ask for the value of a custom property
+int Properties::GetProperty(const char *value, int defaultValue) const
+{
+	if (((value = Property().name) != NULL))
+	{
+		defaultValue = Property().value;
+		return defaultValue;
+	}
+	else if ((value = Property().name) == NULL)
+	{
+		defaultValue = 0;
+		return defaultValue;
+	}	
+}
+
 // Called before render is available
 bool Map::Awake(pugi::xml_node& config)
 {
@@ -34,21 +49,23 @@ void Map::Draw()
 	if (mapLoaded == false) return;
 
 	// L04: TODO 5: Prepare the loop to draw all tilesets + DrawTexture()
+	// L06: TODO 4: Make sure we draw all the layers and not just the first one
 	ListItem<MapLayer*>* itemlayer = data.maplayers.start;
 	while (itemlayer != NULL)
 	{
-		MapLayer* l = itemlayer->data;
+		MapLayer* layer = itemlayer->data;		
 		itemlayer = itemlayer->next;
-		for (int i = 0; i < l->width; i++)
+		
+		for (int i = 0; i < layer->width; i++)
 		{
-			for (int j = 0; j < l->height; j++)
+			for (int j = 0; j < layer->height; j++)
 			{
-				if (l->data[l->Get(i, j)] != 0)
+				if (layer->data[layer->Get(i, j)] != 0)
 				{
-					l->Get(i, j);
+					layer->Get(i, j);
 					SDL_Texture* texture = data.tilesets.start->data->texture;
 					iPoint position = MapToWorld(i, j);
-					SDL_Rect sect = data.tilesets.start->data->GetTileRect(l->data[l->Get(i, j)]);
+					SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
 
 					app->render->DrawTexture(texture, position.x, position.y, &sect);
 				}
@@ -82,6 +99,18 @@ iPoint Map::MapToWorld(int x, int y) const
 
 
 	return ret;
+}
+
+// L06: TODO 3: Pick the right Tileset based on a tile id
+TileSet* Map::GetTilesetFromTileId(int id) const
+{
+	ListItem<TileSet*>* item = data.tilesets.start;
+	TileSet* set = item->data;
+
+	if (id == (item->data->firstgid == 1)|| id == (item->data->firstgid == 65))
+	{
+		return set;
+	}	
 }
 
 // Get relative Tile rectangle
@@ -203,22 +232,23 @@ bool Map::Load(const char* filename)
 		ListItem<MapLayer*>* itemLayer = data.maplayers.start;
 		while (itemLayer != NULL)
 		{
-			MapLayer* l = itemLayer->data;
+			MapLayer* layer = itemLayer->data;
 			LOG("Layer ----");
-			LOG("name: %s", l->name.GetString());
-			LOG("tile width: %d tile height: %d", l->width, l->height);
+			LOG("name: %s", layer->name.GetString());
+			LOG("tile width: %d tile height: %d", layer->width, layer->height);
 
 			//Load collision layer
-			if (l->name == "Collision") {
-				for (int i = 0; i < l->width; i++)
+			if (layer->name == "collision") 
+			{
+				for (int i = 0; i < layer->width; i++)
 				{
-					for (int j = 0; j < l->height; j++)
+					for (int j = 0; j < layer->height; j++)
 					{
-						if (l->data[l->Get(i, j)] != 0)
+						if (layer->data[layer->Get(i, j)] != 0)
 						{
-							l->Get(i, j);
+							layer->Get(i, j);
 							iPoint position = MapToWorld(i, j);
-							SDL_Rect sect = data.tilesets.start->data->GetTileRect(l->data[l->Get(i, j)]);
+							SDL_Rect sect = data.tilesets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
 
 							groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
 						}
@@ -381,6 +411,7 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	layer->width = node.attribute("width").as_int();
 	layer->height = node.attribute("height").as_int();
 	layer->data = new uint[layer->width * layer->height];
+	LoadProperties(node.child("properties"), layer->properties);
 	//set->nav = layer.attribute("nav").as_int();
 
 	memset(layer->data, 0, layer->width * layer->height);
@@ -391,6 +422,22 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	{
 		layer->data[i] = tilesgid.attribute("gid").as_uint();
 		i++;
+	}
+	return ret;
+}
+
+
+// L06: TODO 6: Load a group of properties from a node and fill a list with it
+bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
+{
+	bool ret = false;	
+	
+	for (node = mapFile.child("property"); node && ret; node = node.next_sibling("property"))
+	{
+		Properties::Property* p = new Properties::Property;
+		p->name = node.attribute("Navigation").as_string();
+		p->value = node.attribute("Draw").as_int();		
+		properties.propertyList.add(p);		
 	}
 	return ret;
 }

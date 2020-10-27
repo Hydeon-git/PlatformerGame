@@ -11,7 +11,7 @@
   </renderer>
 
   <window>
-    <resolution width="1280" height="720" scale="3"/>
+    <resolution width="1280" height="720" scale="4"/>
     <fullscreen value="false"/>
     <borderless value="false"/>
     <resizable value="false"/>
@@ -23,7 +23,7 @@
     <folder>Assets/maps/</folder>
   </map>
   <player>
-    <initialPos1 x="10" y="10"/>
+    <initialPos1 x="20" y="70"/>
     <death time="4"/>
     <propierties life="100" speed="0.1" gravity="0.25"/>
     <path tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
