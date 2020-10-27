@@ -32,7 +32,7 @@ Player::Player() : Module()
 
 	jump.PushBack({ 64, 0, 32, 32 });
 	jump.PushBack({ 96, 0, 32, 32 });
-	jump.speed = 1.0f;
+	jump.speed = 0.1f;
 }
 
 // Destructor
@@ -58,12 +58,13 @@ bool Player::Start()
 {
 	bool ret = true;
 	//Loading assets and propierties from config file
-	position = initialPos;
+	positionf.x = initialPos.x;
+	positionf.y = initialPos.y;
 	graphics = app->tex->Load(texPath.GetString());
 	LOG("creating player colliders");
-	r_collider = { position.x, position.y+16, 10, 16 };
+	r_collider = { position.x+11, position.y+17, 10, 15 };
 	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER);
-	colPlayerWalls = app->collision->AddCollider({position.x-1, position.y+14, 12, 2 }, COLLIDER_PLAYER);
+	colPlayerWalls = app->collision->AddCollider({position.x, position.y+14, 12, 2 }, COLLIDER_PLAYER);
 	return ret;
 }
 
@@ -215,11 +216,13 @@ bool Player::Update(float dt)
 	position.y = positionf.y;
 
 	//Collider position
-	if (velocity.y > 0) colPlayer->SetPos(position.x + 9, position.y + 18);
-	else colPlayer->SetPos(position.x + 9, position.y + 16);
-	if (velocity.x > 0) 	colPlayerWalls->SetPos(position.x + 9, position.y + 14);
-	else if (velocity.x < 0) 	colPlayerWalls->SetPos(position.x + 7, position.y + 14);
-	else colPlayerWalls->SetPos(position.x + 8, position.y + 14);
+	if (velocity.y > 0) colPlayer->SetPos(position.x + 11, position.y + 18);
+	else colPlayer->SetPos(position.x + 11, position.y + 17);
+
+	if (velocity.x > 0) 	colPlayerWalls->SetPos(position.x + 11, position.y + 15);
+	else if (velocity.x < 0) 	colPlayerWalls->SetPos(position.x + 9, position.y + 15);
+	else colPlayerWalls->SetPos(position.x + 10, position.y + 15);
+
 	r_collider.x = position.x + 9; r_collider.y = position.y + 18;
 
 	//Function to draw the player
@@ -246,41 +249,41 @@ bool Player::OnGround() {
 
 	bool ret = false;
 
-	//for (int i = 0; i < app->map->groundCol.count(); i++) {
-	//	ret = colPlayer->CheckCollision(app->map->groundCol.At(i)->data->rect);
-	//	if (ret) {
-	//		if (vel.y > 0) {
-	//			position.y = app->map->groundCol.At(i)->data->rect.y - 32;
-	//			vel.x = 0;
-	//		}
-	//		else if (vel.y < 0) {
-	//			position.y = app->map->groundCol.At(i)->data->rect.y + 1;
-	//			vel.x = 0;
-	//		}
-	//		return ret;
-	//	}
-	//}
-	ret = true;
+	for (int i = 0; i < app->map->groundCol.count(); i++) {
+		ret = colPlayer->CheckCollision(app->map->groundCol.At(i)->data->rect);
+		if (ret) {
+			if (velocity.y > 0) {
+				positionf.y = app->map->groundCol.At(i)->data->rect.y - 32;
+				velocity.x = 0;
+			}
+			else if (velocity.y < 0) {
+				positionf.y = app->map->groundCol.At(i)->data->rect.y + 1;
+				velocity.x = 0;
+			}
+			return ret;
+		}
+	}
+
 	return ret;
 }
 
 bool Player::WallCollision() {
 	bool ret = false;
 
-	//for (int i = 0; i < app->map->groundCol.count(); i++) {
-	//	ret = colPlayerWalls->CheckCollision(app->map->groundCol.At(i)->data->rect);
-	//	if (ret) {
-	//		if (velocity.x > 0) {
-	//			if (airTimer < 3) vel.x = 0;
-	//			position.x = app->map->groundCol.At(i)->data->rect.x - 23;
-	//		}
-	//		else if (velocity.x < 0) {
-	//			if (airTimer < 3) vel.x = 0;
-	//			position.x = app->map->groundCol.At(i)->data->rect.x + 11;
-	//		}
-	//		break;
-	//	}
-	//}
+	for (int i = 0; i < app->map->groundCol.count(); i++) {
+		ret = colPlayerWalls->CheckCollision(app->map->groundCol.At(i)->data->rect);
+		if (ret) {
+			if (velocity.x > 0) {
+				if (airTimer < 3) velocity.x = 0;
+				positionf.x = app->map->groundCol.At(i)->data->rect.x - 23;
+			}
+			else if (velocity.x < 0) {
+				if (airTimer < 3) velocity.x = 0;
+				positionf.x = app->map->groundCol.At(i)->data->rect.x + 8;
+			}
+			break;
+		}
+	}
 
 	return ret;
 }
