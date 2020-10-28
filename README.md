@@ -1,4 +1,4 @@
-# {Project Name}
+# SPACE THIEF
 
 ## Description
 
@@ -6,22 +6,25 @@
 
 ## Key Features
 
- - {Feature01}
- - {Feature02}
- - {Feature03}
- - {Feature04}
+ - A for backward movement
+ - D for forward movement
+ - SPACE for Jump
+ - F1 to start the first level
+ - F3 to start from the beggining of the current level
+ - F5 ​Save the current game state
+ - F6 ​Load the previous state
+ - F9​ View colliders
+ - F10​ God Mode
  
 ## Controls
 
- - {ControlsScheme}
+ - AD to move arround the map
+ - SPACE to jump
 
 ## Developers
 
- - {Dev01} - {Role(s)}
- - {Dev02} - {Role(s)}
- - {Dev03} - {Role(s)}
- - {Dev04} - {Role(s)}
- - {Dev05} - {Role(s)}
+ - Óscar Royo - Programmer
+ - Albert Pou - Programmer / Artist
 
 ## License
 
