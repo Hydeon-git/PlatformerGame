@@ -50,11 +50,12 @@ public:
 	bool LoadState(pugi::xml_node&);
 
 	// Collisions
-	bool OnGround();
-	bool WallCollision();
+	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
 	Collider* colPlayer;
+
+	iPoint position;
 
 private:
 
@@ -74,11 +75,14 @@ private:
 	bool flip = true;
 	bool dead = false;
 
+	bool onGround;
+	bool leftColliding;
+	bool rightColliding;
+
 	SString texPath;
 	SDL_Texture* graphics;
 
 	fPoint velocity;
-	iPoint position;
 	iPoint initialPos;
 
 	Animation* current_animation = &idle;

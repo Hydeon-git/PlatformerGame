@@ -12,25 +12,12 @@ Collision::Collision()
 	for (uint i = 0; i < MAX_COLLIDERS; ++i)
 		colliders[i] = nullptr;
 
-	matrix[COLLIDER_GROUND][COLLIDER_WALL] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_PLAYER] = true;
-	matrix[COLLIDER_GROUND][COLLIDER_ENEMY] = false;
-	matrix[COLLIDER_GROUND][COLLIDER_PLAYER_SHOT] = false;
-	matrix[COLLIDER_GROUND][COLLIDER_ENEMY_SHOT] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_GROUND] = false;
-	matrix[COLLIDER_GROUND][COLLIDER_COIN] = false;
 
-	matrix[COLLIDER_PLAYER][COLLIDER_WALL] = false;
 	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER_SHOT] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY_SHOT] = false;
 	matrix[COLLIDER_PLAYER][COLLIDER_GROUND] = true;
-	matrix[COLLIDER_PLAYER][COLLIDER_COIN] = true;
-
-	matrix[COLLIDER_PLAYER_SHOT][COLLIDER_ENEMY] = true;
 }
-
 
 // Destructor
 Collision::~Collision()
@@ -47,7 +34,7 @@ bool Collision::PreUpdate()
 			colliders[i] = nullptr;
 		}
 	}
-	/*
+	
 	// Calculate collisions
 	Collider* c1;
 	Collider* c2;
@@ -73,7 +60,7 @@ bool Collision::PreUpdate()
 			}
 		}
 	}
-	*/
+	
 	return true;
 }
 

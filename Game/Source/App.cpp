@@ -8,6 +8,7 @@
 #include "Map.h"
 #include "Collision.h"
 #include "Player.h"
+#include "FadeToBlack.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -29,6 +30,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	map = new Map();
 	player = new Player();
 	collision = new Collision();
+	fade = new FadeToBlack();
 
 
 	// Ordered for awake / Start / Update
@@ -41,6 +43,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(map);
 	AddModule(player);
 	AddModule(collision);
+	AddModule(fade);
 
 	// Render last to swap buffer
 	AddModule(render);

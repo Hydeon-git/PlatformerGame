@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Window.h"
 #include "Render.h"
+#include "Player.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -58,6 +59,7 @@ bool Render::Start()
 	LOG("render start");
 	// back background
 	SDL_RenderGetViewport(renderer, &viewport);
+	scale = app->win->GetScale();
 	return true;
 }
 
@@ -70,6 +72,10 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
+	camera.x = -(app->player->position.x - 100) * scale;
+	camera.y = -app->player->position.y + 200;
+	Clamp(&camera.x, -1120, 0);
+	Clamp(&camera.y, 72, 150);
 	return true;
 }
 
@@ -129,7 +135,6 @@ void Render::ResetViewPort()
 bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flip) const
 {
 	bool ret = true;
-	uint scale = app->win->GetScale();
 
 	SDL_Rect rect;
 	rect.x = (int)(camera.x * speed) + x * scale;
@@ -176,7 +181,6 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool filled, bool use_camera) const
 {
 	bool ret = true;
-	uint scale = app->win->GetScale();
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -253,4 +257,12 @@ bool Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, Uin
 	}
 
 	return ret;
+}
+
+void Render::Clamp(int* value, int min, int max) 
+{
+	if (*value > max)
+		*value = max;
+	else if (*value < min)
+		*value = min;
 }

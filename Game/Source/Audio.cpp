@@ -84,6 +84,13 @@ bool Audio::CleanUp()
 	return true;
 }
 
+void Audio::SetVolume(int volume) //It has to be a value between 0 and 100
+{
+	int vol = volume * 1.28f;
+	Mix_Volume(-1, (int)vol);
+	Mix_VolumeMusic((int)vol);
+}
+
 // Play a music file
 bool Audio::PlayMusic(const char* path, float fade_time)
 {

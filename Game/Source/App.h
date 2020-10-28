@@ -21,6 +21,7 @@ class Scene;
 class Map;
 class Collision;
 class Player;
+class FadeToBlack;
 
 class App
 {
@@ -96,6 +97,7 @@ public:
 	Map* map;
 	Collision* collision;
 	Player* player;
+	FadeToBlack* fade;
 
 private:
 

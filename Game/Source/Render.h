@@ -46,12 +46,16 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
+	void Clamp(int* value, int min, int max);
+
 public:
 
 	SDL_Renderer* renderer;
 	SDL_Rect camera;
 	SDL_Rect viewport;
 	SDL_Color background;
+private:
+	uint scale;
 };
 
 #endif // __RENDER_H__

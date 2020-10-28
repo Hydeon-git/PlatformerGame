@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "FadeToBlack.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -35,6 +36,7 @@ bool Scene::Start()
 
 	ret = app->map->Load("scifi_map.tmx");
 	ret = app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+	app->audio->SetVolume(0);
 
 	if (ret) loaded = true;
 
@@ -56,20 +58,12 @@ bool Scene::Update(float dt)
 	if(app->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
 		app->SaveGameRequest();
 
-	if(app->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		app->render->camera.y -= 5;
-
-	if(app->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		app->render->camera.y += 5;
-
-	if(app->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		app->render->camera.x -= 5;
-
-	if(app->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		app->render->camera.x += 5;
-
 	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 		app->debug = !app->debug;
+
+	if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
+		app->fade->FadeToBlkVisualEffect();
+	}
 
 	// Draw map
 	app->map->Draw();

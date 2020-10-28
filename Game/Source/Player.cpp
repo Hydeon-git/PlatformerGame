@@ -62,10 +62,11 @@ bool Player::Start()
 	position.x = initialPos.x;
 	position.y = initialPos.y;
 	graphics = app->tex->Load(texPath.GetString());
-	LOG("creating player colliders");
-	r_collider = { position.x+11, position.y+17, 10, 15 };
-	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER);
-	colPlayerWalls = app->collision->AddCollider({position.x, position.y+14, 12, 2 }, COLLIDER_PLAYER);
+
+	LOG("Creating player colliders");
+	r_collider = { position.x+13, position.y+17, 6, 15 };
+	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER, this);
+	colPlayerWalls = app->collision->AddCollider({position.x+11, position.y+18, 10, 13 }, COLLIDER_PLAYER, this);
 	return ret;
 }
 
@@ -99,8 +100,11 @@ bool Player::ResetStates() //Reset all states before checking input
 bool Player::Update(float dt) 
 {
 	bool ret = false;
-	if (position.y > deathLimit || status == PLAYER_DEATH) {
-		if (!dead) {
+	if (position.y > deathLimit || status == PLAYER_DEATH) 
+	{
+		if (!dead) 
+		{
+			ResetStates();
 			velocity.x = 0;
 			death.Reset();
 			deathTimer = deathTimer_config;
@@ -110,7 +114,8 @@ bool Player::Update(float dt)
 		}
 	}
 	//Input
-	if (input) {
+	if (input) 
+	{
 		if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
 		{ 
 			ResetStates();
@@ -118,11 +123,11 @@ bool Player::Update(float dt)
 		}
 		if (!godmode) 
 		{
-			if (OnGround()) 
+			if (onGround) 
 			{
 				ResetStates();
 
-				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 					status = PLAYER_JUMP;
 
 				else status = PLAYER_IDLE;
@@ -134,17 +139,16 @@ bool Player::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 			{
-				status = PLAYER_BACKWARD;
-				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+				if(!leftColliding) status = PLAYER_BACKWARD;
+				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 					status = PLAYER_JUMP;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 			{
-				status = PLAYER_FORWARD;
-				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+				if(!rightColliding) status = PLAYER_FORWARD;
+				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 					status = PLAYER_JUMP;
 			}
-			WallCollision(); //Detect horizontal collision
 		}
 		else 
 		{ //Godmode input
@@ -156,7 +160,8 @@ bool Player::Update(float dt)
 			{
 				position.x += 1;
 			}
-			else if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
+
+			if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
 			{
 				position.y -= 1;
 			}
@@ -177,15 +182,18 @@ bool Player::Update(float dt)
 	case PLAYER_FORWARD:
 		velocity.x = speed;
 		flip = false;
-		current_animation = &walk;
+		if (onGround)current_animation = &walk;
+		else current_animation = &jump;
 		break;
 	case PLAYER_BACKWARD:
 		velocity.x = -speed;
 		flip = true;
-		current_animation = &walk;
+		if(onGround)current_animation = &walk;
+		else current_animation = &jump;
 		break;
 	case PLAYER_JUMP:
-		if (jumpEnable == true) {
+		if (jumpEnable == true) 
+		{
 			jumpEnable = false;
 			current_animation = &jump;
 			velocity.y = -3;
@@ -196,12 +204,13 @@ bool Player::Update(float dt)
 	case PLAYER_DEATH:
 		//Death animation
 		current_animation = &death;
-		if (deathTimer <= 0) {
+		if (deathTimer <= 0) 
+		{
 			current_animation = &idle;
 			dead = false;
 			life = 100;
 			input = true;
-			position = initialPos;//Return to start
+			position = initialPos; //Return to start
 			status = PLAYER_IN_AIR;
 		}
 		else deathTimer -= 0.1f;
@@ -216,18 +225,16 @@ bool Player::Update(float dt)
 	position.y += velocity.y;
 
 	//Collider position
-	if (velocity.y > 0) colPlayer->SetPos(position.x + 11, position.y + 17);
-	else colPlayer->SetPos(position.x + 11, position.y + 17);
+	colPlayer->SetPos(position.x + 13, position.y + 17);
+	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
 
-	if (velocity.x > 0) 	colPlayerWalls->SetPos(position.x + 11, position.y + 15);
-	else if (velocity.x < 0) 	colPlayerWalls->SetPos(position.x + 9, position.y + 15);
-	else colPlayerWalls->SetPos(position.x + 10, position.y + 15);
-
-	r_collider.x = position.x + 11; r_collider.y = position.y + 17;
+	r_collider.x = position.x + 13; r_collider.y = position.y + 17;
 
 	//Function to draw the player
 	ret = Draw(dt);
-
+	onGround = false;
+	rightColliding = false;
+	leftColliding = false;
 	return true;
 }
 
@@ -235,7 +242,8 @@ bool Player::Draw(float dt)
 {
 	bool ret = false;
 	r = current_animation->GetCurrentFrame(dt);
-	if (graphics != nullptr) {
+	if (graphics != nullptr) 
+	{
 		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
 	}
 	else LOG("No available graphics to draw.");
@@ -245,47 +253,57 @@ bool Player::Draw(float dt)
 	return ret;
 }
 
-bool Player::OnGround() {
-
+bool Player::OnCollision(Collider* c1, Collider* c2) 
+{
 	bool ret = false;
-
-	for (int i = 0; i < app->map->groundCol.count(); i++) {
-		ret = colPlayer->CheckCollision(app->map->groundCol.At(i)->data->rect);
-		if (ret) {
-			if (velocity.y > 0) {
-				position.y = app->map->groundCol.At(i)->data->rect.y - 32;
-				velocity.x = 0;
+	if (!godmode)
+	{
+		if (c1 == colPlayer && c2->type == COLLIDER_GROUND)
+		{
+			if (c2->rect.y > c1->rect.y + c1->rect.h - 5)
+			{
+				position.y = c2->rect.y - c2->rect.h * 2;
+				velocity.y = 0;
+				onGround = true;
 			}
-			else if (velocity.y < 0) {
-				position.y = app->map->groundCol.At(i)->data->rect.y;
-				velocity.x = 0;
+			else if (c2->rect.y + c2->rect.h < c1->rect.y + 5)
+			{
+				velocity.y = 0;
+				position.y = c2->rect.y;
 			}
-			return ret;
+			ret = true;
 		}
+		if (c1 == colPlayerWalls && c2->type == COLLIDER_GROUND) 
+		{
+			if (c2->rect.x > c1->rect.x + c1->rect.w - 5 && c2->rect.y < c1->rect.y + c1->rect.h)
+			{
+				//Collider in the right
+				position.x = c2->rect.x - c2->rect.w - 5;
+				velocity.x = 0;
+				rightColliding = true;
+			}
+			else if (c2->rect.x + c2->rect.w < c1->rect.x + 5 && c2->rect.y < c1->rect.y + c1->rect.h)
+			{
+				//Collider on the left
+				position.x = c2->rect.x + 5;
+				velocity.x = 0;
+				leftColliding = true;
+			}
+			else
+			{
+				leftColliding = false;
+				rightColliding = false;
+			}
+			ret = true;
+		}
+		
 	}
-
+	else ret = true;
 	return ret;
 }
 
-bool Player::WallCollision() {
-	bool ret = false;
-
-	for (int i = 0; i < app->map->groundCol.count(); i++) {
-		ret = colPlayerWalls->CheckCollision(app->map->groundCol.At(i)->data->rect);
-		if (ret) {
-			if (velocity.x > 0) {
-				position.x = app->map->groundCol.At(i)->data->rect.x - 23;
-			}
-			else if (velocity.x < 0) {
-				position.x = app->map->groundCol.At(i)->data->rect.x + 8;
-			}
-			break;
-		}
-	}
-	return ret;
-}
-
-bool Player::SaveState(pugi::xml_node& data) const {
+bool Player::SaveState(pugi::xml_node& data) const 
+{
 	pugi::xml_node ply = data.append_child("player");
 
 	ply.append_attribute("x") = position.x;
