@@ -73,9 +73,9 @@ bool Render::PreUpdate()
 bool Render::Update(float dt)
 {
 	camera.x = -(app->player->position.x - 100) * scale;
-	camera.y = -app->player->position.y + 200;
+	camera.y = -app->player->position.y + 110;
 	Clamp(&camera.x, -1120, 0);
-	Clamp(&camera.y, 72, 150);
+	Clamp(&camera.y, -90, -50);
 	return true;
 }
 
