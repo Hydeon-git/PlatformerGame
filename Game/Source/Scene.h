@@ -5,13 +5,6 @@
 
 struct SDL_Texture;
 
-enum GameScene
-{
-	SceneIntro,
-	Scene1,
-	GameOver
-};
-
 class Scene : public Module
 {
 public:
@@ -43,9 +36,6 @@ public:
 	bool loaded = false;
 
 private:
-	GameScene currentScene;
-	SDL_Texture* introScreen;
-	SDL_Texture* goScreen;
 
 };
 

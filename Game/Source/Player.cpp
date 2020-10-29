@@ -79,18 +79,11 @@ bool Player::CleanUp()
 	return ret;
 }
 
-bool Player::EnablePlayer() //Disable function for changing scene
-{
-	bool ret = false;
-	graphics = app->tex->Load(texPath.GetString());;
-	return ret;
-}
-
-bool Player::DisablePlayer() //Disable function for changing scene
+bool Player::Disable() //Disable function for changing scene
 { 
 	bool ret = false;
-	LOG("Unloading player");
 	ret = app->tex->UnLoad(graphics);
+	ret = app->audio->CleanUp();
 	return ret;
 }
 

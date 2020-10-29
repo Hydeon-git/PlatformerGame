@@ -43,8 +43,7 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
-	bool EnablePlayer();
-	bool DisablePlayer();
+	bool Disable();
 
 	// Load / Save
 	bool SaveState(pugi::xml_node&) const;

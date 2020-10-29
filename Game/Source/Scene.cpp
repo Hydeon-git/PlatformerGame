@@ -6,7 +6,6 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
-#include "Player.h"
 #include "FadeToBlack.h"
 
 #include "Defs.h"
@@ -15,8 +14,6 @@
 Scene::Scene() : Module()
 {
 	name.Create("scene");
-
-	currentScene = GameScene::SceneIntro;
 }
 
 // Destructor
@@ -39,7 +36,7 @@ bool Scene::Start()
 
 	ret = app->map->Load("scifi_map.tmx");
 	ret = app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-	app->audio->SetVolume(20);
+	app->audio->SetVolume(0);
 
 	if (ret) loaded = true;
 
@@ -55,58 +52,33 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	switch (currentScene)
-	{
-	case GameScene::SceneIntro:
-	{		
-		app->audio->CleanUp();
-		app->player->DisablePlayer();
-		
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{ 
-			currentScene = Scene1;
-		}
-
-	}break;
-	case GameScene::Scene1:
-	{
-		app->player->EnablePlayer();
-		// Audio doesn't load
-		//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-
 	// Falta F1 Load first level
 	// Falta F3 Start from the beginning of the level
 
-		if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
-			app->SaveGameRequest();
+	if(app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+		app->SaveGameRequest();
 
-		if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
-			app->LoadGameRequest();
+	if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+		app->LoadGameRequest();
 
-		if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-			app->debug = !app->debug;
+	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+		app->debug = !app->debug;
 
-		if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-		{
-			app->fade->FadeToBlkVisualEffect();
-		}
-
-		// Draw map
-		app->map->Draw();
-
-		SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-			app->map->data.width, app->map->data.height,
-			app->map->data.tileWidth, app->map->data.tileHeight,
-			app->map->data.tilesets.count());
-
-		app->win->SetTitle(title.GetString());
-
-	}break;
-	case GameScene::GameOver:
+	if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) 
 	{
-
-	}break;
+		app->fade->FadeToBlkVisualEffect();
 	}
+
+	// Draw map
+	app->map->Draw();
+
+	SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
+				   app->map->data.width, app->map->data.height,
+				   app->map->data.tileWidth, app->map->data.tileHeight,
+				   app->map->data.tilesets.count());
+
+	app->win->SetTitle(title.GetString());
+
 	return true;
 }
 
