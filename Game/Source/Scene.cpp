@@ -52,16 +52,20 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+	// Falta F1 Load first level
+	// Falta F3 Start from the beginning of the level
+
+	if(app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		app->SaveGameRequest();
 
-	if(app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
 		app->LoadGameRequest();
 
 	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 		app->debug = !app->debug;
 
-	if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
+	if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) 
+	{
 		app->fade->FadeToBlkVisualEffect();
 	}
 
