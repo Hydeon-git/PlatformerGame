@@ -52,11 +52,11 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	if(app->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
-		app->LoadGameRequest();
-
-	if(app->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		app->SaveGameRequest();
+
+	if(app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+		app->LoadGameRequest();
 
 	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 		app->debug = !app->debug;

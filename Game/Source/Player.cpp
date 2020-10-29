@@ -67,6 +67,7 @@ bool Player::Start()
 	r_collider = { position.x+13, position.y+17, 6, 15 };
 	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER, this);
 	colPlayerWalls = app->collision->AddCollider({position.x+11, position.y+18, 10, 13 }, COLLIDER_PLAYER, this);
+	flip = false;
 	return ret;
 }
 
@@ -296,7 +297,6 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 			}
 			ret = true;
 		}
-		
 	}
 	else ret = true;
 	return ret;
@@ -315,8 +315,21 @@ bool Player::SaveState(pugi::xml_node& data) const
 bool Player::LoadState(pugi::xml_node& data)
 {
 	SDL_Delay(1000);
+
 	position.x = data.child("player").attribute("x").as_int();
 	position.y = data.child("player").attribute("y").as_int();
+
+	colPlayer->SetPos(position.x + 13, position.y + 17);
+	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
+
+	r_collider.x = position.x + 13; r_collider.y = position.y + 17;
+
+	r.x = position.x;
+	r.y = position.y;
+
+	onGround = false;
+	rightColliding = false;
+	leftColliding = false;
 
 	return true;
 }
