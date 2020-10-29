@@ -325,5 +325,17 @@ bool Player::LoadState(pugi::xml_node& data)
 	position.x = data.child("player").attribute("x").as_int();
 	position.y = data.child("player").attribute("y").as_int();
 
+	colPlayer->SetPos(position.x + 13, position.y + 17);
+	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
+
+	r_collider.x = position.x + 13; r_collider.y = position.y + 17;
+
+	r.x = position.x;
+	r.y = position.y;
+
+	onGround = false;
+	rightColliding = false;
+	leftColliding = false;
+
 	return true;
 }
