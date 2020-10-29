@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Player.h"
 #include "FadeToBlack.h"
 
 #include "Defs.h"
@@ -14,6 +15,8 @@
 Scene::Scene() : Module()
 {
 	name.Create("scene");
+
+	currentScene = GameScene::SceneIntro;
 }
 
 // Destructor
@@ -52,32 +55,55 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
-	// Falta F1 Load first level
-	// Falta F3 Start from the beginning of the level
-
-	if(app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
-		app->SaveGameRequest();
-
-	if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
-		app->LoadGameRequest();
-
-	if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-		app->debug = !app->debug;
-
-	if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) 
+	switch (currentScene)
 	{
-		app->fade->FadeToBlkVisualEffect();
+	case GameScene::SceneIntro:
+	{
+		app->audio->CleanUp();
+		app->player->DisablePlayer();
+
+		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		{
+			currentScene = Scene1;
+		}
+
+	}break;
+	case GameScene::Scene1:
+	{
+		// Audio doesn't load
+		//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+		app->player->EnablePlayer();
+
+		// Falta F1 Load first level
+
+		// Falta F3 Start from the beginning of the level
+
+		if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+			app->SaveGameRequest();
+
+		if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+			app->LoadGameRequest();
+
+		if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+			app->debug = !app->debug;
+
+		if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)	
+			app->fade->FadeToBlkVisualEffect();
+		
+		// Draw map
+		app->map->Draw();
+
+		SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
+			app->map->data.width, app->map->data.height,
+			app->map->data.tileWidth, app->map->data.tileHeight,
+			app->map->data.tilesets.count());
+
+		app->win->SetTitle(title.GetString());
+	}break;
+	case GameScene::GameOver:
+	{		
+	}break;
 	}
-
-	// Draw map
-	app->map->Draw();
-
-	SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-				   app->map->data.width, app->map->data.height,
-				   app->map->data.tileWidth, app->map->data.tileHeight,
-				   app->map->data.tilesets.count());
-
-	app->win->SetTitle(title.GetString());
 
 	return true;
 }

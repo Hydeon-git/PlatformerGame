@@ -5,6 +5,14 @@
 
 struct SDL_Texture;
 
+enum GameScene
+{
+	SceneIntro,
+	Scene1,
+	GameOver
+};
+
+
 class Scene : public Module
 {
 public:
@@ -37,6 +45,9 @@ public:
 
 private:
 
+	GameScene currentScene;
+	//SDL_Texture* introScreen;
+	//SDL_Texture* goScreen;
 };
 
 #endif // __SCENE_H__
