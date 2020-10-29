@@ -62,7 +62,7 @@ bool Scene::Update(float dt)
 		app->audio->CleanUp();
 		app->player->DisablePlayer();
 
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
 			currentScene = Scene1;
 		}
