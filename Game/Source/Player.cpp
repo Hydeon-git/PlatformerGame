@@ -82,16 +82,19 @@ bool Player::CleanUp()
 bool Player::EnablePlayer() //Disable function for changing scene
 {
 	bool ret = false;
-	graphics = app->tex->Load(texPath.GetString());;
+	app->player->active = true;
+	app->collision->active = true;	
 	return ret;
 }
 
 bool Player::DisablePlayer() //Disable function for changing scene
-{ 
-	bool ret = false;
+{ 	
 	LOG("Unloading player");
-	ret = app->tex->UnLoad(graphics);
-	return ret;
+	app->player->active = false;
+	app->collision->active = false;
+	
+	
+	return true;
 }
 
 bool Player::ResetStates() //Reset all states before checking input

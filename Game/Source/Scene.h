@@ -46,8 +46,9 @@ public:
 private:
 
 	GameScene currentScene;
-	//SDL_Texture* introScreen;
-	//SDL_Texture* goScreen;
+	void Scene::ChangeScene(GameScene nextScene);
+		
+	SDL_Texture* introScreen;
 };
 
 #endif // __SCENE_H__

@@ -12,6 +12,8 @@
 #include "Defs.h"
 #include "Log.h"
 
+#include "SDL_image/include/SDL_image.h"
+
 Scene::Scene() : Module()
 {
 	name.Create("scene");
@@ -34,16 +36,15 @@ bool Scene::Awake()
 
 // Called before the first frame
 bool Scene::Start()
-{
-	bool ret = false;
+{	
+	app->player->DisablePlayer();	
+	introScreen = app->tex->Load("Assets/textures/screens/intro1.png");	
+	//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+	app->audio->SetVolume(80);
+	app->render->introRec.w = 1280;
+	app->render->introRec.h = 720;
 
-	ret = app->map->Load("scifi_map.tmx");
-	ret = app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-	app->audio->SetVolume(0);
-
-	if (ret) loaded = true;
-
-	return ret;
+	return true;
 }
 
 // Called each loop iteration
@@ -59,12 +60,13 @@ bool Scene::Update(float dt)
 	{
 	case GameScene::SceneIntro:
 	{
-		app->audio->CleanUp();
-		app->player->DisablePlayer();
+		app->render->DrawTexture(introScreen, 0, 0, &app->render->introRec);
 
 		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
 		{
+			ChangeScene(Scene1);
 			currentScene = Scene1;
+			SDLCALL _Mix_Free
 		}
 
 	}break;
@@ -72,7 +74,7 @@ bool Scene::Update(float dt)
 	{
 		// Audio doesn't load
 		//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-		app->player->EnablePlayer();
+		
 
 		// Falta F1 Load first level
 
@@ -125,4 +127,20 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 
 	return true;
+}
+
+void Scene::ChangeScene(GameScene nextScene)
+{
+	switch (nextScene)
+	{
+	case GameScene::Scene1:
+	{
+		app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+		app->audio->SetVolume(0);
+		app->map->Load("scifi_map.tmx");
+		app->player->EnablePlayer();		
+		currentScene = Scene1;
+	}break;
+		
+	}
 }
