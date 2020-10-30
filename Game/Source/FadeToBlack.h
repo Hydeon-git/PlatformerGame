@@ -12,7 +12,7 @@ public:
 
 	bool Start();
 	bool Update(float dt);
-	bool FadeToBlk(int module, float time = 2.0f);
+	bool FadeToBlk(GameScene nextScene, float time = 2.0f);
 	bool FadeToBlkVisualEffect(float time = 2.0f);
 
 private:
@@ -27,7 +27,7 @@ private:
 	Uint32 start_time = 0;
 	Uint32 total_time = 0;
 	SDL_Rect screen;
-	int level = 0;
+	GameScene level = SceneIntro;
 };
 
 #endif //__FADETOBLACK_H__

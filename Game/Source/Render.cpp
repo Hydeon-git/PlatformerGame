@@ -72,8 +72,10 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
+
 	camera.x = -(app->player->position.x - 100) * scale;
 	camera.y = -app->player->position.y + 110;
+
 	Clamp(&camera.x, -1120, 0);
 	Clamp(&camera.y, -90, -50);
 	return true;
@@ -132,13 +134,13 @@ void Render::ResetViewPort()
 }
 
 // Blit to screen
-bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flip) const
+bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, int reducedScale, float speed, double angle, int pivotX, int pivotY, bool flip) const
 {
 	bool ret = true;
 
 	SDL_Rect rect;
-	rect.x = (int)(camera.x * speed) + x * scale;
-	rect.y = (int)(camera.y * speed) + y * scale;
+	rect.x = (int)(camera.x * speed) + x * (scale / reducedScale);
+	rect.y = (int)(camera.y * speed) + y * (scale / reducedScale);
 
 	if(section != NULL)
 	{
@@ -150,8 +152,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 		SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
 	}
 
-	rect.w *= scale;
-	rect.h *= scale;
+	rect.w *= (scale / reducedScale);
+	rect.h *= (scale / reducedScale);
 
 	SDL_Point* p = NULL;
 	SDL_Point pivot;

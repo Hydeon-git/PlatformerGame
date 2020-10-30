@@ -17,7 +17,7 @@
 Scene::Scene() : Module()
 {
 	name.Create("scene");
-
+	introRect = nullptr;
 	currentScene = GameScene::SceneIntro;
 }
 
@@ -26,11 +26,11 @@ Scene::~Scene()
 {}
 
 // Called before render is available
-bool Scene::Awake()
+bool Scene::Awake(pugi::xml_node&)
 {
 	bool ret = true;
 	LOG("Loading Scene");
-
+	introRect = new SDL_Rect{ 0,0,1280,720 };
 	return ret;
 }
 
@@ -41,8 +41,6 @@ bool Scene::Start()
 	introScreen = app->tex->Load("Assets/textures/screens/intro1.png");	
 	//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
 	app->audio->SetVolume(80);
-	app->render->introRec.w = 1280;
-	app->render->introRec.h = 720;
 
 	return true;
 }
@@ -58,53 +56,50 @@ bool Scene::Update(float dt)
 {
 	switch (currentScene)
 	{
-	case GameScene::SceneIntro:
-	{
-		app->render->DrawTexture(introScreen, 0, 0, &app->render->introRec);
-
-		if (app->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+		case SceneIntro:
 		{
-			ChangeScene(Scene1);
-			currentScene = Scene1;
-			SDLCALL _Mix_Free
-		}
+			app->render->DrawTexture(introScreen, 0, 81, introRect, 3);
 
-	}break;
-	case GameScene::Scene1:
-	{
-		// Audio doesn't load
-		//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-		
+			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+			{
+				app->fade->FadeToBlk(Scene1);
+			}
 
-		// Falta F1 Load first level
+		} break;
+		case Scene1:
+		{
+			// Audio doesn't load
+			//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+			
 
-		// Falta F3 Start from the beginning of the level
+			// Falta F1 Load first level
 
-		if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
-			app->SaveGameRequest();
+			// Falta F3 Start from the beginning of the level
 
-		if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
-			app->LoadGameRequest();
+			if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+				app->SaveGameRequest();
 
-		if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-			app->debug = !app->debug;
+			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+				app->LoadGameRequest();
 
-		if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)	
-			app->fade->FadeToBlkVisualEffect();
-		
-		// Draw map
-		app->map->Draw();
+			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+				app->debug = !app->debug;
 
-		SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-			app->map->data.width, app->map->data.height,
-			app->map->data.tileWidth, app->map->data.tileHeight,
-			app->map->data.tilesets.count());
+			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)	
+				app->fade->FadeToBlkVisualEffect();
+			
+			// Draw map
+			app->map->Draw();
 
-		app->win->SetTitle(title.GetString());
-	}break;
-	case GameScene::GameOver:
-	{		
-	}break;
+			SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
+				app->map->data.width, app->map->data.height,
+				app->map->data.tileWidth, app->map->data.tileHeight,
+				app->map->data.tilesets.count());
+
+			app->win->SetTitle(title.GetString());
+		} break;
+		case GameOver:
+		{} break;
 	}
 
 	return true;
@@ -133,14 +128,12 @@ void Scene::ChangeScene(GameScene nextScene)
 {
 	switch (nextScene)
 	{
-	case GameScene::Scene1:
-	{
-		app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-		app->audio->SetVolume(0);
-		app->map->Load("scifi_map.tmx");
-		app->player->EnablePlayer();		
-		currentScene = Scene1;
-	}break;
-		
+		case Scene1:
+		{
+			app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+			app->map->Load("scifi_map.tmx");
+			app->player->EnablePlayer();	
+			currentScene = Scene1;
+		} break;
 	}
 }

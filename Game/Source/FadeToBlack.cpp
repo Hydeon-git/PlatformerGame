@@ -40,12 +40,12 @@ bool FadeToBlack::Update(float dt)
 	{
 		if (now >= total_time)
 		{
-			if (level == 1) {
-				//App->scene->ChargeFirstLevel();
-			}
-			else if (level == 2) { 
+			//if (level == 1) {
+				app->scene->ChangeScene(level);
+			//}
+			//else if (level == 2) { 
 				//App->scene->ChargeSecondLevel(); 
-			}
+			//}
 			total_time += total_time;
 			start_time = SDL_GetTicks();
 			current_step = fade_step::fade_from_black;
@@ -69,7 +69,7 @@ bool FadeToBlack::Update(float dt)
 }
 
 // Fade to black. At mid point deactivate one module, then activate the other
-bool FadeToBlack::FadeToBlk(int module, float time)
+bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
 {
 	bool ret = false;
 
@@ -78,7 +78,7 @@ bool FadeToBlack::FadeToBlk(int module, float time)
 		current_step = fade_step::fade_to_black;
 		start_time = SDL_GetTicks();
 		total_time = (Uint32)(time * 0.5f * 1000.0f);
-		level = module;
+		level = nextScene;
 		ret = true;
 	}
 

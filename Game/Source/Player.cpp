@@ -62,6 +62,7 @@ bool Player::Start()
 	position.x = initialPos.x;
 	position.y = initialPos.y;
 	graphics = app->tex->Load(texPath.GetString());
+	flip = false;
 
 	LOG("Creating player colliders");
 	r_collider = { position.x+13, position.y+17, 6, 15 };
@@ -79,10 +80,10 @@ bool Player::CleanUp()
 	return ret;
 }
 
-bool Player::EnablePlayer() //Disable function for changing scene
+bool Player::EnablePlayer() //Enable function for changing scene
 {
 	bool ret = false;
-	app->player->active = true;
+	active = true;
 	app->collision->active = true;	
 	return ret;
 }
@@ -90,7 +91,7 @@ bool Player::EnablePlayer() //Disable function for changing scene
 bool Player::DisablePlayer() //Disable function for changing scene
 { 	
 	LOG("Unloading player");
-	app->player->active = false;
+	active = false;
 	app->collision->active = false;
 	
 	
@@ -254,7 +255,7 @@ bool Player::Draw(float dt)
 	r = current_animation->GetCurrentFrame(dt);
 	if (graphics != nullptr) 
 	{
-		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
+		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
 	}
 	else LOG("No available graphics to draw.");
 

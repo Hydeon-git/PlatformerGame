@@ -4,6 +4,7 @@
 #include "Module.h"
 
 struct SDL_Texture;
+struct SDL_Rect;
 
 enum GameScene
 {
@@ -23,7 +24,7 @@ public:
 	virtual ~Scene();
 
 	// Called before render is available
-	bool Awake();
+	bool Awake(pugi::xml_node&);
 
 	// Called before the first frame
 	bool Start();
@@ -40,15 +41,18 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	//Change the current scene 
+	void ChangeScene(GameScene nextScene);
+
 	//Public variables
 	bool loaded = false;
 
 private:
 
 	GameScene currentScene;
-	void Scene::ChangeScene(GameScene nextScene);
 		
 	SDL_Texture* introScreen;
+	SDL_Rect* introRect;
 };
 
 #endif // __SCENE_H__
