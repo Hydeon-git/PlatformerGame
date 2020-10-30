@@ -73,6 +73,7 @@ private:
 	bool godmode = false;
 
 	bool jumpEnable = true;
+	bool doubleJump = true;
 	bool flip = true;
 	bool dead = false;
 

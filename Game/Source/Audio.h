@@ -25,6 +25,7 @@ public:
 
 	// Play a music file
 	bool PlayMusic(const char* path, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
+	void StopMusic(float fadeTime = DEFAULT_MUSIC_FADE_TIME);
 
 	void SetVolume(int volume);
 

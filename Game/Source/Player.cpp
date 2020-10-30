@@ -61,7 +61,7 @@ bool Player::Start()
 	//Loading assets and propierties from config file
 	position.x = initialPos.x;
 	position.y = initialPos.y;
-	graphics = app->tex->Load(texPath.GetString());
+	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
 	LOG("Creating player colliders");
@@ -84,16 +84,14 @@ bool Player::EnablePlayer() //Enable function for changing scene
 {
 	bool ret = false;
 	active = true;
-	app->collision->active = true;	
+	Start();
 	return ret;
 }
 
 bool Player::DisablePlayer() //Disable function for changing scene
 { 	
 	LOG("Unloading player");
-	active = false;
-	app->collision->active = false;
-	
+	active = false;	
 	
 	return true;
 }
@@ -102,6 +100,7 @@ bool Player::ResetStates() //Reset all states before checking input
 { 
 	velocity.y = 0;
 	jumpEnable = true;
+	doubleJump = true;
 
 	app->scene->loaded = false;
 
@@ -139,26 +138,40 @@ bool Player::Update(float dt)
 				ResetStates();
 
 				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				{
 					status = PLAYER_JUMP;
-
+				}
 				else status = PLAYER_IDLE;
-			}
-			else 
-			{
-				velocity.y += gravity;
 			}
 
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 			{
 				if(!leftColliding) status = PLAYER_BACKWARD;
-				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				{
 					status = PLAYER_JUMP;
+					doubleJump = true;
+				}
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 			{
 				if(!rightColliding) status = PLAYER_FORWARD;
-				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				{
 					status = PLAYER_JUMP;
+					doubleJump = true;
+				}
+			}
+
+			if (!onGround)
+			{
+				velocity.y += gravity;
+				if (doubleJump && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				{
+					doubleJump = false;
+					jumpEnable = true;
+					status = PLAYER_JUMP;
+				}
 			}
 		}
 		else 

@@ -156,10 +156,12 @@ bool Map::CleanUp()
 
 	while (item2 != NULL)
 	{
+		item2->data->properties.propertyList.clear();
 		RELEASE(item2->data);
 		item2 = item2->next;
 	}
 	data.maplayers.clear();
+
 	// Clean up the pugui tree
 	mapFile.reset();
 

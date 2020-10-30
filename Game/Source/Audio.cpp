@@ -99,7 +99,7 @@ bool Audio::PlayMusic(const char* path, float fade_time)
 	if(!active)
 		return false;
 
-	if(music != NULL)
+	if(music != nullptr)
 	{
 		if(fade_time > 0.0f)
 		{
@@ -116,7 +116,7 @@ bool Audio::PlayMusic(const char* path, float fade_time)
 
 	music = Mix_LoadMUS(path);
 
-	if(music == NULL)
+	if(music == nullptr)
 	{
 		LOG("Cannot load music %s. Mix_GetError(): %s\n", path, Mix_GetError());
 		ret = false;
@@ -143,6 +143,21 @@ bool Audio::PlayMusic(const char* path, float fade_time)
 
 	LOG("Successfully playing %s", path);
 	return ret;
+}
+
+void Audio::StopMusic(float fade_time) 
+{
+	if (music != nullptr)
+	{
+		if (fade_time > 0.0f)
+		{
+			Mix_FadeOutMusic(int(fade_time * 1000.0f));
+		}
+		else
+		{
+			Mix_HaltMusic();
+		}
+	}
 }
 
 // Load WAV

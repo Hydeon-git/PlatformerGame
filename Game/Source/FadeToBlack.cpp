@@ -4,6 +4,7 @@
 #include "FadeToBlack.h"
 #include "Render.h"
 #include "Window.h"
+#include "Audio.h"
 #include "Log.h"
 #include "SDL/include/SDL_render.h"
 #include "SDL/include/SDL_timer.h"
@@ -40,12 +41,8 @@ bool FadeToBlack::Update(float dt)
 	{
 		if (now >= total_time)
 		{
-			//if (level == 1) {
-				app->scene->ChangeScene(level);
-			//}
-			//else if (level == 2) { 
-				//App->scene->ChargeSecondLevel(); 
-			//}
+			app->scene->ChangeScene(level);
+			app->render->SetBackgroundColor(app->render->background);
 			total_time += total_time;
 			start_time = SDL_GetTicks();
 			current_step = fade_step::fade_from_black;
@@ -72,7 +69,6 @@ bool FadeToBlack::Update(float dt)
 bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
 {
 	bool ret = false;
-
 	if (current_step == fade_step::none)
 	{
 		current_step = fade_step::fade_to_black;

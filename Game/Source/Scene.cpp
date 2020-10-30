@@ -38,8 +38,8 @@ bool Scene::Awake(pugi::xml_node&)
 bool Scene::Start()
 {	
 	app->player->DisablePlayer();	
-	introScreen = app->tex->Load("Assets/textures/screens/intro1.png");	
-	//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+	introScreen = app->tex->Load("Assets/textures/screens/intro_image.png");	
+	app->audio->PlayMusic("Assets/audio/music/8-bit_menu.ogg");
 	app->audio->SetVolume(80);
 
 	return true;
@@ -68,19 +68,22 @@ bool Scene::Update(float dt)
 		} break;
 		case Scene1:
 		{
-			// Audio doesn't load
-			//app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
-			
-
 			// Falta F1 Load first level
+			if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+				app->fade->FadeToBlk(Scene1);
 
 			// Falta F3 Start from the beginning of the level
+			if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
+				app->fade->FadeToBlk(currentScene);
 
 			if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 				app->SaveGameRequest();
 
 			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
+			{
 				app->LoadGameRequest();
+				app->fade->FadeToBlkVisualEffect();
+			}
 
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 				app->debug = !app->debug;
@@ -120,17 +123,24 @@ bool Scene::PostUpdate()
 bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
-
+	delete introRect;
+	introRect = nullptr;
 	return true;
 }
 
 void Scene::ChangeScene(GameScene nextScene)
 {
+	ListItem<Collider*>* item;
+	for (item = app->map->groundCol.start; item != NULL; item = item->next) //deleting all colliders
+		item->data->to_delete = true;
+	app->map->groundCol.clear();
+	app->collision->CleanUp();
+	app->map->CleanUp();
 	switch (nextScene)
 	{
 		case Scene1:
 		{
-			app->audio->PlayMusic("Assets/audio/music/music_spy.ogg");
+			app->audio->PlayMusic("Assets/audio/music/Escaping_the_Collapsing_Universe.ogg");
 			app->map->Load("scifi_map.tmx");
 			app->player->EnablePlayer();	
 			currentScene = Scene1;
