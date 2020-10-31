@@ -26,11 +26,16 @@ Scene::~Scene()
 {}
 
 // Called before render is available
-bool Scene::Awake(pugi::xml_node&)
+bool Scene::Awake(pugi::xml_node& config)
 {
 	bool ret = true;
 	LOG("Loading Scene");
 	introRect = new SDL_Rect{ 0,0,1280,720 };
+
+	menuAudioPath = config.child("menu").attribute("menuMusic").as_string();
+	gameAudioPath = config.child("scene1").attribute("gameMusic").as_string();
+	audioVol = config.child("properties").attribute("volume").as_int();
+
 	return ret;
 }
 
@@ -38,9 +43,9 @@ bool Scene::Awake(pugi::xml_node&)
 bool Scene::Start()
 {	
 	app->player->DisablePlayer();	
-	introScreen = app->tex->Load("Assets/textures/screens/intro_image.png");	
-	app->audio->PlayMusic("Assets/audio/music/8-bit_menu.ogg");
-	app->audio->SetVolume(80);
+	introScreen = app->tex->Load("Assets/textures/screens/intro_image.png");
+	app->audio->PlayMusic(menuAudioPath.GetString());
+	app->audio->SetVolume(audioVol);
 
 	return true;
 }
@@ -140,9 +145,9 @@ void Scene::ChangeScene(GameScene nextScene)
 	{
 		case Scene1:
 		{
-			app->audio->PlayMusic("Assets/audio/music/Escaping_the_Collapsing_Universe.ogg");
+			app->audio->PlayMusic(gameAudioPath.GetString());
 			app->map->Load("scifi_map.tmx");
-			app->player->EnablePlayer();	
+			app->player->EnablePlayer();
 			currentScene = Scene1;
 		} break;
 	}

@@ -32,7 +32,6 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	collision = new Collision();
 	fade = new FadeToBlack();
 
-
 	// Ordered for awake / Start / Update
 	// Reverse order of CleanUp
 	AddModule(win);
@@ -107,7 +106,6 @@ bool App::Awake()
 			item = item->next;
 		}
 	}
-
 	return ret;
 }
 

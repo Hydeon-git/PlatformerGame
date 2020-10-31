@@ -1,9 +1,8 @@
 <!-- Config file for the game -->
-<!-- L01: DONE 1: Create configuration file-->
 <config>
   <app>
-    <title>Plataformer Game</title>
-    <organization>UPC</organization>
+    <title>Space Thief</title>
+    <organization>Random Team - UPC/CITM</organization>
   </app>
 
   <renderer>
@@ -22,10 +21,17 @@
   <map>
     <folder>Assets/maps/</folder>
   </map>
+  
+  <scene>
+   <menu menuMusic="Assets/audio/music/8-bit_menu.ogg"/>
+   <scene1 gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"/>
+   <properties volume="50"/>
+  </scene>
+  
   <player>
     <initialPos1 x="8" y="191"/>
     <death time="4" height="300"/>
     <propierties life="100" speed="1" gravity="0.25"/>
-    <path tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
+    <texPath tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
   </player>
 </config>

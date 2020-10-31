@@ -24,7 +24,7 @@ public:
 	virtual ~Scene();
 
 	// Called before render is available
-	bool Awake(pugi::xml_node&);
+	bool Awake(pugi::xml_node& config);
 
 	// Called before the first frame
 	bool Start();
@@ -49,10 +49,13 @@ public:
 
 private:
 
-	GameScene currentScene;
-		
+	GameScene currentScene;	
 	SDL_Texture* introScreen;
 	SDL_Rect* introRect;
+
+	SString menuAudioPath;
+	SString gameAudioPath;
+	int audioVol;
 };
 
 #endif // __SCENE_H__

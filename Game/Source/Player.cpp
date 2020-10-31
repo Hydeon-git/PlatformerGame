@@ -44,7 +44,7 @@ bool Player::Awake(pugi::xml_node& config)
 	bool ret = true;
 	LOG("Loading player from config_file");
 
-	texPath = config.child("path").attribute("tex").as_string();
+	texPath = config.child("texPath").attribute("tex").as_string();
 	life = config.child("propierties").attribute("life").as_int();
 	speed = config.child("propierties").attribute("speed").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
@@ -52,12 +52,14 @@ bool Player::Awake(pugi::xml_node& config)
 	deathLimit = config.child("death").attribute("height").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
+	
 	return ret;
 }
 
 bool Player::Start()
 {
 	bool ret = true;
+
 	//Loading assets and propierties from config file
 	position.x = initialPos.x;
 	position.y = initialPos.y;
@@ -68,6 +70,7 @@ bool Player::Start()
 	r_collider = { position.x+13, position.y+17, 6, 15 };
 	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER, this);
 	colPlayerWalls = app->collision->AddCollider({position.x+11, position.y+18, 10, 13 }, COLLIDER_PLAYER, this);
+
 	return ret;
 }
 
@@ -78,33 +81,6 @@ bool Player::CleanUp()
 	LOG("Unloading player");
 	ret = app->tex->UnLoad(graphics);
 	return ret;
-}
-
-bool Player::EnablePlayer() //Enable function for changing scene
-{
-	bool ret = false;
-	active = true;
-	Start();
-	return ret;
-}
-
-bool Player::DisablePlayer() //Disable function for changing scene
-{ 	
-	LOG("Unloading player");
-	active = false;	
-	
-	return true;
-}
-
-bool Player::ResetStates() //Reset all states before checking input
-{ 
-	velocity.y = 0;
-	jumpEnable = true;
-	doubleJump = true;
-
-	app->scene->loaded = false;
-
-	return true;
 }
 
 bool Player::Update(float dt) 
@@ -324,6 +300,33 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 	}
 	else ret = true;
 	return ret;
+}
+
+bool Player::EnablePlayer() //Enable function for changing scene
+{
+	bool ret = false;
+	active = true;
+	Start();
+	return ret;
+}
+
+bool Player::DisablePlayer() //Disable function for changing scene
+{
+	LOG("Unloading player");
+	active = false;
+
+	return true;
+}
+
+bool Player::ResetStates() //Reset all states before checking input
+{
+	velocity.y = 0;
+	jumpEnable = true;
+	doubleJump = true;
+
+	app->scene->loaded = false;
+
+	return true;
 }
 
 bool Player::SaveState(pugi::xml_node& data) const 
