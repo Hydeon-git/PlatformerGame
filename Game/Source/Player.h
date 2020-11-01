@@ -81,6 +81,8 @@ private:
 	bool leftColliding;
 	bool rightColliding;
 
+	int jumpFx;
+
 	SString texPath;
 	SDL_Texture* graphics;
 

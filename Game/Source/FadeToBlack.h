@@ -13,7 +13,7 @@ public:
 	bool Start();
 	bool Update(float dt);
 	bool FadeToBlk(GameScene nextScene, float time = 2.0f);
-	bool FadeToBlkVisualEffect(float time = 2.0f);
+	bool FadeToBlkLoad(float time = 2.0f);
 
 private:
 
@@ -29,7 +29,7 @@ private:
 	SDL_Rect screen;
 	GameScene level = SceneIntro;
 
-	bool visualFx;
+	bool loadState;
 };
 
 #endif //__FADETOBLACK_H__

@@ -83,7 +83,7 @@ bool Render::Update(float dt)
 		camera.y = 0;
 	}
 
-	Clamp(&camera.x, -1120, 0);
+	Clamp(&camera.x, -1744, 0);
 	Clamp(&camera.y, -90, -50);
 	return true;
 }

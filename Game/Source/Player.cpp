@@ -52,6 +52,7 @@ bool Player::Awake(pugi::xml_node& config)
 	deathLimit = config.child("death").attribute("height").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
+	jumpFx = app->audio->LoadFx(config.child("sounds").attribute("jumpFx").as_string());
 	
 	return ret;
 }
@@ -105,6 +106,7 @@ bool Player::Update(float dt)
 		if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
 		{ 
 			ResetStates();
+			status = PLAYER_IDLE;
 			godmode = !godmode;
 		}
 		if (!godmode) 
@@ -154,20 +156,20 @@ bool Player::Update(float dt)
 		{ //Godmode input
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
 			{
-				position.x -= 1;
+				position.x -= 2;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
 			{
-				position.x += 1;
+				position.x += 3;
 			}
 
 			if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
 			{
-				position.y -= 1;
+				position.y -= 2;
 			}
 			else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
 			{
-				position.y += 1;
+				position.y += 2;
 			}
 		}
 
@@ -199,6 +201,7 @@ bool Player::Update(float dt)
 			velocity.y = -3;
 			jump.Reset();
 			// Sound
+			app->audio->PlayFx(jumpFx);
 		}
 		break;
 	case PLAYER_DEATH:
@@ -320,6 +323,7 @@ bool Player::DisablePlayer() //Disable function for changing scene
 
 bool Player::ResetStates() //Reset all states before checking input
 {
+	velocity.x = 0;
 	velocity.y = 0;
 	jumpEnable = true;
 	doubleJump = true;
@@ -341,7 +345,6 @@ bool Player::SaveState(pugi::xml_node& data) const
 
 bool Player::LoadState(pugi::xml_node& data)
 {
-	SDL_Delay(1000);
 	position.x = data.child("player").attribute("x").as_int();
 	position.y = data.child("player").attribute("y").as_int();
 

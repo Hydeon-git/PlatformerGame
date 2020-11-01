@@ -24,6 +24,8 @@
   
   <scene>
    <music menuMusic="Assets/audio/music/8-bit_menu.ogg" gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"/>
+   <textures introTexture="Assets/textures/screens/intro_image.png" endTexture="Assets/textures/screens/ending_image.png"/>
+    <maps level1="scifi_map.tmx"/>
    <properties volume="50"/>
   </scene>
   
@@ -32,5 +34,6 @@
     <death time="4" height="300"/>
     <propierties life="100" speed="1" gravity="0.25"/>
     <texPath tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
+    <sounds jumpFx="Assets/audio/fx/JumpSfx.ogg"/>
   </player>
 </config>

@@ -35,6 +35,9 @@ bool Scene::Awake(pugi::xml_node& config)
 
 	menuAudioPath = config.child("music").attribute("menuMusic").as_string();
 	gameAudioPath = config.child("music").attribute("gameMusic").as_string();
+	introTexturePath = config.child("textures").attribute("introTexture").as_string();
+	endTexturePath = config.child("textures").attribute("endTexture").as_string();
+	level1Map = config.child("maps").attribute("level1").as_string();
 	audioVol = config.child("properties").attribute("volume").as_int();
 
 	return ret;
@@ -44,7 +47,7 @@ bool Scene::Awake(pugi::xml_node& config)
 bool Scene::Start()
 {	
 	app->player->DisablePlayer();	
-	introScreen = app->tex->Load("Assets/textures/screens/intro_image.png");
+	introScreen = app->tex->Load(introTexturePath.GetString());
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
 	app->audio->SetVolume(audioVol);
@@ -88,8 +91,7 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
 			{
-				app->fade->FadeToBlkVisualEffect();
-				app->LoadGameRequest();				
+				app->fade->FadeToBlkLoad();			
 			}
 
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
@@ -153,15 +155,15 @@ void Scene::ChangeScene(GameScene nextScene)
 		case Scene1:
 		{
 			app->audio->PlayMusic(gameAudioPath.GetString());
-			app->map->Load("scifi_map.tmx");
+			app->map->Load(level1Map.GetString());
 			app->player->EnablePlayer();
-			endCol = app->collision->AddCollider({ 720, 194, 15, 30 }, COLLIDER_END, this);
+			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;
 			currentScene = Scene1;
 		} break;
 		case SceneEnd:
 		{
-			endScreen = app->tex->Load("Assets/textures/screens/ending_image.png");
+			endScreen = app->tex->Load(endTexturePath.GetString());
 			currentScene = SceneEnd;
 		} break;
 	}

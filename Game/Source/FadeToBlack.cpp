@@ -22,7 +22,7 @@ FadeToBlack::~FadeToBlack()
 bool FadeToBlack::Start()
 {
 	LOG("Preparing Fade Screen");
-	visualFx = false;
+	loadState = false;
 	SDL_SetRenderDrawBlendMode(app->render->renderer, SDL_BLENDMODE_BLEND);
 	return true;
 }
@@ -42,7 +42,8 @@ bool FadeToBlack::Update(float dt)
 	{
 		if (now >= total_time)
 		{
-			if(!visualFx) app->scene->ChangeScene(level);
+			if (loadState)app->LoadGameRequest();
+			else app->scene->ChangeScene(level);
 			app->render->SetBackgroundColor(app->render->background);
 			total_time += total_time;
 			start_time = SDL_GetTicks();
@@ -72,7 +73,7 @@ bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
 	bool ret = false;
 	if (current_step == fade_step::none)
 	{
-		visualFx = false;
+		loadState = false;
 		current_step = fade_step::fade_to_black;
 		start_time = SDL_GetTicks();
 		total_time = (Uint32)(time * 0.5f * 1000.0f);
@@ -83,13 +84,13 @@ bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
 	return ret;
 }
 
-bool FadeToBlack::FadeToBlkVisualEffect(float time)
+bool FadeToBlack::FadeToBlkLoad(float time)
 {
 	bool ret = false;
 
 	if (current_step == fade_step::none)
 	{
-		visualFx = true;
+		loadState = true;
 		current_step = fade_step::fade_to_black;
 		start_time = SDL_GetTicks();
 		total_time = (Uint32)(time * 0.5f * 1000.0f);
