@@ -23,10 +23,14 @@
   </map>
   
   <scene>
-   <music menuMusic="Assets/audio/music/8-bit_menu.ogg" gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"/>
+   <music 
+   menuMusic="Assets/audio/music/8-bit_menu.ogg" 
+   gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"
+   winMusic="Assets/audio/music/Ship_under_attack.ogg"
+	/>
    <textures introTexture="Assets/textures/screens/intro_image.png" endTexture="Assets/textures/screens/ending_image.png"/>
     <maps level1="scifi_map.tmx"/>
-   <properties volume="50"/>
+   <properties volume="60"/>
   </scene>
   
   <player>

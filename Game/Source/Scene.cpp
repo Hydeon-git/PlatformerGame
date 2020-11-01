@@ -35,10 +35,13 @@ bool Scene::Awake(pugi::xml_node& config)
 
 	menuAudioPath = config.child("music").attribute("menuMusic").as_string();
 	gameAudioPath = config.child("music").attribute("gameMusic").as_string();
+	winAudioPath = config.child("music").attribute("winMusic").as_string();
+	audioVol = config.child("properties").attribute("volume").as_int();
+
 	introTexturePath = config.child("textures").attribute("introTexture").as_string();
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
 	level1Map = config.child("maps").attribute("level1").as_string();
-	audioVol = config.child("properties").attribute("volume").as_int();
+	
 
 	return ret;
 }
@@ -163,6 +166,7 @@ void Scene::ChangeScene(GameScene nextScene)
 		} break;
 		case SceneEnd:
 		{
+			app->audio->PlayMusic(winAudioPath.GetString());
 			endScreen = app->tex->Load(endTexturePath.GetString());
 			currentScene = SceneEnd;
 		} break;
@@ -176,7 +180,6 @@ bool Scene::OnCollision(Collider* c1, Collider* c2)
 		if (!ended) 
 		{
 			app->fade->FadeToBlk(SceneEnd);
-			app->audio->StopMusic();
 			ended = true;
 		}
 	}

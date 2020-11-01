@@ -62,6 +62,8 @@ private:
 
 	SString menuAudioPath;
 	SString gameAudioPath;
+	SString winAudioPath;
+
 	SString introTexturePath;
 	SString endTexturePath;
 	SString level1Map;
