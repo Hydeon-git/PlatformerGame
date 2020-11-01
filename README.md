@@ -3,7 +3,7 @@
 ## Description
 
 Space Thief is a Sci-Fi 2D Platformer where our main character, Star is assaulting a Destructor-class Battleship.
-His objective: Steal a prototype of a weapon capable of destroying planets. The spacial robin hood awakens!
+His objective: Steal a prototype of a weapon capable of destroying planets. The spacial Robin Hood awakens!
 
 ## Key Features
 
@@ -12,32 +12,34 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
 - Tiled TMX Map loading and drawing with various layers
 - Metadata Loaded using TMX Map layer "collision"
 - Map Collisions detection
+
 - Map navigation: Player Movement and Jump
 - Player Idle/Jump/Walk animations
-
-- Logo screen / Game Over screen
-- Fade-in & Fade-out between scenes
 - Player Double Jump
+- Player Jump sound
+
+- Logo screen / Level Completed screen
+- Fade-in & Fade-out between scenes
+- Music for Logo Screen, Level 1 and Level Completed Screen
 - DEBUG Keys
 
-
- 
 ## Controls
 
  - A for backward movement
  - D for forward movement
  - SPACE for Jump
+ - Double click on SPACE for Double Jump
  - F1 to start the first level
  - F3 to start from the beggining of the current level
  - F5 ​Save the current game state
  - F6 ​Load the previous state
  - F9​ View colliders
  - F10​ God Mode
- - ENTER to start the game in the Logo / Game Over screen
+ - SPACE to start the game in the Logo Screen / leave Level Completed screen
  
 ## Developers
 
- - Óscar Royo - Programmer
+ - Óscar Royo - Programmer / Artist
  - Albert Pou - Programmer / Artist
 
 ## License
