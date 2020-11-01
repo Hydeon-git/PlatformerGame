@@ -258,10 +258,6 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 	bool ret = false;
 	if (!godmode)
 	{
-		if (c1 == colPlayerWalls && c2->type == COLLIDER_END)
-		{
-			//LOG("hola de nuevo");
-		}
 		if (c1 == colPlayer && c2->type == COLLIDER_GROUND)
 		{
 			if (c2->rect.y > c1->rect.y + c1->rect.h - 5)

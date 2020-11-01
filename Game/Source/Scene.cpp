@@ -18,6 +18,7 @@ Scene::Scene() : Module()
 {
 	name.Create("scene");
 	fullscreenRect = nullptr;
+	ended = false;
 	currentScene = GameScene::SceneIntro;
 }
 
@@ -64,7 +65,7 @@ bool Scene::Update(float dt)
 	{
 		case SceneIntro:
 		{
-			app->render->DrawTexture(introScreen, 0, 81, fullscreenRect, 3);
+			app->render->DrawTexture(introScreen, 0, 51, fullscreenRect, 3);
 
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
@@ -96,21 +97,10 @@ bool Scene::Update(float dt)
 			
 			// Draw map
 			app->map->Draw();
-
-			SString title("Map:%dx%d Tiles:%dx%d Tilesets:%d",
-				app->map->data.width, app->map->data.height,
-				app->map->data.tileWidth, app->map->data.tileHeight,
-				app->map->data.tilesets.count());
-
-			app->win->SetTitle(title.GetString());
-			if (endCol->CheckCollision(app->player->rCollider))
-			{
-				LOG("colision detectada");
-			}
 		} break;
 		case SceneEnd:
 		{
-			app->render->DrawTexture(endScreen, 0, 81, fullscreenRect, 3);
+			app->render->DrawTexture(endScreen, 0, 51, fullscreenRect, 3);
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
 				app->fade->FadeToBlk(Scene1);
@@ -147,10 +137,16 @@ void Scene::ChangeScene(GameScene nextScene)
 	ListItem<Collider*>* item;
 	for (item = app->map->groundCol.start; item != NULL; item = item->next) //deleting all colliders
 		item->data->to_delete = true;
+	if (endCol != nullptr)
+	{
+		endCol->to_delete = true;
+		endCol = nullptr;
+	}
 	app->map->groundCol.clear();
 	app->collision->CleanUp();
 	app->map->CleanUp();
 	if (introScreen) app->tex->UnLoad(introScreen);
+	app->player->DisablePlayer();
 
 	switch (nextScene)
 	{
@@ -159,26 +155,28 @@ void Scene::ChangeScene(GameScene nextScene)
 			app->audio->PlayMusic(gameAudioPath.GetString());
 			app->map->Load("scifi_map.tmx");
 			app->player->EnablePlayer();
-			endCol = app->collision->AddCollider({ 720, 193, 15, 30 }, COLLIDER_END, this);
+			endCol = app->collision->AddCollider({ 720, 194, 15, 30 }, COLLIDER_END, this);
+			ended = false;
 			currentScene = Scene1;
 		} break;
 		case SceneEnd:
 		{
-			app->render->camera.x = 0;
-			app->render->camera.y = 0;
-
-			endScreen = app->tex->Load("Assets/textures/screens/gameover1.png");
+			endScreen = app->tex->Load("Assets/textures/screens/ending_image.png");
+			currentScene = SceneEnd;
 		} break;
 	}
 }
 
 bool Scene::OnCollision(Collider* c1, Collider* c2)
 {
-	LOG("hola de nuevo");
 	if (c1 == endCol && c2->type == COLLIDER_PLAYER)
 	{
-		
-		//app->fade->FadeToBlk(SceneEnd);
+		if (!ended) 
+		{
+			app->fade->FadeToBlk(SceneEnd);
+			app->audio->StopMusic();
+			ended = true;
+		}
 	}
 	return true;
 }

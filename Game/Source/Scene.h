@@ -63,6 +63,8 @@ private:
 	SString menuAudioPath;
 	SString gameAudioPath;
 	int audioVol;
+
+	bool ended;
 };
 
 #endif // __SCENE_H__
