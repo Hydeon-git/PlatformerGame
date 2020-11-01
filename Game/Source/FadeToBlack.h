@@ -28,6 +28,8 @@ private:
 	Uint32 total_time = 0;
 	SDL_Rect screen;
 	GameScene level = SceneIntro;
+
+	bool visualFx;
 };
 
 #endif //__FADETOBLACK_H__

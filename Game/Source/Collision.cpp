@@ -14,9 +14,16 @@ Collision::Collision()
 
 	matrix[COLLIDER_GROUND][COLLIDER_PLAYER] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_GROUND] = false;
+	matrix[COLLIDER_GROUND][COLLIDER_END] = false;
 
 	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER] = false;
 	matrix[COLLIDER_PLAYER][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_PLAYER][COLLIDER_END] = true;
+
+	matrix[COLLIDER_END][COLLIDER_PLAYER] = true;	
+	matrix[COLLIDER_END][COLLIDER_GROUND] = false;
+	matrix[COLLIDER_END][COLLIDER_END] = false;
+	
 }
 
 // Destructor
@@ -85,10 +92,7 @@ void Collision::DebugDraw()
 		{
 		case COLLIDER_NONE: // white
 			app->render->DrawRectangle(colliders[i]->rect, 255, 255, 255, alpha);
-			break;
-		case COLLIDER_WALL: // blue
-			app->render->DrawRectangle(colliders[i]->rect, 0, 0, 255, alpha);
-			break;
+			break;		
 		case COLLIDER_PLAYER: // green
 			app->render->DrawRectangle(colliders[i]->rect, 0, 255, 0, alpha);
 			break;

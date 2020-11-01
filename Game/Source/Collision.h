@@ -1,7 +1,7 @@
 #ifndef __Collision_H__
 #define __Collision_H__
 
-#define MAX_COLLIDERS 2000
+#define MAX_COLLIDERS 3000
 
 #include "Module.h"
 #include "SDL\include\SDL_rect.h"
@@ -10,13 +10,9 @@ enum COLLIDER_TYPE
 {
 	COLLIDER_NONE = -1,
 	COLLIDER_END,
-	COLLIDER_WALL,
 	COLLIDER_GROUND,
 	COLLIDER_PLAYER,
-	COLLIDER_ENEMY,
-	COLLIDER_PLAYER_SHOT,
-	COLLIDER_ENEMY_SHOT,
-	COLLIDER_COIN,
+
 
 	COLLIDER_MAX
 };

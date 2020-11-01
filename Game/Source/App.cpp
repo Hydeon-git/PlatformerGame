@@ -215,7 +215,8 @@ bool App::PreUpdate()
 	{
 		pModule = item->data;
 
-		if(pModule->active == false) {
+		if(pModule->active == false) 
+		{
 			continue;
 		}
 
@@ -237,7 +238,8 @@ bool App::DoUpdate()
 	{
 		pModule = item->data;
 
-		if(pModule->active == false) {
+		if(pModule->active == false) 
+		{
 			continue;
 		}
 
@@ -258,7 +260,8 @@ bool App::PostUpdate()
 	{
 		pModule = item->data;
 
-		if(pModule->active == false) {
+		if(pModule->active == false) 
+		{
 			continue;
 		}
 
@@ -317,7 +320,8 @@ void App::LoadGameRequest()
 	// NOTE: We should check if SAVE_STATE_FILENAME actually exist
 	pugi::xml_document savestateFile;
 	pugi::xml_parse_result result = savestateFile.load_file(SAVE_STATE_FILENAME);
-	if (result != NULL) {
+	if (result != NULL) 
+	{
 		loadGameRequested = true;
 	}
 }
@@ -328,7 +332,8 @@ void App::SaveGameRequest() const
 	// NOTE: We should check if SAVE_STATE_FILENAME actually exist and... should we overwriten
 	pugi::xml_document savestateFile;
 	pugi::xml_parse_result result = savestateFile.load_file(SAVE_STATE_FILENAME);
-	if (result == NULL) {
+	if (result == NULL) 
+	{
 		SDL_RWFromFile(SAVE_STATE_FILENAME, "w");
 	}
 
@@ -392,7 +397,8 @@ bool App::SaveGame() const
 		item = item->next;
 	}
 
-	if (ret == true) {
+	if (ret == true) 
+	{
 		data.save_file(SAVE_STATE_FILENAME);
 	}
 

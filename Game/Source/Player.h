@@ -55,6 +55,7 @@ public:
 
 	//Public variables
 	Collider* colPlayer;
+	SDL_Rect rCollider;
 
 	iPoint position;
 
@@ -97,7 +98,6 @@ private:
 
 	Collider* colPlayerWalls;
 
-	SDL_Rect r;
-	SDL_Rect r_collider;
+	SDL_Rect r;	
 };
 #endif //__PLAYER_H__

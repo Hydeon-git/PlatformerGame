@@ -67,8 +67,8 @@ bool Player::Start()
 	flip = false;
 
 	LOG("Creating player colliders");
-	r_collider = { position.x+13, position.y+17, 6, 15 };
-	colPlayer = app->collision->AddCollider(r_collider, COLLIDER_PLAYER, this);
+	rCollider = { position.x+13, position.y+17, 6, 15 };
+	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
 	colPlayerWalls = app->collision->AddCollider({position.x+11, position.y+18, 10, 13 }, COLLIDER_PLAYER, this);
 
 	return ret;
@@ -228,7 +228,7 @@ bool Player::Update(float dt)
 	colPlayer->SetPos(position.x + 13, position.y + 17);
 	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
 
-	r_collider.x = position.x + 13; r_collider.y = position.y + 17;
+	rCollider.x = position.x + 13; rCollider.y = position.y + 17;
 
 	//Function to draw the player
 	ret = Draw(dt);
@@ -258,6 +258,10 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 	bool ret = false;
 	if (!godmode)
 	{
+		if (c1 == colPlayerWalls && c2->type == COLLIDER_END)
+		{
+			//LOG("hola de nuevo");
+		}
 		if (c1 == colPlayer && c2->type == COLLIDER_GROUND)
 		{
 			if (c2->rect.y > c1->rect.y + c1->rect.h - 5)
@@ -348,7 +352,7 @@ bool Player::LoadState(pugi::xml_node& data)
 	colPlayer->SetPos(position.x + 13, position.y + 17);
 	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
 
-	r_collider.x = position.x + 13; r_collider.y = position.y + 17;
+	rCollider.x = position.x + 13; rCollider.y = position.y + 17;
 
 	r.x = position.x;
 	r.y = position.y;

@@ -17,7 +17,7 @@
 Scene::Scene() : Module()
 {
 	name.Create("scene");
-	introRect = nullptr;
+	fullscreenRect = nullptr;
 	currentScene = GameScene::SceneIntro;
 }
 
@@ -30,10 +30,10 @@ bool Scene::Awake(pugi::xml_node& config)
 {
 	bool ret = true;
 	LOG("Loading Scene");
-	introRect = new SDL_Rect{ 0,0,1280,720 };
+	fullscreenRect = new SDL_Rect{ 0,0,1280,720 };
 
-	menuAudioPath = config.child("menu").attribute("menuMusic").as_string();
-	gameAudioPath = config.child("scene1").attribute("gameMusic").as_string();
+	menuAudioPath = config.child("music").attribute("menuMusic").as_string();
+	gameAudioPath = config.child("music").attribute("gameMusic").as_string();
 	audioVol = config.child("properties").attribute("volume").as_int();
 
 	return ret;
@@ -44,6 +44,7 @@ bool Scene::Start()
 {	
 	app->player->DisablePlayer();	
 	introScreen = app->tex->Load("Assets/textures/screens/intro_image.png");
+
 	app->audio->PlayMusic(menuAudioPath.GetString());
 	app->audio->SetVolume(audioVol);
 
@@ -63,7 +64,7 @@ bool Scene::Update(float dt)
 	{
 		case SceneIntro:
 		{
-			app->render->DrawTexture(introScreen, 0, 81, introRect, 3);
+			app->render->DrawTexture(introScreen, 0, 81, fullscreenRect, 3);
 
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
@@ -86,15 +87,12 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
 			{
-				app->LoadGameRequest();
 				app->fade->FadeToBlkVisualEffect();
+				app->LoadGameRequest();				
 			}
 
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-				app->debug = !app->debug;
-
-			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)	
-				app->fade->FadeToBlkVisualEffect();
+				app->debug = !app->debug;		
 			
 			// Draw map
 			app->map->Draw();
@@ -105,9 +103,19 @@ bool Scene::Update(float dt)
 				app->map->data.tilesets.count());
 
 			app->win->SetTitle(title.GetString());
+			if (endCol->CheckCollision(app->player->rCollider))
+			{
+				LOG("colision detectada");
+			}
 		} break;
-		case GameOver:
-		{} break;
+		case SceneEnd:
+		{
+			app->render->DrawTexture(endScreen, 0, 81, fullscreenRect, 3);
+			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+			{
+				app->fade->FadeToBlk(Scene1);
+			}
+		} break;
 	}
 
 	return true;
@@ -128,8 +136,9 @@ bool Scene::PostUpdate()
 bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
-	delete introRect;
-	introRect = nullptr;
+	delete fullscreenRect;
+	fullscreenRect = nullptr;
+	app->tex->UnLoad(endScreen);
 	return true;
 }
 
@@ -141,6 +150,8 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->map->groundCol.clear();
 	app->collision->CleanUp();
 	app->map->CleanUp();
+	if (introScreen) app->tex->UnLoad(introScreen);
+
 	switch (nextScene)
 	{
 		case Scene1:
@@ -148,7 +159,26 @@ void Scene::ChangeScene(GameScene nextScene)
 			app->audio->PlayMusic(gameAudioPath.GetString());
 			app->map->Load("scifi_map.tmx");
 			app->player->EnablePlayer();
+			endCol = app->collision->AddCollider({ 720, 193, 15, 30 }, COLLIDER_END, this);
 			currentScene = Scene1;
 		} break;
+		case SceneEnd:
+		{
+			app->render->camera.x = 0;
+			app->render->camera.y = 0;
+
+			endScreen = app->tex->Load("Assets/textures/screens/gameover1.png");
+		} break;
 	}
+}
+
+bool Scene::OnCollision(Collider* c1, Collider* c2)
+{
+	LOG("hola de nuevo");
+	if (c1 == endCol && c2->type == COLLIDER_PLAYER)
+	{
+		
+		//app->fade->FadeToBlk(SceneEnd);
+	}
+	return true;
 }

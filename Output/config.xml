@@ -23,8 +23,7 @@
   </map>
   
   <scene>
-   <menu menuMusic="Assets/audio/music/8-bit_menu.ogg"/>
-   <scene1 gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"/>
+   <music menuMusic="Assets/audio/music/8-bit_menu.ogg" gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"/>
    <properties volume="50"/>
   </scene>
   

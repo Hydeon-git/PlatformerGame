@@ -10,7 +10,7 @@ enum GameScene
 {
 	SceneIntro,
 	Scene1,
-	GameOver
+	SceneEnd
 };
 
 
@@ -41,17 +41,24 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	//Change the current scene 
+	// Change the current scene 
 	void ChangeScene(GameScene nextScene);
 
-	//Public variables
+	// Detects collisions
+	bool OnCollision(Collider* c1, Collider* c2);
+
+	// Public variables
 	bool loaded = false;
+
 
 private:
 
 	GameScene currentScene;	
 	SDL_Texture* introScreen;
-	SDL_Rect* introRect;
+	SDL_Texture* endScreen;
+	SDL_Rect* fullscreenRect;
+
+	Collider* endCol = nullptr;
 
 	SString menuAudioPath;
 	SString gameAudioPath;
