@@ -6,14 +6,12 @@
 #include "Module.h"
 #include "SDL\include\SDL_rect.h"
 
-enum COLLIDER_TYPE
+enum ColliderType
 {
 	COLLIDER_NONE = -1,
 	COLLIDER_END,
 	COLLIDER_GROUND,
 	COLLIDER_PLAYER,
-
-
 	COLLIDER_MAX
 };
 
@@ -21,10 +19,10 @@ struct Collider
 {
 	SDL_Rect rect;
 	bool to_delete = false;
-	COLLIDER_TYPE type;
+	ColliderType type;
 	Module* callback = nullptr;
 
-	Collider(SDL_Rect rectangle, COLLIDER_TYPE type, Module* callback = nullptr) :
+	Collider(SDL_Rect rectangle, ColliderType type, Module* callback = nullptr) :
 		rect(rectangle),
 		type(type),
 		callback(callback)
@@ -50,7 +48,7 @@ public:
 	bool Update(float dt) override;
 	bool CleanUp() override;
 
-	Collider* AddCollider(SDL_Rect rect, COLLIDER_TYPE type, Module* callback = nullptr);
+	Collider* AddCollider(SDL_Rect rect, ColliderType type, Module* callback = nullptr);
 	void DebugDraw();
 	SDL_Rect rect;
 

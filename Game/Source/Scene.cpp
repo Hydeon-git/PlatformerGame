@@ -19,7 +19,7 @@ Scene::Scene() : Module()
 	name.Create("scene");
 	fullscreenRect = nullptr;
 	ended = false;
-	currentScene = GameScene::SceneIntro;
+	currentScene = GameScene::SCENE_INTRO;
 }
 
 // Destructor
@@ -69,21 +69,21 @@ bool Scene::Update(float dt)
 {
 	switch (currentScene)
 	{
-		case SceneIntro:
+		case SCENE_INTRO:
 		{
 			app->render->DrawTexture(introScreen, 0, 51, fullscreenRect, 3);
 
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
-				app->fade->FadeToBlk(Scene1);
+				app->fade->FadeToBlk(SCENE_1);
 			}
 
 		} break;
-		case Scene1:
+		case SCENE_1:
 		{
 			// Falta F1 Load first level
 			if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-				app->fade->FadeToBlk(Scene1);
+				app->fade->FadeToBlk(SCENE_1);
 
 			// Falta F3 Start from the beginning of the level
 			if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
@@ -103,12 +103,12 @@ bool Scene::Update(float dt)
 			// Draw map
 			app->map->Draw();
 		} break;
-		case SceneEnd:
+		case SCENE_END:
 		{
 			app->render->DrawTexture(endScreen, 0, 51, fullscreenRect, 3);
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
-				app->fade->FadeToBlk(Scene1);
+				app->fade->FadeToBlk(SCENE_1);
 			}
 		} break;
 	}
@@ -155,20 +155,20 @@ void Scene::ChangeScene(GameScene nextScene)
 
 	switch (nextScene)
 	{
-		case Scene1:
+		case SCENE_1:
 		{
 			app->audio->PlayMusic(gameAudioPath.GetString());
 			app->map->Load(level1Map.GetString());
 			app->player->EnablePlayer();
 			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;
-			currentScene = Scene1;
+			currentScene = SCENE_1;
 		} break;
-		case SceneEnd:
+		case SCENE_END:
 		{
 			app->audio->PlayMusic(winAudioPath.GetString());
 			endScreen = app->tex->Load(endTexturePath.GetString());
-			currentScene = SceneEnd;
+			currentScene = SCENE_END;
 		} break;
 	}
 }
@@ -179,7 +179,7 @@ bool Scene::OnCollision(Collider* c1, Collider* c2)
 	{
 		if (!ended) 
 		{
-			app->fade->FadeToBlk(SceneEnd);
+			app->fade->FadeToBlk(SCENE_END);
 			ended = true;
 		}
 	}

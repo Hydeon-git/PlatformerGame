@@ -7,11 +7,11 @@
 	<scene />
 	<map />
 	<player>
-		<player x="8" y="192" />
+		<player x="61" y="176" />
 	</player>
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="0" y="-82" />
+		<camera x="0" y="-66" />
 	</renderer>
 </save_state>

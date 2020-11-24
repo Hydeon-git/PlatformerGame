@@ -8,9 +8,9 @@ struct SDL_Rect;
 
 enum GameScene
 {
-	SceneIntro,
-	Scene1,
-	SceneEnd
+	SCENE_INTRO,
+	SCENE_1,
+	SCENE_END
 };
 
 

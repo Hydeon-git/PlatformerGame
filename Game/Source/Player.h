@@ -10,7 +10,8 @@
 #include "Animation.h"
 #include "Collision.h"
 
-enum player_status {
+enum PlayerStatus 
+{
 	PLAYER_IDLE,
 	PLAYER_FORWARD,
 	PLAYER_BACKWARD,
@@ -54,7 +55,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colPlayer;
+	Collider *colPlayer;
 
 	iPoint position;
 
@@ -65,7 +66,7 @@ private:
 	int life = 100;
 	float speed;
 	float gravity;
-	float deathTimer_config;
+	float deathTimerConfig;
 	float deathTimer;
 	int deathLimit;
 
@@ -84,20 +85,20 @@ private:
 	int jumpFx;
 
 	SString texPath;
-	SDL_Texture* graphics;
+	SDL_Texture *graphics;
 
 	fPoint velocity;
 	iPoint initialPos;
 
-	Animation* current_animation = &idle;
+	Animation *currentAnimation = &idle;
 	Animation idle;
 	Animation walk;
 	Animation jump;
 	Animation death;
 
-	player_status status = PLAYER_IDLE;
+	PlayerStatus status = PLAYER_IDLE;
 
-	Collider* colPlayerWalls;
+	Collider *colPlayerWalls;
 
 	SDL_Rect rCollider;
 	SDL_Rect r;	

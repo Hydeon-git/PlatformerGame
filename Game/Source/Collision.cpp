@@ -123,7 +123,7 @@ bool Collision::CleanUp()
 	return true;
 }
 
-Collider* Collision::AddCollider(SDL_Rect rect, COLLIDER_TYPE type, Module* callback)
+Collider* Collision::AddCollider(SDL_Rect rect, ColliderType type, Module* callback)
 {
 	Collider* ret = nullptr;
 

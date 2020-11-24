@@ -48,7 +48,7 @@ bool Player::Awake(pugi::xml_node& config)
 	life = config.child("propierties").attribute("life").as_int();
 	speed = config.child("propierties").attribute("speed").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
-	deathTimer_config = config.child("death").attribute("time").as_float();
+	deathTimerConfig = config.child("death").attribute("time").as_float();
 	deathLimit = config.child("death").attribute("height").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
@@ -94,7 +94,7 @@ bool Player::Update(float dt)
 			ResetStates();
 			velocity.x = 0;
 			death.Reset();
-			deathTimer = deathTimer_config;
+			deathTimer = deathTimerConfig;
 			status = PLAYER_DEATH;
 			input = false;
 			dead = true;
@@ -179,25 +179,25 @@ bool Player::Update(float dt)
 	{
 	case PLAYER_IDLE:
 		velocity.x = 0;
-		current_animation = &idle;
+		currentAnimation = &idle;
 		break;
 	case PLAYER_FORWARD:
 		velocity.x = speed;
 		flip = false;
-		if (onGround)current_animation = &walk;
-		else current_animation = &jump;
+		if (onGround)currentAnimation = &walk;
+		else currentAnimation = &jump;
 		break;
 	case PLAYER_BACKWARD:
 		velocity.x = -speed;
 		flip = true;
-		if(onGround)current_animation = &walk;
-		else current_animation = &jump;
+		if(onGround)currentAnimation = &walk;
+		else currentAnimation = &jump;
 		break;
 	case PLAYER_JUMP:
 		if (jumpEnable == true) 
 		{
 			jumpEnable = false;
-			current_animation = &jump;
+			currentAnimation = &jump;
 			velocity.y = -3;
 			jump.Reset();
 			// Sound
@@ -206,10 +206,10 @@ bool Player::Update(float dt)
 		break;
 	case PLAYER_DEATH:
 		//Death animation
-		current_animation = &death;
+		currentAnimation = &death;
 		if (deathTimer <= 0) 
 		{
-			current_animation = &idle;
+			currentAnimation = &idle;
 			dead = false;
 			life = 100;
 			input = true;
@@ -244,7 +244,7 @@ bool Player::Update(float dt)
 bool Player::Draw(float dt)
 {
 	bool ret = false;
-	r = current_animation->GetCurrentFrame(dt);
+	r = currentAnimation->GetCurrentFrame(dt);
 	if (graphics != nullptr) 
 	{
 		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
