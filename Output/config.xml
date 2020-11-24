@@ -19,16 +19,16 @@
 
   <!-- L03: Added maps folder as config option -->
   <map>
-    <folder>Assets/maps/</folder>
+    <folder>Assets/Maps/</folder>
   </map>
   
   <scene>
    <music 
-   menuMusic="Assets/audio/music/8-bit_menu.ogg" 
-   gameMusic="Assets/audio/music/Escaping_the_Collapsing_Universe.ogg"
-   winMusic="Assets/audio/music/Ship_under_attack.ogg"
+   menuMusic="Assets/Audio/Music/8bit_menu.ogg" 
+   gameMusic="Assets/Audio/Music/escaping_the_collapsing_universe.ogg"
+   winMusic="Assets/Audio/Music/ship_under_attack.ogg"
 	/>
-   <textures introTexture="Assets/textures/screens/intro_image.png" endTexture="Assets/textures/screens/ending_image.png"/>
+   <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
     <maps level1="scifi_map.tmx"/>
    <properties volume="60"/>
   </scene>
@@ -37,7 +37,7 @@
     <initialPos1 x="8" y="191"/>
     <death time="4" height="300"/>
     <propierties life="100" speed="1" gravity="0.25"/>
-    <texPath tex="Assets/textures/character/AgentMike_Spritesheet.png"/>
-    <sounds jumpFx="Assets/audio/fx/JumpSfx.ogg"/>
+    <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
+    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg"/>
   </player>
 </config>
