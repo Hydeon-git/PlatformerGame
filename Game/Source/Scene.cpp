@@ -40,7 +40,7 @@ bool Scene::Awake(pugi::xml_node& config)
 
 	introTexturePath = config.child("textures").attribute("introTexture").as_string();
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
-	level1Map = config.child("maps").attribute("level1").as_string();
+	mapLevel1 = config.child("maps").attribute("level1").as_string();
 	
 
 	return ret;
@@ -141,10 +141,10 @@ void Scene::ChangeScene(GameScene nextScene)
 {
 	ListItem<Collider*>* item;
 	for (item = app->map->groundCol.start; item != NULL; item = item->next) //deleting all colliders
-		item->data->to_delete = true;
+		item->data->toDelete = true;
 	if (endCol != nullptr)
 	{
-		endCol->to_delete = true;
+		endCol->toDelete = true;
 		endCol = nullptr;
 	}
 	app->map->groundCol.clear();
@@ -158,7 +158,7 @@ void Scene::ChangeScene(GameScene nextScene)
 		case SCENE_1:
 		{
 			app->audio->PlayMusic(gameAudioPath.GetString());
-			app->map->Load(level1Map.GetString());
+			app->map->Load(mapLevel1.GetString());
 			app->player->EnablePlayer();
 			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;

@@ -19,7 +19,7 @@
 // Constructor
 App::App(int argc, char* args[]) : argc(argc), args(args)
 {
-	framecount = 0;
+	frameCount = 0;
 
 	win = new Window();
 	input = new Input();
@@ -164,11 +164,11 @@ pugi::xml_node App::LoadConfig(pugi::xml_document& configFile) const
 // ---------------------------------------------
 void App::PrepareUpdate()
 {
-	framecount++;
-	lastsecframecount++;
+	frameCount++;
+	lastSecFrameCount++;
 
-	dt = frametime.ReadSec();
-	frametime.Start();
+	dt = frameTime.ReadSec();
+	frameTime.Start();
 }
 
 // ---------------------------------------------
@@ -180,21 +180,21 @@ void App::FinishUpdate()
 
 	// Framerate calculations --
 
-	if (lastsecframetime.Read() > 1000)
+	if (lastSecFrameTime.Read() > 1000)
 	{
-		lastsecframetime.Start();
-		prevlastsecframecount = lastsecframecount;
-		lastsecframecount = 0;
+		lastSecFrameTime.Start();
+		prevLastSecFrameCount = lastSecFrameCount;
+		lastSecFrameCount = 0;
 	}
 
-	float avgfps = float(framecount) / startuptime.ReadSec();
-	float secondssincestartup = startuptime.ReadSec();
-	uint32 lastframems = frametime.Read();
-	uint32 framesonlastupdate = prevlastsecframecount;
+	float avgfps = float(frameCount) / startupTime.ReadSec();
+	float secondssincestartup = startupTime.ReadSec();
+	uint32 lastframems = frameTime.Read();
+	uint32 framesonlastupdate = prevLastSecFrameCount;
 
 	if(debug)
 		LOG("Av.FPS: %.2f Last Frame Ms: %u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %lu ", 
-			avgfps, lastframems, framesonlastupdate, dt, secondssincestartup, framecount);
+			avgfps, lastframems, framesonlastupdate, dt, secondssincestartup, frameCount);
 
 	if (cappedms > 0 && lastframems < cappedms)
 	{

@@ -13,7 +13,7 @@
 struct TileSet
 {
 	SString	name;
-	int	firstgid;
+	int	firstGid;
 	int margin;
 	int	spacing;
 	int	tileWidth;
@@ -54,7 +54,7 @@ struct Properties
 	}
 
 	// L06: TODO 7: Method to ask for the value of a custom property
-	int GetProperty(const char *name, int default_value = 0) const;
+	int GetProperty(const char *name, int defaultValue = 0) const;
 
 	List<Property*> propertyList;
 };
@@ -94,10 +94,10 @@ struct MapData
 	int	tileHeight;
 	SDL_Color backgroundColor;
 	MapTypes type;
-	List<TileSet*> tilesets;
+	List<TileSet*> tileSets;
 
 	// L04: TODO 2: Add a list/array of layers to the map
-	List<MapLayer*> maplayers;
+	List<MapLayer*> mapLayers;
 };
 
 class Map : public Module
@@ -119,7 +119,7 @@ public:
     bool CleanUp();
 
     // Load new map
-    bool Load(const char* path);
+    bool Load(const char* fileName);
 
 	// L04: DONE 8: Create a method that translates x,y coordinates from map positions to world positions
 	iPoint MapToWorld(int x, int y) const;
@@ -128,8 +128,8 @@ private:
 
 	// L03: Methods to load all required map data
 	bool LoadMap();
-	bool LoadTilesetDetails(pugi::xml_node& tileset_node, TileSet* set);
-	bool LoadTilesetImage(pugi::xml_node& tileset_node, TileSet* set);
+	bool LoadTilesetDetails(pugi::xml_node& tilesetNode, TileSet* set);
+	bool LoadTilesetImage(pugi::xml_node& tilesetNode, TileSet* set);
 	bool LoadLayer(pugi::xml_node& node, MapLayer* layer);
 
 	// L06: TODO 6: Load a group of properties 

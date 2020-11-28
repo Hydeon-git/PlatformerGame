@@ -18,7 +18,7 @@ enum ColliderType
 struct Collider
 {
 	SDL_Rect rect;
-	bool to_delete = false;
+	bool toDelete = false;
 	ColliderType type;
 	Module* callback = nullptr;
 

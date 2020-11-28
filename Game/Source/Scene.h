@@ -63,11 +63,11 @@ private:
 	SString menuAudioPath;
 	SString gameAudioPath;
 	SString winAudioPath;
+	int audioVol;
 
 	SString introTexturePath;
 	SString endTexturePath;
-	SString level1Map;
-	int audioVol;
+	SString mapLevel1;
 
 	bool ended;
 };

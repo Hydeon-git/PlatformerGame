@@ -114,13 +114,13 @@ private:
 	//pugi::xml_node config;
 	//pugi::xml_node configApp;
 
-	PerfTimer			ptimer;
-	uint64				framecount = 0;
-	Timer				startuptime;
-	Timer				frametime;
-	Timer				lastsecframetime;
-	uint32				lastsecframecount = 0;
-	uint32				prevlastsecframecount = 0;
+	PerfTimer			pTimer;
+	uint64				frameCount = 0;
+	Timer				startupTime;
+	Timer				frameTime;
+	Timer				lastSecFrameTime;
+	uint32				lastSecFrameCount = 0;
+	uint32				prevLastSecFrameCount = 0;
 	float				dt = 0.0f;
 	int					cappedms = -1;
 

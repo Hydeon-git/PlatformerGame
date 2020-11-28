@@ -55,7 +55,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider *colPlayer;
+	Collider* colPlayer;
 
 	iPoint position;
 
@@ -85,12 +85,12 @@ private:
 	int jumpFx;
 
 	SString texPath;
-	SDL_Texture *graphics;
+	SDL_Texture* graphics;
 
 	fPoint velocity;
 	iPoint initialPos;
 
-	Animation *currentAnimation = &idle;
+	Animation* currentAnimation = &idle;
 	Animation idle;
 	Animation walk;
 	Animation jump;
@@ -98,7 +98,7 @@ private:
 
 	PlayerStatus status = PLAYER_IDLE;
 
-	Collider *colPlayerWalls;
+	Collider* colPlayerWalls;
 
 	SDL_Rect rCollider;
 	SDL_Rect r;	
