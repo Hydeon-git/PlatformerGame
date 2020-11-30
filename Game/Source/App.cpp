@@ -6,6 +6,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Pathfinding.h"
 #include "Collision.h"
 #include "Player.h"
 #include "FadeToBlack.h"
@@ -28,6 +29,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new Audio();
 	scene = new Scene();
 	map = new Map();
+	pathfinding = new PathFinding();
 	player = new Player();
 	collision = new Collision();
 	fade = new FadeToBlack();
@@ -40,6 +42,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(scene);
 	AddModule(map);
+	AddModule(pathfinding);
 	AddModule(player);
 	AddModule(collision);
 	AddModule(fade);
@@ -60,13 +63,13 @@ App::~App()
 		item = item->prev;
 	}
 
-	modules.clear();
+	modules.Clear();
 }
 
 void App::AddModule(Module* module)
 {
 	module->Init();
-	modules.add(module);
+	modules.Add(module);
 }
 
 // Called before render is available
@@ -89,6 +92,13 @@ bool App::Awake()
 		// L01: DONE 4: Read the title from the config file
 		title.Create(configApp.child("title").child_value());
 		organization.Create(configApp.child("organization").child_value());
+
+		cappedFPS = configApp.child("cap").attribute("fps").as_int();
+
+		if (cappedFPS > 0)
+		{
+			cappedms = 1000 / cappedFPS;
+		}
 	}
 
 	if (ret == true)
@@ -187,19 +197,19 @@ void App::FinishUpdate()
 		lastSecFrameCount = 0;
 	}
 
-	float avgfps = float(frameCount) / startupTime.ReadSec();
-	float secondssincestartup = startupTime.ReadSec();
-	uint32 lastframems = frameTime.Read();
-	uint32 framesonlastupdate = prevLastSecFrameCount;
+	float avgFPS = float(frameCount) / startupTime.ReadSec();
+	float secondsSinceStartup = startupTime.ReadSec();
+	uint32 lastFramems = frameTime.Read();
+	uint32 framesOnLastUpdate = prevLastSecFrameCount;
 
 	if(debug)
 		LOG("Av.FPS: %.2f Last Frame Ms: %u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %lu ", 
-			avgfps, lastframems, framesonlastupdate, dt, secondssincestartup, frameCount);
+			avgFPS, lastFramems, framesOnLastUpdate, dt, secondsSinceStartup, frameCount);
 
-	if (cappedms > 0 && lastframems < cappedms)
+	if (cappedms > 0 && lastFramems < cappedms)
 	{
 		PerfTimer t;
-		SDL_Delay(cappedms - lastframems);
+		SDL_Delay(cappedms - lastFramems);
 	}
 }
 
@@ -312,6 +322,11 @@ const char* App::GetTitle() const
 const char* App::GetOrganization() const
 {
 	return organization.GetString();
+}
+
+int App::GetFPS()
+{
+	return cappedFPS;
 }
 
 // Load / Save

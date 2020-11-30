@@ -147,7 +147,7 @@ void Scene::ChangeScene(GameScene nextScene)
 		endCol->toDelete = true;
 		endCol = nullptr;
 	}
-	app->map->groundCol.clear();
+	app->map->groundCol.Clear();
 	app->collision->CleanUp();
 	app->map->CleanUp();
 	if (introScreen) app->tex->UnLoad(introScreen);

@@ -27,7 +27,7 @@ public:
 		this->y = y;
 	}
 
-	Point& create(const TYPE& x, const TYPE& y)
+	Point& Create(const TYPE& x, const TYPE& y)
 	{
 		this->x = x;
 		this->y = y;
@@ -38,7 +38,7 @@ public:
 	// Math ------------------------------------------------
 	Point operator -(const Point &v) const
 	{
-		p2Vector2 r;
+		TYPE r;
 
 		r.x = x - v.x;
 		r.y = y - v.y;
@@ -48,7 +48,7 @@ public:
 
 	Point operator + (const Point &v) const
 	{
-		p2Vector2 r;
+		TYPE r;
 
 		r.x = x + v.x;
 		r.y = y + v.y;

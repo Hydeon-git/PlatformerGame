@@ -3,10 +3,11 @@
   <app>
     <title>Space Thief</title>
     <organization>Random Team - UPC/CITM</organization>
+    <cap fps="120"/>
   </app>
 
   <renderer>
-    <vsync value="true"/>
+    <vsync value="false"/>
   </renderer>
 
   <window>
@@ -34,9 +35,9 @@
   </scene>
   
   <player>
-    <initialPos1 x="8" y="191"/>
+    <initialPos1 x="8" y="185"/>
     <death time="4" height="300"/>
-    <propierties life="100" speed="1" gravity="0.25"/>
+    <propierties life="100" speed="70" jumpForce="150" gravity="8" fpsMovementCompensation="60"/>
     <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
     <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg"/>
   </player>

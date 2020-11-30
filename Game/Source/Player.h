@@ -57,7 +57,8 @@ public:
 	//Public variables
 	Collider* colPlayer;
 
-	iPoint position;
+	fPoint position;
+	iPoint positionPixelPerfect;
 
 private:
 
@@ -65,10 +66,12 @@ private:
 
 	int life = 100;
 	float speed;
+	float jumpForce;
 	float gravity;
 	float deathTimerConfig;
 	float deathTimer;
 	int deathLimit;
+	int fpsMovementCompensation = 1;
 
 	bool input = true;
 	bool godmode = false;
