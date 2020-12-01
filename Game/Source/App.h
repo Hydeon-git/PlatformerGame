@@ -54,7 +54,7 @@ public:
 	const char* GetArgv(int index) const;
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
-	int GetFPS();
+	float GetFPS();
 
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
@@ -125,7 +125,7 @@ private:
 	uint32				lastSecFrameCount = 0;
 	uint32				prevLastSecFrameCount = 0;
 	float				dt = 0.0f;
-	int					cappedFPS = -1;
+	float				avgFPS = -1;
 	int					cappedms = -1;
 
 	mutable bool saveGameRequested;

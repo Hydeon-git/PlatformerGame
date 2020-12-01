@@ -8,7 +8,7 @@
 	<map />
 	<pathfinding />
 	<player>
-		<player x="84" y="176" />
+		<player x="64" y="176" />
 	</player>
 	<collision />
 	<fadetoblack />

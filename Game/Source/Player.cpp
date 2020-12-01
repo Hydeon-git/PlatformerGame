@@ -203,7 +203,7 @@ bool Player::Update(float dt)
 			jumpEnable = false;
 			currentAnimation = &jump;
 			position.y -= 1;
-			velocity.y = -jumpForce * dt;
+			velocity.y = -jumpForce;
 			jump.Reset();
 			// Sound
 			app->audio->PlayFx(jumpFx);
@@ -228,11 +228,9 @@ bool Player::Update(float dt)
 		break;
 	}
 
-	LOG("%f %f", velocity.y, dt);
-
 	//Change position from velocity
 	position.x += (velocity.x * dt);
-	position.y += velocity.y;
+	position.y += (velocity.y * dt);
 
 	positionPixelPerfect.x = round(position.x);
 	positionPixelPerfect.y = round(position.y);
@@ -273,7 +271,7 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 	{
 		if (c1 == colPlayer && c2->type == COLLIDER_GROUND)
 		{
-			if (c2->rect.y >= c1->rect.y + c1->rect.h - 1)
+			if (c2->rect.y >= c1->rect.y + c1->rect.h - 5)
 			{
 				if(velocity.y != 0) position.y = c2->rect.y - c2->rect.h * 2;
 				velocity.y = 0;

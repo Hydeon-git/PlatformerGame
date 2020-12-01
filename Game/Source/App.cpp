@@ -93,7 +93,7 @@ bool App::Awake()
 		title.Create(configApp.child("title").child_value());
 		organization.Create(configApp.child("organization").child_value());
 
-		cappedFPS = configApp.child("cap").attribute("fps").as_int();
+		int cappedFPS = configApp.child("cap").attribute("fps").as_int();
 
 		if (cappedFPS > 0)
 		{
@@ -197,7 +197,7 @@ void App::FinishUpdate()
 		lastSecFrameCount = 0;
 	}
 
-	float avgFPS = float(frameCount) / startupTime.ReadSec();
+	avgFPS = float(frameCount) / startupTime.ReadSec();
 	float secondsSinceStartup = startupTime.ReadSec();
 	uint32 lastFramems = frameTime.Read();
 	uint32 framesOnLastUpdate = prevLastSecFrameCount;
@@ -324,9 +324,9 @@ const char* App::GetOrganization() const
 	return organization.GetString();
 }
 
-int App::GetFPS()
+float App::GetFPS()
 {
-	return cappedFPS;
+	return avgFPS;
 }
 
 // Load / Save
