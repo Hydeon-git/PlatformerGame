@@ -19,6 +19,7 @@ class Textures;
 class Audio;
 class Scene;
 class Map;
+class PathFinding;
 class Collision;
 class Player;
 class FadeToBlack;
@@ -53,6 +54,7 @@ public:
 	const char* GetArgv(int index) const;
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
+	float GetFPS();
 
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
@@ -95,6 +97,7 @@ public:
 	Audio* audio;
 	Scene* scene;
 	Map* map;
+	PathFinding* pathfinding;
 	Collision* collision;
 	Player* player;
 	FadeToBlack* fade;
@@ -122,6 +125,7 @@ private:
 	uint32				lastSecFrameCount = 0;
 	uint32				prevLastSecFrameCount = 0;
 	float				dt = 0.0f;
+	float				avgFPS = -1;
 	int					cappedms = -1;
 
 	mutable bool saveGameRequested;

@@ -47,6 +47,7 @@ bool Player::Awake(pugi::xml_node& config)
 	texPath = config.child("texPath").attribute("tex").as_string();
 	life = config.child("propierties").attribute("life").as_int();
 	speed = config.child("propierties").attribute("speed").as_float();
+	jumpForce = config.child("propierties").attribute("jumpForce").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	deathTimerConfig = config.child("death").attribute("time").as_float();
 	deathLimit = config.child("death").attribute("height").as_int();
@@ -64,13 +65,16 @@ bool Player::Start()
 	//Loading assets and propierties from config file
 	position.x = initialPos.x;
 	position.y = initialPos.y;
+	velocity.SetToZero();
+	onGround = true;
+
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
 	LOG("Creating player colliders");
-	rCollider = { position.x+13, position.y+17, 6, 15 };
+	rCollider = { positionPixelPerfect.x+13, positionPixelPerfect.y+17, 6, 15 };
 	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
-	colPlayerWalls = app->collision->AddCollider({position.x+11, position.y+18, 10, 13 }, COLLIDER_PLAYER, this);
+	colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
 
 	return ret;
 }
@@ -87,7 +91,7 @@ bool Player::CleanUp()
 bool Player::Update(float dt) 
 {
 	bool ret = false;
-	if (position.y > deathLimit || status == PLAYER_DEATH) 
+	if (positionPixelPerfect.y > deathLimit) 
 	{
 		if (!dead) 
 		{
@@ -143,7 +147,7 @@ bool Player::Update(float dt)
 
 			if (!onGround)
 			{
-				velocity.y += gravity;
+				velocity.y += gravity * dt;
 				if (doubleJump && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 				{
 					doubleJump = false;
@@ -198,7 +202,8 @@ bool Player::Update(float dt)
 		{
 			jumpEnable = false;
 			currentAnimation = &jump;
-			velocity.y = -3;
+			position.y -= 1;
+			velocity.y = -jumpForce;
 			jump.Reset();
 			// Sound
 			app->audio->PlayFx(jumpFx);
@@ -213,8 +218,8 @@ bool Player::Update(float dt)
 			dead = false;
 			life = 100;
 			input = true;
-			position = initialPos; //Return to start
-			status = PLAYER_IN_AIR;
+			position.x = initialPos.x;
+			position.y = initialPos.y; //Return to start
 		}
 		else deathTimer -= 0.1f;
 		break;
@@ -224,14 +229,17 @@ bool Player::Update(float dt)
 	}
 
 	//Change position from velocity
-	position.x += velocity.x;
-	position.y += velocity.y;
+	position.x += (velocity.x * dt);
+	position.y += (velocity.y * dt);
+
+	positionPixelPerfect.x = round(position.x);
+	positionPixelPerfect.y = round(position.y);
 
 	//Collider position
-	colPlayer->SetPos(position.x + 13, position.y + 17);
-	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
+	colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+	colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
 
-	rCollider.x = position.x + 13; rCollider.y = position.y + 17;
+	rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
 
 	//Function to draw the player
 	ret = Draw(dt);
@@ -247,12 +255,12 @@ bool Player::Draw(float dt)
 	r = currentAnimation->GetCurrentFrame(dt);
 	if (graphics != nullptr) 
 	{
-		ret = app->render->DrawTexture(graphics, position.x, position.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
+		ret = app->render->DrawTexture(graphics, positionPixelPerfect.x, positionPixelPerfect.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
 	}
 	else LOG("No available graphics to draw.");
 
-	r.x = position.x;
-	r.y = position.y;
+	r.x = positionPixelPerfect.x;
+	r.y = positionPixelPerfect.y;
 	return ret;
 }
 
@@ -263,9 +271,9 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 	{
 		if (c1 == colPlayer && c2->type == COLLIDER_GROUND)
 		{
-			if (c2->rect.y > c1->rect.y + c1->rect.h - 5)
+			if (c2->rect.y >= c1->rect.y + c1->rect.h - 5)
 			{
-				position.y = c2->rect.y - c2->rect.h * 2;
+				if(velocity.y != 0) position.y = c2->rect.y - c2->rect.h * 2;
 				velocity.y = 0;
 				onGround = true;
 			}
@@ -285,10 +293,10 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 				velocity.x = 0;
 				rightColliding = true;
 			}
-			else if (c2->rect.x + c2->rect.w < c1->rect.x + 5 && c2->rect.y < c1->rect.y + c1->rect.h)
+			else if (c2->rect.x + c2->rect.w < c1->rect.x + 6 && c2->rect.y < c1->rect.y + c1->rect.h)
 			{
 				//Collider on the left
-				position.x = c2->rect.x + 5;
+				position.x = c2->rect.x + 6;
 				velocity.x = 0;
 				leftColliding = true;
 			}
@@ -337,8 +345,8 @@ bool Player::SaveState(pugi::xml_node& data) const
 {
 	pugi::xml_node ply = data.append_child("player");
 
-	ply.append_attribute("x") = position.x;
-	ply.append_attribute("y") = position.y;
+	ply.append_attribute("x") = positionPixelPerfect.x;
+	ply.append_attribute("y") = positionPixelPerfect.y;
 
 	return true;
 }
@@ -348,13 +356,16 @@ bool Player::LoadState(pugi::xml_node& data)
 	position.x = data.child("player").attribute("x").as_int();
 	position.y = data.child("player").attribute("y").as_int();
 
-	colPlayer->SetPos(position.x + 13, position.y + 17);
-	colPlayerWalls->SetPos(position.x + 11, position.y + 18);
+	positionPixelPerfect.x = position.x;
+	positionPixelPerfect.y = position.y;
 
-	rCollider.x = position.x + 13; rCollider.y = position.y + 17;
+	colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+	colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
 
-	r.x = position.x;
-	r.y = position.y;
+	rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
+
+	r.x = positionPixelPerfect.x;
+	r.y = positionPixelPerfect.y;
 
 	onGround = false;
 	rightColliding = false;

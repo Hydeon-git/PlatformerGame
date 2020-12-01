@@ -6,8 +6,9 @@
 	<audio />
 	<scene />
 	<map />
+	<pathfinding />
 	<player>
-		<player x="61" y="176" />
+		<player x="64" y="176" />
 	</player>
 	<collision />
 	<fadetoblack />

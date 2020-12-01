@@ -21,9 +21,9 @@ Map::~Map()
 int Properties::GetProperty(const char *value, int defaultValue) const
 {
 	int ret = defaultValue;
-	if (propertyList.count() != 0)
+	if (propertyList.Count() != 0)
 	{
-		for (int i = 0; i < propertyList.count() - 1; i++)
+		for (int i = 0; i < propertyList.Count() - 1; i++)
 		{
 			if (strcmp(propertyList.At(i)->data->name, value) == 0) 
 			{
@@ -147,7 +147,7 @@ bool Map::CleanUp()
 		RELEASE(item->data);
 		item = item->next;
 	}
-	data.tileSets.clear();
+	data.tileSets.Clear();
 
 	// L04: TODO 2: clean up all layer data
 	// Remove all layers
@@ -156,11 +156,11 @@ bool Map::CleanUp()
 
 	while (item2 != NULL)
 	{
-		item2->data->properties.propertyList.clear();
+		item2->data->properties.propertyList.Clear();
 		RELEASE(item2->data);
 		item2 = item2->next;
 	}
-	data.mapLayers.clear();
+	data.mapLayers.Clear();
 
 	// Clean up the pugui tree
 	mapFile.reset();
@@ -199,7 +199,7 @@ bool Map::Load(const char* fileName)
 
 		if (ret == true) ret = LoadTilesetImage(tileset, set);
 
-		data.tileSets.add(set);
+		data.tileSets.Add(set);
 	}
 	// L04: TODO 4: Iterate all layers and load each of them
 	pugi::xml_node layernode;
@@ -212,7 +212,7 @@ bool Map::Load(const char* fileName)
 			ret = LoadLayer(layernode, set1);
 		}
 		
-		data.mapLayers.add(set1);
+		data.mapLayers.Add(set1);
 	}
 
     if(ret == true)
@@ -422,7 +422,7 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 					iPoint position = MapToWorld(i, j);
 					SDL_Rect sect = data.tileSets.start->data->GetTileRect(layer->data[layer->Get(i, j)]);
 
-					groundCol.add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
+					groundCol.Add(app->collision->AddCollider({ position.x,position.y,sect.w,sect.h }, COLLIDER_GROUND));
 				}
 			}
 		}
@@ -443,7 +443,7 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		Properties::Property* p = new Properties::Property;
 		p->name = localNode.attribute("name").as_string();
 		p->value = localNode.attribute("value").as_int();
-		properties.propertyList.add(p);		
+		properties.propertyList.Add(p);		
 	}
 	
 	return ret;
