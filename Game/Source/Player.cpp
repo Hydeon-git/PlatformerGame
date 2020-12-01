@@ -317,7 +317,7 @@ bool Player::EnablePlayer() //Enable function for changing scene
 {
 	bool ret = false;
 	active = true;
-	Start();
+	ret = Start();
 	return ret;
 }
 
