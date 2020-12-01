@@ -37,8 +37,14 @@
   <player>
     <initialPos1 x="8" y="189"/>
     <death time="4" height="300"/>
-    <propierties life="100" speed="70" jumpForce="125" gravity="350" fpsMovementCompensation="60"/>
+    <propierties life="100" speed="70" jumpForce="125" gravity="350"/>
     <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
     <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg"/>
   </player>
+  
+  <enemy>
+    <initialPos1 x="40" y="189"/>
+    <propierties life="100" speed="30" gravity="350"/>
+    <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
+  </enemy>
 </config>

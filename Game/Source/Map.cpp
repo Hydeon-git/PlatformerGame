@@ -104,6 +104,31 @@ iPoint Map::MapToWorld(int x, int y) const
 	return ret;
 }
 
+iPoint Map::WorldToMap(int x, int y) const
+{
+	iPoint ret;
+
+	if (data.type == MAPTYPE_ORTHOGONAL)
+	{
+		ret.x = x / data.tileWidth;
+		ret.y = y / data.tileHeight;
+	}
+	else if (data.type == MAPTYPE_ISOMETRIC)
+	{
+		int halfWidth = data.tileWidth * 0.5f;
+		int	halfHeight = data.tileHeight * 0.5f;
+		ret.x = int((x / halfWidth + y / halfHeight) / 2) - 1;
+		ret.y = int((y / halfHeight - x / halfWidth) / 2);
+	}
+	else
+	{
+		LOG("Unknown Map Type");
+		ret.x = x; ret.y = y;
+	}
+
+	return ret;
+}
+
 // L06: TODO 3: Pick the right Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int id) const
 {

@@ -13,14 +13,22 @@ Collision::Collision()
 		colliders[i] = nullptr;
 
 	matrix[COLLIDER_GROUND][COLLIDER_PLAYER] = true;
+	matrix[COLLIDER_GROUND][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_GROUND] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_END] = false;
 
 	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER] = false;
+	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_GROUND] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_END] = true;
+	
+	matrix[COLLIDER_ENEMY][COLLIDER_ENEMY] = false;
+	matrix[COLLIDER_ENEMY][COLLIDER_PLAYER] = true;
+	matrix[COLLIDER_ENEMY][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_ENEMY][COLLIDER_END] = false;
 
-	matrix[COLLIDER_END][COLLIDER_PLAYER] = true;	
+	matrix[COLLIDER_END][COLLIDER_PLAYER] = true;
+	matrix[COLLIDER_END][COLLIDER_ENEMY] = false;
 	matrix[COLLIDER_END][COLLIDER_GROUND] = false;
 	matrix[COLLIDER_END][COLLIDER_END] = false;
 	
