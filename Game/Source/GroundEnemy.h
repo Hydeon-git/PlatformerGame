@@ -1,5 +1,5 @@
-#ifndef __PLAYER_H__
-#define __PLAYER_H__
+#ifndef __GROUNDENEMY_H__
+#define __GROUNDENEMY_H__
 
 #include "Module.h"
 #include "Input.h"
@@ -10,25 +10,22 @@
 #include "Animation.h"
 #include "Collision.h"
 
-enum PlayerStatus 
+enum GroundEnemyStatus 
 {
-	PLAYER_IDLE,
-	PLAYER_FORWARD,
-	PLAYER_BACKWARD,
-	PLAYER_JUMP,
-	PLAYER_IN_AIR,
-	PLAYER_DEATH
+	GROUNDENEMY_IDLE,
+	GROUNDENEMY_MOVE,
+	GROUNDENEMY_DEATH
 };
 
 
-class Player : public Module
+class GroundEnemy : public Module
 {
 public:
 
-	Player();
+	GroundEnemy();
 
 	// Destructor
-	virtual ~Player();
+	virtual ~GroundEnemy();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node& config);
@@ -44,8 +41,8 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
-	bool DisablePlayer();
-	bool EnablePlayer();
+	bool DisableGroundEnemy();
+	bool EnableGroundEnemy();
 
 	// Load / Save
 	bool SaveState(pugi::xml_node&) const;
@@ -55,37 +52,30 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colPlayer;
+	Collider* colGroundEnemy;
 
 	fPoint position;
 	iPoint positionPixelPerfect;
 
-	int life = 100;
-	bool godmode = false;
-
 private:
 
 	bool ResetStates();
-	
+
+	int life = 20;
 	float speed;
-	float jumpForce;
 	float gravity;
-	float deathTimerConfig;
-	float deathTimer;
 	int deathLimit;
 
-	bool input = true;
+	float attackTimer;
 
-	bool jumpEnable = true;
-	bool doubleJump = true;
+	// Pathfinding variables
+	int pathSteps = 0;
+	iPoint nextPos;
+
 	bool flip = true;
 	bool dead = false;
 
 	bool onGround;
-	bool leftColliding;
-	bool rightColliding;
-
-	int jumpFx;
 
 	SString texPath;
 	SDL_Texture* graphics;
@@ -96,14 +86,10 @@ private:
 	Animation* currentAnimation = &idle;
 	Animation idle;
 	Animation walk;
-	Animation jump;
 	Animation death;
 
-	PlayerStatus status = PLAYER_IDLE;
+	GroundEnemyStatus status = GROUNDENEMY_IDLE;
 
-	Collider* colPlayerWalls;
-
-	SDL_Rect rCollider;
-	SDL_Rect r;	
+	SDL_Rect r;
 };
-#endif //__PLAYER_H__
+#endif //__GROUNDENEMY_H__

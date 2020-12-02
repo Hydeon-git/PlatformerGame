@@ -356,8 +356,8 @@ bool Player::LoadState(pugi::xml_node& data)
 	position.x = data.child("player").attribute("x").as_int();
 	position.y = data.child("player").attribute("y").as_int();
 
-	positionPixelPerfect.x = position.x;
-	positionPixelPerfect.y = position.y;
+	positionPixelPerfect.x = round(position.x);
+	positionPixelPerfect.y = round(position.y);
 
 	colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
 	colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
