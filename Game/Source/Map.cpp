@@ -23,7 +23,7 @@ int Properties::GetProperty(const char *value, int defaultValue) const
 	int ret = defaultValue;
 	if (propertyList.Count() != 0)
 	{
-		for (int i = 0; i < propertyList.Count() - 1; i++)
+		for (int i = 0; i < propertyList.Count(); i++)
 		{
 			if (strcmp(propertyList.At(i)->data->name, value) == 0) 
 			{
@@ -423,7 +423,6 @@ bool Map::LoadLayer(pugi::xml_node& node, MapLayer* layer)
 	layer->height = node.attribute("height").as_int();
 	layer->data = new uint[layer->width * layer->height];
 	LoadProperties(node.child("properties"), layer->properties);
-	//set->nav = layer.attribute("nav").as_int();
 
 	memset(layer->data, 0, layer->width * layer->height);
 
@@ -471,5 +470,40 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 		properties.propertyList.Add(p);		
 	}
 	
+	return ret;
+}
+
+bool Map::CreateWalkabilityMap(int& width, int& height, uchar** buffer) const
+{
+	bool ret = false;
+	ListItem<MapLayer*>* item = data.mapLayers.start;
+
+	for (item = data.mapLayers.start; item != NULL || ret == false; item = item->next)
+	{
+		MapLayer* layer = item->data;
+
+		if (layer->properties.GetProperty("Navigation", 0) == 1) 
+		{
+			uchar* map = new uchar[layer->width * layer->height];
+			memset(map, 1, layer->width * layer->height);
+
+			for (int y = 0; y < data.height; ++y)
+			{
+				for (int x = 0; x < data.width; ++x)
+				{
+					int i = (y * layer->width) + x;
+
+					int tile_id = layer->Get(x, y);
+					map[i] = (layer->data[tile_id] == 54) == true ? 1 : 0;
+				}
+			}
+
+			*buffer = map;
+			width = data.width;
+			height = data.height;
+			ret = true;
+		}
+	}
+
 	return ret;
 }

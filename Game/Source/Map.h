@@ -66,6 +66,7 @@ struct MapLayer
 	int width;
 	int height;
 	uint* data;
+	uint nav;
 
 	// L06: DONE 1: Support custom properties
 	Properties properties;
@@ -124,6 +125,8 @@ public:
 	// L04: DONE 8: Create a method that translates x,y coordinates from map positions to world positions
 	iPoint MapToWorld(int x, int y) const;
 	iPoint WorldToMap(int x, int y) const;
+
+	bool CreateWalkabilityMap(int& width, int& height, uchar** buffer) const;
 
 private:
 

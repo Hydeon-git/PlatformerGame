@@ -6,7 +6,9 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Pathfinding.h"
 #include "Player.h"
+#include "GroundEnemy.h"
 #include "FadeToBlack.h"
 
 #include "Defs.h"
@@ -37,6 +39,7 @@ bool Scene::Awake(pugi::xml_node& config)
 	gameAudioPath = config.child("music").attribute("gameMusic").as_string();
 	winAudioPath = config.child("music").attribute("winMusic").as_string();
 	audioVol = config.child("properties").attribute("volume").as_int();
+	deathLimit = config.child("properties").attribute("deathLimit").as_int();
 
 	introTexturePath = config.child("textures").attribute("introTexture").as_string();
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
@@ -49,7 +52,8 @@ bool Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool Scene::Start()
 {	
-	app->player->DisablePlayer();	
+	app->player->DisablePlayer();
+	app->groundEnemy->DisableGroundEnemy();
 	introScreen = app->tex->Load(introTexturePath.GetString());
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
@@ -152,14 +156,24 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->map->CleanUp();
 	if (introScreen) app->tex->UnLoad(introScreen);
 	app->player->DisablePlayer();
+	app->groundEnemy->DisableGroundEnemy();
 
 	switch (nextScene)
 	{
 		case SCENE_1:
 		{
 			app->audio->PlayMusic(gameAudioPath.GetString());
-			app->map->Load(mapLevel1.GetString());
+			if (app->map->Load(mapLevel1.GetString()) == true)
+			{
+				int w, h;
+				uchar* data = NULL;
+				if (app->map->CreateWalkabilityMap(w, h, &data))
+					app->pathfinding->SetMap(w, h, data);
+
+				RELEASE_ARRAY(data);
+			}
 			app->player->EnablePlayer();
+			app->groundEnemy->EnableGroundEnemy();
 			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;
 			currentScene = SCENE_1;

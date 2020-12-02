@@ -49,7 +49,7 @@ public:
 
 	// Public variables
 	bool loaded = false;
-
+	int deathLimit;
 
 private:
 

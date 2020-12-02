@@ -15,17 +15,17 @@ Timer::Timer()
 // ---------------------------------------------
 void Timer::Start()
 {
-	started_at = SDL_GetTicks();
+	startedAt = SDL_GetTicks();
 }
 
 // ---------------------------------------------
 uint32 Timer::Read() const
 {
-	return SDL_GetTicks() - started_at;
+	return SDL_GetTicks() - startedAt;
 }
 
 // ---------------------------------------------
 float Timer::ReadSec() const
 {
-	return float(SDL_GetTicks() - started_at) / 1000.0f;
+	return float(SDL_GetTicks() - startedAt) / 1000.0f;
 }

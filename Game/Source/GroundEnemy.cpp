@@ -15,14 +15,28 @@ GroundEnemy::GroundEnemy() : Module()
 
 	//animations
 	idle.PushBack({ 1, 1, 18, 10 });
-	idle.speed = 0.1f;
+	idle.PushBack({ 1, 1, 18, 10 });
+	idle.PushBack({ 1, 1, 18, 10 });
+	idle.PushBack({ 1, 1, 18, 10 });
+	idle.PushBack({ 21, 1, 18, 10 });
+	idle.PushBack({ 41, 1, 18, 10 });
+	idle.PushBack({ 61, 1, 18, 10 });
+	idle.PushBack({ 41, 1, 18, 10 });
+	idle.PushBack({ 21, 1, 18, 10 });
+	idle.speed = 0.3f;
 
-	walk.PushBack({ 1, 1, 18, 10 });
-	walk.PushBack({ 22, 1, 18, 10 });
-	walk.speed = 0.4f;
+	move.PushBack({ 1, 12, 18, 10 });
+	move.PushBack({ 21, 12, 18, 10 });
+	move.speed = 0.2f;
 
-	death.PushBack({ 1, 1, 18, 10 });
-	death.speed = 0.1f;
+	death.PushBack({ 41, 12, 18, 10 });
+	death.PushBack({ 41, 12, 18, 10 });
+	death.PushBack({ 41, 12, 18, 10 });
+	death.PushBack({ 21, 1, 18, 10 });
+	death.PushBack({ 41, 1, 18, 10 });
+	death.PushBack({ 61, 1, 18, 10 });
+	death.PushBack({ 61, 12, 18, 10 });
+	death.speed = 0.2f;
 	death.loop = false;
 }
 
@@ -41,6 +55,8 @@ bool GroundEnemy::Awake(pugi::xml_node& config)
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
+
+	deathLimit = app->scene->deathLimit;
 	
 	return ret;
 }
@@ -58,9 +74,11 @@ bool GroundEnemy::Start()
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
-	LOG("Creating player colliders");
+	LOG("Creating ground enemy colliders");
 	r = { positionPixelPerfect.x, positionPixelPerfect.y, 18, 10 };
 	colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
+
+	currentAnimation = &idle;
 
 	return ret;
 }
@@ -70,35 +88,45 @@ bool GroundEnemy::CleanUp()
 {
 	bool ret = false;
 	LOG("Unloading enemy");
+	colGroundEnemy->toDelete = true;
 	ret = app->tex->UnLoad(graphics);
+	graphics = nullptr;
 	return ret;
 }
 
 bool GroundEnemy::Update(float dt) 
 {
 	bool ret = false;
-	if (positionPixelPerfect.y > deathLimit) 
+
+	if (!dead) 
 	{
-		if (!dead) 
-		{			
+		// Input
+		if (onGround)
+		{
+			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0))
+			{
+				status = GROUNDENEMY_MOVE;
+			}
+			else status = GROUNDENEMY_IDLE;
+		}
+		else
+		{
+			velocity.y += gravity * dt;
+			status = GROUNDENEMY_IDLE;
+		}
+
+		if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
+		{
+			life = 0;
+		}
+
+		if (positionPixelPerfect.y > deathLimit || life <= 0)
+		{
 			velocity.x = 0;
 			status = GROUNDENEMY_DEATH;
-			dead = true;
 		}
 	}
-	// Input
-	if (onGround)
-	{
-		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0))
-		{			
-				status = GROUNDENEMY_MOVE;
-		}
-	}
-	else
-	{
-		velocity.y += gravity * dt;
-		status = GROUNDENEMY_IDLE;
-	}
+	else status = GROUNDENEMY_IDLE;
 	
 	//Status
 	switch (status)
@@ -108,17 +136,19 @@ bool GroundEnemy::Update(float dt)
 		currentAnimation = &idle;
 		break;
 	case GROUNDENEMY_MOVE:
+	{
+		currentAnimation = &move;
 		static iPoint origin;
 		// Target is player position
 		iPoint playerPos = app->player->positionPixelPerfect;
 
 		// Convert World position to map position
-		origin = app->map->WorldToMap(positionPixelPerfect.x, positionPixelPerfect.y);
+		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
 		playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
 
 		// Create new path
 		app->pathfinding->CreatePath(origin, playerPos);
-		const DynArray<iPoint> *path = app->pathfinding->GetLastPath();
+		const DynArray<iPoint> * path = app->pathfinding->GetLastPath();
 
 		if (path->At(1) != NULL)
 		{
@@ -136,6 +166,7 @@ bool GroundEnemy::Update(float dt)
 			if (path->At(1)->y < origin.y)
 			{
 				velocity.x = 0;
+				currentAnimation = &idle;
 			}
 		}
 
@@ -150,12 +181,20 @@ bool GroundEnemy::Update(float dt)
 			}
 		}
 		break;
+	}
 	case GROUNDENEMY_DEATH:
 		currentAnimation = &death;
+		if (death.Finished()) 
+		{
+			dead = true;
+			DisableGroundEnemy();
+		}
 		break;
 	default:
 		break;
 	}
+
+	if(velocity.x != 0) idle.Reset();
 
 	//Change position from velocity
 	position.x += (velocity.x * dt);
@@ -169,7 +208,7 @@ bool GroundEnemy::Update(float dt)
 	r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
 
 	//Function to draw the player
-	ret = Draw(dt);
+	if(!dead) ret = Draw(dt);
 	onGround = false;
 	return true;
 }
@@ -192,24 +231,31 @@ bool GroundEnemy::Draw(float dt)
 bool GroundEnemy::OnCollision(Collider* c1, Collider* c2) 
 {
 	bool ret = false;
-	if (!app->player->godmode)
+
+	if (c1 == colGroundEnemy && c2->type == COLLIDER_GROUND)
 	{
-		if (c1 == colGroundEnemy && c2->type == COLLIDER_GROUND)
-		{
-			if (c2->rect.y >= c1->rect.y + c1->rect.h - 5)
-			{
-				if(velocity.y != 0) position.y = c2->rect.y - c2->rect.h * 2;
-				velocity.y = 0;
-				onGround = true;
-			}			
-			ret = true;
-		}
+		if (velocity.y != 0) position.y = c2->rect.y - c1->rect.h;
+		velocity.y = 0;
+		onGround = true;
+		ret = true;
+	}
+
+	if (c1 == colGroundEnemy && c2->type == COLLIDER_BULLET)
+	{
+		life -= app->player->bulletDamage;
+		ret = true;
+	}
+
+	if (!app->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
+	{
+		velocity.x = 0;
 	}
 	return ret;
 }
 
 bool GroundEnemy::EnableGroundEnemy() //Enable function for changing scene
 {
+	LOG("Enabling enemy");
 	bool ret = false;
 	active = true;
 	ret = Start();
@@ -218,9 +264,9 @@ bool GroundEnemy::EnableGroundEnemy() //Enable function for changing scene
 
 bool GroundEnemy::DisableGroundEnemy() //Disable function for changing scene
 {
-	LOG("Unloading player");
+	LOG("Disabling enemy");
 	active = false;
-
+	if(colGroundEnemy != nullptr) colGroundEnemy->toDelete = true;
 	return true;
 }
 

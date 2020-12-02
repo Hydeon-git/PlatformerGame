@@ -85,7 +85,7 @@ private:
 
 	Animation* currentAnimation = &idle;
 	Animation idle;
-	Animation walk;
+	Animation move;
 	Animation death;
 
 	GroundEnemyStatus status = GROUNDENEMY_IDLE;

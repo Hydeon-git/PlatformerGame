@@ -20,6 +20,29 @@ enum PlayerStatus
 	PLAYER_DEATH
 };
 
+class Bullet : public Module
+{
+public:
+	Bullet(SDL_Texture* grph, float sp, fPoint pos, bool fp, int sound);
+	~Bullet();
+
+	bool Update(float dt);
+	bool OnCollision(Collider* c1, Collider* c2);
+
+	//Public variables
+	bool toDelete = false;
+
+private:
+
+	bool flip;
+	fPoint position;
+	SDL_Rect rect;
+	SDL_Texture* graphics = nullptr;
+	float speed = 1.0f;
+	Collider* bulletCollider;
+	int wallHitFx;
+
+};
 
 class Player : public Module
 {
@@ -35,6 +58,9 @@ public:
 
 	// Called each loop iteration
 	bool Start();
+
+	// Called before all Updates
+	bool PreUpdate();
 
 	// Called each loop iteration
 	bool Update(float dt);
@@ -86,6 +112,8 @@ private:
 	bool rightColliding;
 
 	int jumpFx;
+	int shotFx;
+	int wallHitFx;
 
 	SString texPath;
 	SDL_Texture* graphics;
@@ -105,5 +133,15 @@ private:
 
 	SDL_Rect rCollider;
 	SDL_Rect r;	
+
+	iPoint gunOffset;
+
+	//Bullet variables
+	List<Bullet*> bullets;
+	SString bulletTexPath;
+	SDL_Texture* bulletGraphics;
+	float bulletSpeed;
+public:
+	int bulletDamage;
 };
 #endif //__PLAYER_H__

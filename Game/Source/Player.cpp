@@ -50,10 +50,18 @@ bool Player::Awake(pugi::xml_node& config)
 	jumpForce = config.child("propierties").attribute("jumpForce").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	deathTimerConfig = config.child("death").attribute("time").as_float();
-	deathLimit = config.child("death").attribute("height").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
 	jumpFx = app->audio->LoadFx(config.child("sounds").attribute("jumpFx").as_string());
+	shotFx = app->audio->LoadFx(config.child("sounds").attribute("shotFx").as_string());
+	wallHitFx = app->audio->LoadFx(config.child("sounds").attribute("wallHitFx").as_string());
+
+	//Bullet
+	bulletTexPath = config.child("bullets").attribute("tex").as_string();
+	bulletSpeed = config.child("bullets").attribute("speed").as_float();
+	bulletDamage = config.child("bullets").attribute("damage").as_int();
+
+	deathLimit = app->scene->deathLimit;
 	
 	return ret;
 }
@@ -71,6 +79,11 @@ bool Player::Start()
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
+	if(bulletGraphics == nullptr) 
+		bulletGraphics = app->tex->Load(bulletTexPath.GetString());
+	gunOffset.x = 28;
+	gunOffset.y = 23;
+
 	LOG("Creating player colliders");
 	rCollider = { positionPixelPerfect.x+13, positionPixelPerfect.y+17, 6, 15 };
 	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
@@ -86,6 +99,20 @@ bool Player::CleanUp()
 	LOG("Unloading player");
 	ret = app->tex->UnLoad(graphics);
 	return ret;
+}
+
+bool Player::PreUpdate() 
+{
+	for (uint i = 0; i < bullets.Count(); ++i)
+	{
+		// Remove all bullets scheduled for deletion
+		if (bullets[i] != nullptr && bullets[i]->toDelete == true)
+		{
+			delete bullets[i];
+			bullets[i] = nullptr;
+		}
+	}
+	return true;
 }
 
 bool Player::Update(float dt) 
@@ -143,6 +170,17 @@ bool Player::Update(float dt)
 					status = PLAYER_JUMP;
 					doubleJump = true;
 				}
+			}
+
+			if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) 
+			{
+				fPoint spawnPoint;
+				spawnPoint.x = (flip) == false ? positionPixelPerfect.x + gunOffset.x : positionPixelPerfect.x;
+				spawnPoint.y = positionPixelPerfect.y + gunOffset.y;
+				bullets.Add(new Bullet(bulletGraphics, bulletSpeed, spawnPoint, flip, wallHitFx));
+
+				// Sound
+				app->audio->PlayFx(shotFx);
 			}
 
 			if (!onGround)
@@ -259,6 +297,15 @@ bool Player::Draw(float dt)
 	}
 	else LOG("No available graphics to draw.");
 
+	//Update bullets
+	for (uint i = 0; i < bullets.Count(); ++i)
+	{
+		if (bullets[i] != nullptr)
+		{
+			bullets[i]->Update(dt);
+		}
+	}
+
 	r.x = positionPixelPerfect.x;
 	r.y = positionPixelPerfect.y;
 	return ret;
@@ -296,7 +343,7 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 			else if (c2->rect.x + c2->rect.w < c1->rect.x + 6 && c2->rect.y < c1->rect.y + c1->rect.h)
 			{
 				//Collider on the left
-				position.x = c2->rect.x + 6;
+				position.x = c2->rect.x + 5;
 				velocity.x = 0;
 				leftColliding = true;
 			}
@@ -372,4 +419,57 @@ bool Player::LoadState(pugi::xml_node& data)
 	leftColliding = false;
 
 	return true;
+}
+
+//--------------BULLETS---------------
+
+Bullet::Bullet(SDL_Texture* graph, float sp, fPoint pos, bool fp, int sound)
+{
+	graphics = graph;
+	position = pos;
+	flip = fp;
+	wallHitFx = sound;
+
+	if (flip) speed = -sp;
+	else speed = sp;
+
+	rect = { 0, 0, 5, 4 };
+	bulletCollider = app->collision->AddCollider(rect, COLLIDER_BULLET, this);
+	bulletCollider->SetPos(position.x, position.y);
+}
+
+Bullet::~Bullet()
+{
+	bulletCollider->toDelete = true;
+}
+
+bool Bullet::Update(float dt)
+{
+	bool ret = false;
+
+	position.x += speed * dt;
+
+	bulletCollider->SetPos(position.x, position.y);
+
+	if (graphics != nullptr)
+	{
+		ret = app->render->DrawTexture(graphics, position.x, position.y, &rect, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
+	}
+	else LOG("No available graphics to draw.");
+
+	return ret;
+}
+
+bool Bullet::OnCollision(Collider* c1, Collider* c2)
+{
+	bool ret = false;
+
+	if (c1 == bulletCollider && c2->type == COLLIDER_GROUND) 
+	{
+		//Play sound
+		app->audio->PlayFx(wallHitFx);
+	}
+
+	toDelete = true;
+	return ret;
 }

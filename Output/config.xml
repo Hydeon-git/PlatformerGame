@@ -31,20 +31,21 @@
 	/>
    <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
     <maps level1="scifi_map.tmx"/>
-   <properties volume="60"/>
+   <properties volume="10" deathLimit="300"/>
   </scene>
   
   <player>
     <initialPos1 x="8" y="189"/>
-    <death time="4" height="300"/>
+    <death time="4"/>
     <propierties life="100" speed="70" jumpForce="125" gravity="350"/>
+    <bullets tex="Assets/Textures/Characters/agent_mike_bullet.png" speed="130" damage="20"/>
     <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
-    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg"/>
+    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg" shotFx="Assets/Audio/Fx/shot_sfx.ogg" wallHitFx="Assets/Audio/Fx/hit_sfx.ogg"/>
   </player>
-  
-  <enemy>
-    <initialPos1 x="40" y="189"/>
+
+  <groundEnemy>
+    <initialPos1 x="370" y="90"/>
     <propierties life="100" speed="30" gravity="350"/>
     <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
-  </enemy>
+  </groundEnemy>
 </config>

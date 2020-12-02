@@ -15,21 +15,31 @@ Collision::Collision()
 	matrix[COLLIDER_GROUND][COLLIDER_PLAYER] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_GROUND] = false;
+	matrix[COLLIDER_GROUND][COLLIDER_BULLET] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_END] = false;
 
 	matrix[COLLIDER_PLAYER][COLLIDER_PLAYER] = false;
 	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_PLAYER][COLLIDER_BULLET] = false;
 	matrix[COLLIDER_PLAYER][COLLIDER_END] = true;
 	
-	matrix[COLLIDER_ENEMY][COLLIDER_ENEMY] = false;
 	matrix[COLLIDER_ENEMY][COLLIDER_PLAYER] = true;
+	matrix[COLLIDER_ENEMY][COLLIDER_ENEMY] = false;
 	matrix[COLLIDER_ENEMY][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_ENEMY][COLLIDER_BULLET] = true;
 	matrix[COLLIDER_ENEMY][COLLIDER_END] = false;
+
+	matrix[COLLIDER_BULLET][COLLIDER_PLAYER] = false;
+	matrix[COLLIDER_BULLET][COLLIDER_ENEMY] = true;
+	matrix[COLLIDER_BULLET][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_BULLET][COLLIDER_BULLET] = false;
+	matrix[COLLIDER_BULLET][COLLIDER_END] = false;
 
 	matrix[COLLIDER_END][COLLIDER_PLAYER] = true;
 	matrix[COLLIDER_END][COLLIDER_ENEMY] = false;
 	matrix[COLLIDER_END][COLLIDER_GROUND] = false;
+	matrix[COLLIDER_END][COLLIDER_BULLET] = false;
 	matrix[COLLIDER_END][COLLIDER_END] = false;
 	
 }
@@ -59,6 +69,7 @@ bool Collision::PreUpdate()
 		if (colliders[i] == nullptr)
 			continue;
 		c1 = colliders[i];
+
 		// avoid checking collisions already checked
 		for (uint k = i + 1; k < MAX_COLLIDERS; ++k)
 		{
@@ -66,6 +77,7 @@ bool Collision::PreUpdate()
 			if (colliders[k] == nullptr)
 				continue;
 			c2 = colliders[k];
+
 			if (c1->CheckCollision(c2->rect) == true)
 			{
 				if (matrix[c1->type][c2->type] && c1->callback)
@@ -103,6 +115,12 @@ void Collision::DebugDraw()
 			break;		
 		case COLLIDER_PLAYER: // green
 			app->render->DrawRectangle(colliders[i]->rect, 0, 255, 0, alpha);
+			break;
+		case COLLIDER_ENEMY: // red
+			app->render->DrawRectangle(colliders[i]->rect, 255, 0, 0, alpha);
+			break;
+		case COLLIDER_BULLET: // violet
+			app->render->DrawRectangle(colliders[i]->rect, 238, 130, 238, alpha);
 			break;
 		case COLLIDER_GROUND: // brown
 			app->render->DrawRectangle(colliders[i]->rect, 139, 69, 19, alpha);
@@ -151,9 +169,9 @@ Collider* Collision::AddCollider(SDL_Rect rect, ColliderType type, Module* callb
 
 bool Collider::CheckCollision(const SDL_Rect& r) const
 {
-	bool ret = true;
+	bool ret = false;
 
-	if (r.x + r.w < rect.x || rect.x + rect.w < r.x || r.y - r.h > rect.y || rect.y - rect.h > r.y) ret = false;
+	if (rect.x <= r.x + r.w && rect.x + rect.w >= r.x && rect.y <= r.y + r.h && rect.h + rect.y >= r.y) ret = true;
 
 	return ret;
 }
