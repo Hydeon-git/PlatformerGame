@@ -22,6 +22,7 @@ class Map;
 class PathFinding;
 class Collision;
 class Player;
+class GroundEnemy;
 class FadeToBlack;
 
 class App
@@ -100,6 +101,7 @@ public:
 	PathFinding* pathfinding;
 	Collision* collision;
 	Player* player;
+	GroundEnemy* groundEnemy;
 	FadeToBlack* fade;
 
 private:
