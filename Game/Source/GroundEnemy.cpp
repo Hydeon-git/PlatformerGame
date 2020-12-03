@@ -246,7 +246,6 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 		//Take damage
 		life -= app->player->bulletDamage;
 		//Sound
-		LOG("audio enemy");
 		app->audio->PlayFx(damageFx);
 
 		ret = true;
@@ -288,18 +287,28 @@ bool GroundEnemy::ResetStates() //Reset all states before checking input
 
 bool GroundEnemy::SaveState(pugi::xml_node& data) const 
 {
-	pugi::xml_node ply = data.append_child("player");
+	pugi::xml_node gEnemy = data.append_child("groundEnemy");
 
-	ply.append_attribute("x") = positionPixelPerfect.x;
-	ply.append_attribute("y") = positionPixelPerfect.y;
+	gEnemy.append_attribute("x") = positionPixelPerfect.x;
+	gEnemy.append_attribute("y") = positionPixelPerfect.y;
+
+	gEnemy.append_attribute("life") = life;
+	gEnemy.append_attribute("dead") = dead;
 
 	return true;
 }
 
 bool GroundEnemy::LoadState(pugi::xml_node& data)
 {
-	position.x = data.child("groundEnemy").attribute("x").as_int();
-	position.y = data.child("groundEnemy").attribute("y").as_int();
+	pugi::xml_node gEnemy = data.child("groundEnemy");
+
+	position.x = gEnemy.attribute("x").as_int();
+	position.y = gEnemy.attribute("y").as_int();
+
+	dead = gEnemy.attribute("dead").as_bool();
+
+	if (!dead) life = gEnemy.attribute("life").as_int();
+	else life = 0;
 
 	positionPixelPerfect.x = position.x;
 	positionPixelPerfect.y = position.y;
@@ -312,6 +321,8 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 	r.y = positionPixelPerfect.y;
 
 	onGround = false;
+
+	status = GROUNDENEMY_IDLE;
 
 	return true;
 }

@@ -43,6 +43,7 @@ public:
 
 	// Change the current scene 
 	void ChangeScene(GameScene nextScene);
+	void LoadLastSave();
 
 	// Detects collisions
 	bool OnCollision(Collider* c1, Collider* c2);

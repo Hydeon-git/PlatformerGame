@@ -114,6 +114,7 @@ private:
 	int jumpFx;
 	int shotFx;
 	int wallHitFx;
+	int deathFx;
 
 	SString texPath;
 	SDL_Texture* graphics;

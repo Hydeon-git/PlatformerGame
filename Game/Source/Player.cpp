@@ -23,11 +23,13 @@ Player::Player() : Module()
 	walk.PushBack({ 160, 32, 32, 32 });
 	walk.speed = 0.4f;
 
-	death.PushBack({ 0, 96, 32, 32 });
-	death.PushBack({ 32, 102, 32, 26 });
-	death.PushBack({ 64, 102, 32, 26 });
-	death.PushBack({ 96, 102, 32, 26 });
-	death.speed = 0.1f;
+	death.PushBack({ 0, 64, 32, 32 });
+	death.PushBack({ 32, 64, 32, 32 });
+	death.PushBack({ 64, 64, 32, 32 });
+	death.PushBack({ 96, 64, 32, 32 });
+	death.PushBack({ 128, 64, 32, 32 });
+	death.PushBack({ 160, 64, 32, 32 });
+	death.speed = 0.2f;
 	death.loop = false;
 
 	jump.PushBack({ 64, 0, 32, 32 });
@@ -55,6 +57,7 @@ bool Player::Awake(pugi::xml_node& config)
 	jumpFx = app->audio->LoadFx(config.child("sounds").attribute("jumpFx").as_string());
 	shotFx = app->audio->LoadFx(config.child("sounds").attribute("shotFx").as_string());
 	wallHitFx = app->audio->LoadFx(config.child("sounds").attribute("wallHitFx").as_string());
+	deathFx = app->audio->LoadFx(config.child("sounds").attribute("deathFx").as_string());
 
 	//Bullet
 	bulletTexPath = config.child("bullets").attribute("tex").as_string();
@@ -118,7 +121,7 @@ bool Player::PreUpdate()
 bool Player::Update(float dt) 
 {
 	bool ret = false;
-	if (positionPixelPerfect.y > deathLimit) 
+	if (positionPixelPerfect.y > deathLimit || life <= 0) 
 	{
 		if (!dead) 
 		{
@@ -127,6 +130,9 @@ bool Player::Update(float dt)
 			death.Reset();
 			deathTimer = deathTimerConfig;
 			status = PLAYER_DEATH;
+
+			app->audio->PlayFx(deathFx);
+
 			input = false;
 			dead = true;
 		}
@@ -151,6 +157,11 @@ bool Player::Update(float dt)
 					status = PLAYER_JUMP;
 				}
 				else status = PLAYER_IDLE;
+			}
+
+			if (app->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+			{
+				life = 0;
 			}
 
 			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
@@ -250,16 +261,10 @@ bool Player::Update(float dt)
 	case PLAYER_DEATH:
 		//Death animation
 		currentAnimation = &death;
-		if (deathTimer <= 0) 
+		if (death.Finished()) 
 		{
-			currentAnimation = &idle;
-			dead = false;
-			life = 100;
-			input = true;
-			position.x = initialPos.x;
-			position.y = initialPos.y; //Return to start
+			app->scene->LoadLastSave();
 		}
-		else deathTimer -= 0.1f;
 		break;
 
 	default:
@@ -395,13 +400,19 @@ bool Player::SaveState(pugi::xml_node& data) const
 	ply.append_attribute("x") = positionPixelPerfect.x;
 	ply.append_attribute("y") = positionPixelPerfect.y;
 
+	ply.append_attribute("life") = life;
+
 	return true;
 }
 
 bool Player::LoadState(pugi::xml_node& data)
 {
-	position.x = data.child("player").attribute("x").as_int();
-	position.y = data.child("player").attribute("y").as_int();
+	pugi::xml_node ply = data.child("player");
+
+	position.x = ply.attribute("x").as_int();
+	position.y = ply.attribute("y").as_int();
+
+	life = ply.attribute("life").as_int();
 
 	positionPixelPerfect.x = round(position.x);
 	positionPixelPerfect.y = round(position.y);
@@ -417,6 +428,10 @@ bool Player::LoadState(pugi::xml_node& data)
 	onGround = false;
 	rightColliding = false;
 	leftColliding = false;
+	dead = false;
+	input = true;
+
+	status = PLAYER_IDLE;
 
 	return true;
 }

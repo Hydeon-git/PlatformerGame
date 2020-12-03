@@ -40,7 +40,7 @@
     <propierties life="100" speed="70" jumpForce="125" gravity="350"/>
     <bullets tex="Assets/Textures/Characters/agent_mike_bullet.png" speed="130" damage="20"/>
     <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
-    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg" shotFx="Assets/Audio/Fx/shot_sfx.ogg" wallHitFx="Assets/Audio/Fx/hit_sfx.ogg"/>
+    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg" shotFx="Assets/Audio/Fx/shot_sfx.ogg" wallHitFx="Assets/Audio/Fx/hit_sfx.ogg" deathFx="Assets/Audio/Fx/death_sfx.ogg"/>
   </player>
 
   <groundEnemy>

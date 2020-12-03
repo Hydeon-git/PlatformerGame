@@ -8,11 +8,14 @@
 	<map />
 	<pathfinding />
 	<player>
-		<player x="64" y="176" />
+		<player x="8" y="192" life="100" />
 	</player>
+	<groundEnemy>
+		<groundEnemy x="370" y="102" life="100" dead="false" />
+	</groundEnemy>
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="0" y="-66" />
+		<camera x="0" y="-82" />
 	</renderer>
 </save_state>

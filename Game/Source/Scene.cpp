@@ -97,12 +97,10 @@ bool Scene::Update(float dt)
 				app->SaveGameRequest();
 
 			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
-			{
-				app->fade->FadeToBlkLoad();			
-			}
+				LoadLastSave();
 
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
-				app->debug = !app->debug;		
+				app->debug = !app->debug;
 			
 			// Draw map
 			app->map->Draw();
@@ -118,6 +116,11 @@ bool Scene::Update(float dt)
 	}
 
 	return true;
+}
+
+void Scene::LoadLastSave()
+{
+	app->fade->FadeToBlkLoad();
 }
 
 // Called each loop iteration
