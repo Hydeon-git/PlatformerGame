@@ -6,16 +6,17 @@
 	<audio />
 	<scene />
 	<map />
+	<checkpoint />
 	<pathfinding />
 	<player>
-		<player x="8" y="192" life="100" />
+		<player x="504" y="176" life="100" />
 	</player>
 	<groundEnemy>
-		<groundEnemy x="370" y="102" life="100" dead="false" />
+		<groundEnemy x="287" y="182" life="0" dead="true" />
 	</groundEnemy>
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="0" y="-82" />
+		<camera x="-1212" y="-66" />
 	</renderer>
 </save_state>

@@ -53,6 +53,8 @@ bool GroundEnemy::Awake(pugi::xml_node& config)
 	life = config.child("propierties").attribute("life").as_int();
 	speed = config.child("propierties").attribute("speed").as_float();
 	gravity = config.child("propierties").attribute("gravity").as_float();
+	attackTimerConfig = config.child("propierties").attribute("attackSpeed").as_float();
+	damage = config.child("propierties").attribute("damage").as_int();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
 	damageFx = app->audio->LoadFx(config.child("sounds").attribute("damageFx").as_string());
@@ -89,7 +91,11 @@ bool GroundEnemy::CleanUp()
 {
 	bool ret = false;
 	LOG("Unloading enemy");
-	colGroundEnemy->toDelete = true;
+	if (colGroundEnemy != nullptr)
+	{
+		colGroundEnemy->toDelete = true;
+		colGroundEnemy = nullptr;
+	}
 	ret = app->tex->UnLoad(graphics);
 	graphics = nullptr;
 	return ret;
@@ -106,7 +112,11 @@ bool GroundEnemy::Update(float dt)
 		{
 			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0))
 			{
-				status = GROUNDENEMY_MOVE;
+				if (attackTimer > 0)
+				{
+					status = GROUNDENEMY_ATTACK;
+				}
+				else status = GROUNDENEMY_MOVE;
 			}
 			else status = GROUNDENEMY_IDLE;
 		}
@@ -183,6 +193,15 @@ bool GroundEnemy::Update(float dt)
 		}
 		break;
 	}
+	case GROUNDENEMY_ATTACK:
+		currentAnimation = &move;
+		if (attackTimer <= dt)
+		{
+			app->player->Hit(damage);
+			attackTimer = 0;
+		}
+		else attackTimer -= dt;
+		break;
 	case GROUNDENEMY_DEATH:
 		currentAnimation = &death;
 		if (death.Finished()) 
@@ -195,23 +214,28 @@ bool GroundEnemy::Update(float dt)
 		break;
 	}
 
-	if(velocity.x != 0) idle.Reset();
+	if (!dead)
+	{
+		if (velocity.x != 0) idle.Reset();
 
-	//Change position from velocity
-	position.x += (velocity.x * dt);
-	position.y += (velocity.y * dt);
+		//Change position from velocity
+		position.x += (velocity.x * dt);
+		position.y += (velocity.y * dt);
 
-	positionPixelPerfect.x = round(position.x);
-	positionPixelPerfect.y = round(position.y);
+		positionPixelPerfect.x = round(position.x);
+		positionPixelPerfect.y = round(position.y);
 
-	//Collider position
-	colGroundEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
-	r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
+		//Collider position
+		colGroundEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
+		r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
 
-	//Function to draw the player
-	if(!dead) ret = Draw(dt);
-	onGround = false;
-	return true;
+		//Function to draw the player
+		ret = Draw(dt);
+		onGround = false;
+	}
+	else ret = true;
+	
+	return ret;
 }
 
 bool GroundEnemy::Draw(float dt)
@@ -254,6 +278,7 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 	if (!app->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
 	{
 		velocity.x = 0;
+		if (attackTimer <= 0) attackTimer = attackTimerConfig;
 	}
 	return ret;
 }
@@ -271,7 +296,11 @@ bool GroundEnemy::DisableGroundEnemy() //Disable function for changing scene
 {
 	LOG("Disabling enemy");
 	active = false;
-	if(colGroundEnemy != nullptr) colGroundEnemy->toDelete = true;
+	if (colGroundEnemy != nullptr)
+	{
+		colGroundEnemy->toDelete = true;
+		colGroundEnemy = nullptr;
+	}
 	return true;
 }
 
@@ -300,6 +329,7 @@ bool GroundEnemy::SaveState(pugi::xml_node& data) const
 
 bool GroundEnemy::LoadState(pugi::xml_node& data)
 {
+	LOG("Loading ground enemy form savefile");
 	pugi::xml_node gEnemy = data.child("groundEnemy");
 
 	position.x = gEnemy.attribute("x").as_int();
@@ -307,22 +337,29 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 	dead = gEnemy.attribute("dead").as_bool();
 
-	if (!dead) life = gEnemy.attribute("life").as_int();
-	else life = 0;
+	if (dead)
+	{
+		life = 0;
+	}
+	else 
+	{
+		life = gEnemy.attribute("life").as_int();
+		positionPixelPerfect.x = position.x;
+		positionPixelPerfect.y = position.y;
 
-	positionPixelPerfect.x = position.x;
-	positionPixelPerfect.y = position.y;
+		colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
 
-	colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+		r.x = positionPixelPerfect.x + 13; r.y = positionPixelPerfect.y + 17;
 
-	r.x = positionPixelPerfect.x + 13; r.y = positionPixelPerfect.y + 17;
+		r.x = positionPixelPerfect.x;
+		r.y = positionPixelPerfect.y;
 
-	r.x = positionPixelPerfect.x;
-	r.y = positionPixelPerfect.y;
+		onGround = false;
 
-	onGround = false;
+		status = GROUNDENEMY_IDLE;
+	}
 
-	status = GROUNDENEMY_IDLE;
+	
 
 	return true;
 }

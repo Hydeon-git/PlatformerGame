@@ -6,6 +6,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Checkpoint.h"
 #include "Pathfinding.h"
 #include "Collision.h"
 #include "Player.h"
@@ -30,6 +31,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new Audio();
 	scene = new Scene();
 	map = new Map();
+	checkpoint = new Checkpoint();
 	pathfinding = new PathFinding();
 	player = new Player();
 	groundEnemy = new GroundEnemy();
@@ -44,6 +46,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(scene);
 	AddModule(map);
+	AddModule(checkpoint);
 	AddModule(pathfinding);
 	AddModule(player);
 	AddModule(groundEnemy);

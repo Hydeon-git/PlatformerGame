@@ -23,6 +23,11 @@ Player::Player() : Module()
 	walk.PushBack({ 160, 32, 32, 32 });
 	walk.speed = 0.4f;
 
+	hit.PushBack({ 128, 0, 32, 32 });
+	hit.PushBack({ 160, 0, 32, 32 });
+	hit.speed = 0.1f;
+	hit.loop = false;
+
 	death.PushBack({ 0, 64, 32, 32 });
 	death.PushBack({ 32, 64, 32, 32 });
 	death.PushBack({ 64, 64, 32, 32 });
@@ -88,7 +93,7 @@ bool Player::Start()
 	gunOffset.y = 23;
 
 	LOG("Creating player colliders");
-	rCollider = { positionPixelPerfect.x+13, positionPixelPerfect.y+17, 6, 15 };
+	rCollider = { positionPixelPerfect.x + 13, positionPixelPerfect.y + 17, 6, 15 };
 	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
 	colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
 
@@ -101,6 +106,17 @@ bool Player::CleanUp()
 	bool ret = false;
 	LOG("Unloading player");
 	ret = app->tex->UnLoad(graphics);
+	if (colPlayer != nullptr)
+	{
+		colPlayer->toDelete = true;
+		colPlayer = nullptr;
+	}	
+	if (colPlayerWalls != nullptr)
+	{
+		colPlayerWalls->toDelete = true;
+		colPlayerWalls = nullptr;
+	}
+
 	return ret;
 }
 
@@ -204,6 +220,8 @@ bool Player::Update(float dt)
 					status = PLAYER_JUMP;
 				}
 			}
+
+			if (currentAnimation == &hit) status = PLAYER_HIT;
 		}
 		else 
 		{ //Godmode input
@@ -253,9 +271,17 @@ bool Player::Update(float dt)
 			currentAnimation = &jump;
 			position.y -= 1;
 			velocity.y = -jumpForce;
-			jump.Reset();
 			// Sound
 			app->audio->PlayFx(jumpFx);
+		}
+		else jump.Reset();
+		break;
+	case PLAYER_HIT:
+		currentAnimation = &hit;
+		if (hit.Finished())
+		{
+			status = PLAYER_IDLE;
+			currentAnimation = &jump;
 		}
 		break;
 	case PLAYER_DEATH:
@@ -314,6 +340,14 @@ bool Player::Draw(float dt)
 	r.x = positionPixelPerfect.x;
 	r.y = positionPixelPerfect.y;
 	return ret;
+}
+
+void Player::Hit(int damage) 
+{
+	hit.Reset();
+	life -= damage;
+	status = PLAYER_HIT;
+	currentAnimation = &hit;
 }
 
 bool Player::OnCollision(Collider* c1, Collider* c2) 
@@ -377,6 +411,16 @@ bool Player::DisablePlayer() //Disable function for changing scene
 {
 	LOG("Unloading player");
 	active = false;
+	if (colPlayer != nullptr)
+	{
+		colPlayer->toDelete = true;
+		colPlayer = nullptr;
+	}
+	if (colPlayerWalls != nullptr)
+	{
+		colPlayerWalls->toDelete = true;
+		colPlayerWalls = nullptr;
+	}
 
 	return true;
 }
@@ -407,6 +451,7 @@ bool Player::SaveState(pugi::xml_node& data) const
 
 bool Player::LoadState(pugi::xml_node& data)
 {
+	LOG("Loading player form savefile");
 	pugi::xml_node ply = data.child("player");
 
 	position.x = ply.attribute("x").as_int();

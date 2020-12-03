@@ -19,6 +19,7 @@ class Textures;
 class Audio;
 class Scene;
 class Map;
+class Checkpoint;
 class PathFinding;
 class Collision;
 class Player;
@@ -98,6 +99,7 @@ public:
 	Audio* audio;
 	Scene* scene;
 	Map* map;
+	Checkpoint* checkpoint;
 	PathFinding* pathfinding;
 	Collision* collision;
 	Player* player;

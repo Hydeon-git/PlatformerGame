@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
+#include "Checkpoint.h"
 #include "Pathfinding.h"
 #include "Player.h"
 #include "GroundEnemy.h"
@@ -104,6 +105,7 @@ bool Scene::Update(float dt)
 			
 			// Draw map
 			app->map->Draw();
+			app->checkpoint->Draw(dt);
 		} break;
 		case SCENE_END:
 		{
@@ -157,6 +159,7 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->map->groundCol.Clear();
 	app->collision->CleanUp();
 	app->map->CleanUp();
+	app->checkpoint->CleanUp();
 	if (introScreen) app->tex->UnLoad(introScreen);
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
@@ -168,6 +171,8 @@ void Scene::ChangeScene(GameScene nextScene)
 			app->audio->PlayMusic(gameAudioPath.GetString());
 			if (app->map->Load(mapLevel1.GetString()) == true)
 			{
+				app->checkpoint->Load();
+
 				int w, h;
 				uchar* data = NULL;
 				if (app->map->CreateWalkabilityMap(w, h, &data))

@@ -14,6 +14,7 @@ enum GroundEnemyStatus
 {
 	GROUNDENEMY_IDLE,
 	GROUNDENEMY_MOVE,
+	GROUNDENEMY_ATTACK,
 	GROUNDENEMY_DEATH
 };
 
@@ -66,7 +67,9 @@ private:
 	float gravity;
 	int deathLimit;
 	int damageFx;
+	int damage;
 
+	float attackTimerConfig;
 	float attackTimer;
 
 	// Pathfinding variables

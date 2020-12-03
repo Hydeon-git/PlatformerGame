@@ -48,6 +48,7 @@ public:
 	void Reset()
 	{
 		currentFrame = 0;
+		loops = 0;
 	}
 };
 

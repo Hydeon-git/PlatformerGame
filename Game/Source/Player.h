@@ -17,6 +17,7 @@ enum PlayerStatus
 	PLAYER_BACKWARD,
 	PLAYER_JUMP,
 	PLAYER_IN_AIR,
+	PLAYER_HIT,
 	PLAYER_DEATH
 };
 
@@ -73,6 +74,9 @@ public:
 	bool DisablePlayer();
 	bool EnablePlayer();
 
+	// Player recibe hit
+	void Hit(int damage);
+
 	// Load / Save
 	bool SaveState(pugi::xml_node&) const;
 	bool LoadState(pugi::xml_node&);
@@ -126,6 +130,7 @@ private:
 	Animation idle;
 	Animation walk;
 	Animation jump;
+	Animation hit;
 	Animation death;
 
 	PlayerStatus status = PLAYER_IDLE;
