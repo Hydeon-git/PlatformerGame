@@ -55,6 +55,7 @@ bool GroundEnemy::Awake(pugi::xml_node& config)
 	gravity = config.child("propierties").attribute("gravity").as_float();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
+	damageFx = app->audio->LoadFx(config.child("sounds").attribute("damageFx").as_string());
 
 	deathLimit = app->scene->deathLimit;
 	
@@ -75,7 +76,7 @@ bool GroundEnemy::Start()
 	flip = false;
 
 	LOG("Creating ground enemy colliders");
-	r = { positionPixelPerfect.x, positionPixelPerfect.y, 18, 10 };
+	r = { positionPixelPerfect.x, positionPixelPerfect.y, 16, 10 };
 	colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
 	currentAnimation = &idle;
@@ -242,7 +243,12 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 
 	if (c1 == colGroundEnemy && c2->type == COLLIDER_BULLET)
 	{
+		//Take damage
 		life -= app->player->bulletDamage;
+		//Sound
+		LOG("audio enemy");
+		app->audio->PlayFx(damageFx);
+
 		ret = true;
 	}
 

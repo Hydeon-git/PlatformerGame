@@ -65,6 +65,7 @@ private:
 	float speed;
 	float gravity;
 	int deathLimit;
+	int damageFx;
 
 	float attackTimer;
 

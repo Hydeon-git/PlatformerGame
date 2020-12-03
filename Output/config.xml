@@ -31,7 +31,7 @@
 	/>
    <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
     <maps level1="scifi_map.tmx"/>
-   <properties volume="10" deathLimit="300"/>
+   <properties volume="30" deathLimit="300"/>
   </scene>
   
   <player>
@@ -47,5 +47,6 @@
     <initialPos1 x="370" y="90"/>
     <propierties life="100" speed="30" gravity="350"/>
     <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
+    <sounds damageFx="Assets/Audio/Fx/shot_enemy.ogg"/>
   </groundEnemy>
 </config>
