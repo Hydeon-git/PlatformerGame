@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "GroundEnemy.h"
 #include "FadeToBlack.h"
+#include "Objects.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -45,6 +46,8 @@ bool Scene::Awake(pugi::xml_node& config)
 	introTexturePath = config.child("textures").attribute("introTexture").as_string();
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
 	mapLevel1 = config.child("maps").attribute("level1").as_string();
+
+	app->obj->diamondTexPath = config.child("diamondTex").attribute("tex").as_string();
 	
 
 	return ret;
@@ -55,6 +58,7 @@ bool Scene::Start()
 {	
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
+	app->obj->active = false;
 	introScreen = app->tex->Load(introTexturePath.GetString());
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
@@ -182,6 +186,12 @@ void Scene::ChangeScene(GameScene nextScene)
 			}
 			app->player->EnablePlayer();
 			app->groundEnemy->EnableGroundEnemy();
+
+			// Object
+			fPoint diamondPos;
+			diamondPos.x = 19; diamondPos.y = 189;
+			app->obj->objects.Add(new Objects(diamondPos, DIAMOND));
+
 			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;
 			currentScene = SCENE_1;

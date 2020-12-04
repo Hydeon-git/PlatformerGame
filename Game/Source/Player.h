@@ -42,7 +42,6 @@ private:
 	float speed = 1.0f;
 	Collider* bulletCollider;
 	int wallHitFx;
-
 };
 
 class Player : public Module

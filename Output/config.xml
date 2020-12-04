@@ -31,7 +31,7 @@
 	/>
    <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
     <maps level1="scifi_map.tmx"/>
-   <properties volume="0" deathLimit="300"/>
+   <properties volume="40" deathLimit="300"/>
   </scene>
   
   <player>
@@ -49,6 +49,10 @@
     <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
     <sounds damageFx="Assets/Audio/Fx/shot_enemy.ogg"/>
   </groundEnemy>
+  
+  <objects>
+    <diamondTex tex="Assets/Textures/Others/sheller_tex.png"/>
+  </objects>
 
   <checkpoint>
     <position x="515" y="176"/>

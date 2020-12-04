@@ -11,6 +11,7 @@
 #include "Collision.h"
 #include "Player.h"
 #include "GroundEnemy.h"
+#include "Objects.h"
 #include "FadeToBlack.h"
 
 #include "Defs.h"
@@ -35,6 +36,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	pathfinding = new PathFinding();
 	player = new Player();
 	groundEnemy = new GroundEnemy();
+	obj = new Objects();
 	collision = new Collision();
 	fade = new FadeToBlack();
 
@@ -50,6 +52,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(pathfinding);
 	AddModule(player);
 	AddModule(groundEnemy);
+	AddModule(obj);
 	AddModule(collision);
 	AddModule(fade);
 
