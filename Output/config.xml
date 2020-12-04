@@ -51,7 +51,8 @@
   </groundEnemy>
   
   <objects>
-    <diamondTex tex="Assets/Textures/Others/sheller_tex.png"/>
+    <diamond tex="Assets/Textures/Others/sheller_tex.png"/>
+    <healthPotion tex="Assets/Textures/Others/sheller_tex.png"/>
   </objects>
 
   <checkpoint>

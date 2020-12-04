@@ -16,7 +16,7 @@ Collision::Collision()
 	matrix[COLLIDER_GROUND][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_GROUND][COLLIDER_GROUND] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_BULLET] = true;
-	matrix[COLLIDER_GROUND][COLLIDER_OBJECT] = true;
+	matrix[COLLIDER_GROUND][COLLIDER_OBJECT] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_CHECKPOINT] = false;
 	matrix[COLLIDER_GROUND][COLLIDER_END] = false;
 
@@ -24,7 +24,7 @@ Collision::Collision()
 	matrix[COLLIDER_PLAYER][COLLIDER_ENEMY] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_GROUND] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_BULLET] = false;
-	matrix[COLLIDER_PLAYER][COLLIDER_OBJECT] = false;
+	matrix[COLLIDER_PLAYER][COLLIDER_OBJECT] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_CHECKPOINT] = true;
 	matrix[COLLIDER_PLAYER][COLLIDER_END] = true;
 	
@@ -60,9 +60,9 @@ Collision::Collision()
 	matrix[COLLIDER_END][COLLIDER_CHECKPOINT] = false;
 	matrix[COLLIDER_END][COLLIDER_END] = false;
 
-	matrix[COLLIDER_OBJECT][COLLIDER_PLAYER] = false;
+	matrix[COLLIDER_OBJECT][COLLIDER_PLAYER] = true;
 	matrix[COLLIDER_OBJECT][COLLIDER_ENEMY] = false;
-	matrix[COLLIDER_OBJECT][COLLIDER_GROUND] = true;
+	matrix[COLLIDER_OBJECT][COLLIDER_GROUND] = false;
 	matrix[COLLIDER_OBJECT][COLLIDER_BULLET] = false;
 	matrix[COLLIDER_OBJECT][COLLIDER_OBJECT] = false;
 	matrix[COLLIDER_OBJECT][COLLIDER_CHECKPOINT] = false;
@@ -152,6 +152,9 @@ void Collision::DebugDraw()
 			app->render->DrawRectangle(colliders[i]->rect, 238, 130, 238, alpha);
 			break;
 		case COLLIDER_CHECKPOINT: // blue
+			app->render->DrawRectangle(colliders[i]->rect, 0, 0, 255, alpha);
+			break;
+		case COLLIDER_OBJECT: // blue
 			app->render->DrawRectangle(colliders[i]->rect, 0, 0, 255, alpha);
 			break;
 		case COLLIDER_GROUND: // brown

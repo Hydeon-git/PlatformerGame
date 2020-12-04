@@ -48,9 +48,6 @@ bool Scene::Awake(pugi::xml_node& config)
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
 	mapLevel1 = config.child("maps").attribute("level1").as_string();
 
-	app->obj->diamondTexPath = config.child("diamondTex").attribute("tex").as_string();
-	
-
 	return ret;
 }
 
@@ -59,7 +56,6 @@ bool Scene::Start()
 {	
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
-	app->obj->active = false;
 	introScreen = app->tex->Load(introTexturePath.GetString());
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
@@ -172,6 +168,7 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->collision->CleanUp();
 	app->map->CleanUp();
 	app->checkpoint->CleanUp();
+	app->obj->DeleteObjects();
 	if (introScreen) app->tex->UnLoad(introScreen);
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
@@ -196,9 +193,9 @@ void Scene::ChangeScene(GameScene nextScene)
 			app->groundEnemy->EnableGroundEnemy();
 
 			// Object
-			fPoint diamondPos;
-			diamondPos.x = 19; diamondPos.y = 189;
-			app->obj->objects.Add(new Objects(diamondPos, DIAMOND));
+			iPoint diamondPos;
+			diamondPos.x = 80; diamondPos.y = 140;
+			app->obj->CreateObject(diamondPos, HEALTH_POTION);
 
 			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 			ended = false;

@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Map.h"
 #include "Player.h"
+#include "Objects.h"
 
 Player::Player() : Module()
 {

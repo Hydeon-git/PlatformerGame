@@ -7,41 +7,59 @@ enum ObjectType
 {
 	NO_TYPE,
 	DIAMOND,
-	H_POTION
+	HEALTH_POTION
 };
 
 struct SDL_Texture;
+
+class Object
+{
+public:
+	Object(iPoint objectPos, ObjectType type, SDL_Texture* tex);
+	~Object();
+
+	bool Draw();
+
+	ObjectType type;
+	Collider* collider;
+private:
+	SDL_Rect rect = {};
+	iPoint position;
+	SDL_Texture* texture = nullptr;
+};
 
 class Objects : public Module
 {
 public:
 	// Constructor
 	Objects();
-	Objects(fPoint objectPos, ObjectType type);
 	
 	// Destructor
 	~Objects();
 
+	// Called before render is available
+	bool Awake(pugi::xml_node& config);
 	bool Start();
 	bool Update(float dt);
 	bool CleanUp();
 
+	bool DeleteObjects();
+	bool DeleteObject(Object* obj);
+
 	// OnCollision with another object
 	bool OnCollision(Collider* c1, Collider* c2);
 
-	// Add an object into the queue to be spawned later
-	List<Objects*> objects;
-	
+	Object* CreateObject(iPoint pos, ObjectType type);
 
-public:
-	// Variables;
-	fPoint position;
-	ObjectType type;
-	// Textures
-	SDL_Texture* diamondTex = nullptr;
+private:
+	// List of objects
+	List<Object*> objects;
+
 	SString diamondTexPath;
-	SDL_Rect dRect = {};
-	Collider* dCol = nullptr;
+	SString healthPotionTexPath;
+
+	SDL_Texture* diamondTex;
+	SDL_Texture* healthPotionTex;
 };
 
 #endif // __OBJECTS_H__
