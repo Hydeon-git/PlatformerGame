@@ -148,6 +148,9 @@ void Collision::DebugDraw()
 		case COLLIDER_BULLET: // violet
 			app->render->DrawRectangle(colliders[i]->rect, 238, 130, 238, alpha);
 			break;
+		case COLLIDER_OBJECT: // violet
+			app->render->DrawRectangle(colliders[i]->rect, 238, 130, 238, alpha);
+			break;
 		case COLLIDER_CHECKPOINT: // blue
 			app->render->DrawRectangle(colliders[i]->rect, 0, 0, 255, alpha);
 			break;

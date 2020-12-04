@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Audio.h"
 #include "Log.h"
+#include "Player.h"
 #include "SDL/include/SDL_render.h"
 #include "SDL/include/SDL_timer.h"
 
@@ -50,6 +51,21 @@ bool FadeToBlack::Update(float dt)
 			currentStep = FadeStep::FADE_FROM_BLACK;
 		}
 	} break;
+	case FadeStep::FADE_TO_BLACK_CP:
+	{
+		if (now >= totalTime)
+		{
+			if (loadState)app->LoadGameRequest();
+			else app->scene->ChangeScene(level);
+			app->render->SetBackgroundColor(app->render->background);
+			app->player->position.x = 515;
+			app->player->position.y = 176;
+			totalTime += totalTime;
+			startTime = SDL_GetTicks();
+
+			currentStep = FadeStep::FADE_FROM_BLACK;
+		}
+	} break;
 
 	case FadeStep::FADE_FROM_BLACK:
 	{
@@ -74,7 +90,7 @@ bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
 	if (currentStep == FadeStep::NONE)
 	{
 		loadState = false;
-		currentStep = FadeStep::FADE_TO_BLACK;
+		currentStep = FadeStep::FADE_TO_BLACK_CP;
 		startTime = SDL_GetTicks();
 		totalTime = (Uint32)(time * 0.5f * 1000.0f);
 		level = nextScene;
@@ -94,6 +110,23 @@ bool FadeToBlack::FadeToBlkLoad(float time)
 		currentStep = FadeStep::FADE_TO_BLACK;
 		startTime = SDL_GetTicks();
 		totalTime = (Uint32)(time * 0.5f * 1000.0f);
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool FadeToBlack::FadeToBlkCp(float time)
+{
+	bool ret = false;
+
+	if (currentStep == FadeStep::NONE)
+	{
+		loadState = true;
+		currentStep = FadeStep::FADE_TO_BLACK_CP;
+		startTime = SDL_GetTicks();
+		totalTime = (Uint32)(time * 0.5f * 1000.0f);
+
 		ret = true;
 	}
 

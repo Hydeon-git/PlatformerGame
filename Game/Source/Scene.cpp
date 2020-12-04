@@ -12,6 +12,7 @@
 #include "GroundEnemy.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
+#include "Checkpoint.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -106,6 +107,13 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 				app->debug = !app->debug;
+
+			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+			{
+				app->fade->FadeToBlkCp();
+				//app->player->position.x = 515;
+				//app->player->position.y = 176;
+			}
 			
 			// Draw map
 			app->map->Draw();

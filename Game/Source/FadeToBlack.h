@@ -14,6 +14,7 @@ public:
 	bool Update(float dt);
 	bool FadeToBlk(GameScene nextScene, float time = 2.0f);
 	bool FadeToBlkLoad(float time = 2.0f);
+	bool FadeToBlkCp(float time = 2.0f);
 
 private:
 
@@ -21,7 +22,8 @@ private:
 	{
 		NONE,
 		FADE_TO_BLACK,
-		FADE_FROM_BLACK
+		FADE_FROM_BLACK,
+		FADE_TO_BLACK_CP
 	} currentStep = FadeStep::NONE;
 
 	Uint32 startTime = 0;
