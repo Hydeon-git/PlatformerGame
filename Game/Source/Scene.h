@@ -2,12 +2,14 @@
 #define __SCENE_H__
 
 #include "Module.h"
+#include "Point.h"
 
 struct SDL_Texture;
 struct SDL_Rect;
 
 enum GameScene
 {
+	SCENE_NONE,
 	SCENE_INTRO,
 	SCENE_1,
 	SCENE_END
@@ -44,6 +46,8 @@ public:
 	// Change the current scene 
 	void ChangeScene(GameScene nextScene);
 	void LoadLastSave();
+
+	bool MovePlayer(iPoint pos);
 
 	// Detects collisions
 	bool OnCollision(Collider* c1, Collider* c2);

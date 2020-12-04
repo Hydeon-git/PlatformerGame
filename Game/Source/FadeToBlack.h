@@ -3,6 +3,14 @@
 
 #include "Module.h"
 #include "SDL\include\SDL_rect.h"
+#include "Point.h"
+
+enum FadeType
+{
+	CHANGE_SCENE,
+	LOAD_SAVE,
+	MOVE_CHECKPOINT
+};
 
 class FadeToBlack : public Module
 {
@@ -12,26 +20,23 @@ public:
 
 	bool Start();
 	bool Update(float dt);
-	bool FadeToBlk(GameScene nextScene, float time = 2.0f);
-	bool FadeToBlkLoad(float time = 2.0f);
-	bool FadeToBlkCp(float time = 2.0f);
+	bool FadeToBlk(FadeType ft, GameScene nextScene = SCENE_NONE, iPoint newPos = iPoint(0,0), float time = 2.0f);
 
 private:
-
 	enum FadeStep
 	{
 		NONE,
 		FADE_TO_BLACK,
 		FADE_FROM_BLACK,
-		FADE_TO_BLACK_CP
 	} currentStep = FadeStep::NONE;
 
 	Uint32 startTime = 0;
 	Uint32 totalTime = 0;
 	SDL_Rect screen;
-	GameScene level = SCENE_INTRO;
 
-	bool loadState;
+	GameScene level = SCENE_NONE;
+	iPoint position;
+	FadeType fadeType;
 };
 
 #endif //__FADETOBLACK_H__

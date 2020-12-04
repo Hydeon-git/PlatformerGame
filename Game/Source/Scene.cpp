@@ -12,7 +12,6 @@
 #include "GroundEnemy.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
-#include "Checkpoint.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -81,7 +80,7 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
-				app->fade->FadeToBlk(SCENE_1);
+				app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
 			}
 
 		} break;
@@ -89,11 +88,11 @@ bool Scene::Update(float dt)
 		{
 			// Falta F1 Load first level
 			if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-				app->fade->FadeToBlk(SCENE_1);
+				app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
 
 			// Falta F3 Start from the beginning of the level
 			if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
-				app->fade->FadeToBlk(currentScene);
+				app->fade->FadeToBlk(CHANGE_SCENE ,currentScene);
 
 			if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 				app->SaveGameRequest();
@@ -106,9 +105,7 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 			{
-				app->fade->FadeToBlkCp();
-				//app->player->position.x = 515;
-				//app->player->position.y = 176;
+				app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, app->checkpoint->position);
 			}
 			
 			// Draw map
@@ -120,7 +117,7 @@ bool Scene::Update(float dt)
 			app->render->DrawTexture(endScreen, 0, 51, fullscreenRect, 3);
 			if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 			{
-				app->fade->FadeToBlk(SCENE_1);
+				app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
 			}
 		} break;
 	}
@@ -130,7 +127,7 @@ bool Scene::Update(float dt)
 
 void Scene::LoadLastSave()
 {
-	app->fade->FadeToBlkLoad();
+	app->fade->FadeToBlk(LOAD_SAVE);
 }
 
 // Called each loop iteration
@@ -170,43 +167,53 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->checkpoint->CleanUp();
 	app->obj->DeleteObjects();
 	if (introScreen) app->tex->UnLoad(introScreen);
+	if (endScreen) app->tex->UnLoad(endScreen);
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
 
 	switch (nextScene)
 	{
-		case SCENE_1:
+	case SCENE_NONE:
+		LOG("ERROR: Scene loaded was none so intro scene loaded instead.");
+		ChangeScene(SCENE_INTRO);
+		break;
+	case SCENE_INTRO:
+		app->audio->PlayMusic(menuAudioPath.GetString());
+		introScreen = app->tex->Load(introTexturePath.GetString());
+		currentScene = SCENE_INTRO;
+		break;
+	case SCENE_1:
+	{
+		app->audio->PlayMusic(gameAudioPath.GetString());
+		if (app->map->Load(mapLevel1.GetString()) == true)
 		{
-			app->audio->PlayMusic(gameAudioPath.GetString());
-			if (app->map->Load(mapLevel1.GetString()) == true)
-			{
-				app->checkpoint->Load();
+			app->checkpoint->Load();
 
-				int w, h;
-				uchar* data = NULL;
-				if (app->map->CreateWalkabilityMap(w, h, &data))
-					app->pathfinding->SetMap(w, h, data);
+			int w, h;
+			uchar* data = NULL;
+			if (app->map->CreateWalkabilityMap(w, h, &data))
+				app->pathfinding->SetMap(w, h, data);
 
-				RELEASE_ARRAY(data);
-			}
-			app->player->EnablePlayer();
-			app->groundEnemy->EnableGroundEnemy();
+			RELEASE_ARRAY(data);
+		}
+		app->player->EnablePlayer();
+		app->groundEnemy->EnableGroundEnemy();
 
-			// Object
-			iPoint diamondPos;
-			diamondPos.x = 80; diamondPos.y = 140;
-			app->obj->CreateObject(diamondPos, HEALTH_POTION);
+		// Object
+		iPoint diamondPos;
+		diamondPos.x = 80; diamondPos.y = 140;
+		app->obj->CreateObject(diamondPos, HEALTH_POTION);
 
-			endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
-			ended = false;
-			currentScene = SCENE_1;
-		} break;
-		case SCENE_END:
-		{
-			app->audio->PlayMusic(winAudioPath.GetString());
-			endScreen = app->tex->Load(endTexturePath.GetString());
-			currentScene = SCENE_END;
-		} break;
+		endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
+		ended = false;
+		currentScene = SCENE_1;
+	} break;
+	case SCENE_END:
+	{
+		app->audio->PlayMusic(winAudioPath.GetString());
+		endScreen = app->tex->Load(endTexturePath.GetString());
+		currentScene = SCENE_END;
+	} break;
 	}
 }
 
@@ -216,9 +223,18 @@ bool Scene::OnCollision(Collider* c1, Collider* c2)
 	{
 		if (!ended) 
 		{
-			app->fade->FadeToBlk(SCENE_END);
+			app->fade->FadeToBlk(CHANGE_SCENE, SCENE_END);
 			ended = true;
 		}
 	}
+	return true;
+}
+
+bool Scene::MovePlayer(iPoint pos) 
+{
+	fPoint newPos;
+	newPos.x = pos.x;
+	newPos.y = pos.y;
+	app->player->position = newPos;
 	return true;
 }

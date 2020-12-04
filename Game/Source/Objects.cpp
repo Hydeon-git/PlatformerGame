@@ -77,14 +77,7 @@ bool Objects::CleanUp()
 
 bool Objects::DeleteObjects()
 {
-	for (uint i = 0; i < objects.Count(); ++i)
-	{
-		if (objects[i] != nullptr)
-		{
-			delete objects[i];
-			objects[i] = nullptr;
-		}
-	}
+	objects.Clear();
 
 	return true;
 }

@@ -4,9 +4,7 @@
 #include "FadeToBlack.h"
 #include "Render.h"
 #include "Window.h"
-#include "Audio.h"
 #include "Log.h"
-#include "Player.h"
 #include "SDL/include/SDL_render.h"
 #include "SDL/include/SDL_timer.h"
 
@@ -23,7 +21,6 @@ FadeToBlack::~FadeToBlack()
 bool FadeToBlack::Start()
 {
 	LOG("Preparing Fade Screen");
-	loadState = false;
 	SDL_SetRenderDrawBlendMode(app->render->renderer, SDL_BLENDMODE_BLEND);
 	return true;
 }
@@ -43,30 +40,26 @@ bool FadeToBlack::Update(float dt)
 	{
 		if (now >= totalTime)
 		{
-			if (loadState)app->LoadGameRequest();
-			else app->scene->ChangeScene(level);
+			switch (fadeType)
+			{
+			case CHANGE_SCENE:
+				app->scene->ChangeScene(level);
+				break;
+			case LOAD_SAVE:
+				app->LoadGameRequest();
+				break;
+			case MOVE_CHECKPOINT:
+				app->scene->MovePlayer(position);
+				break;
+			default:
+				break;
+			}
 			app->render->SetBackgroundColor(app->render->background);
 			totalTime += totalTime;
 			startTime = SDL_GetTicks();
 			currentStep = FadeStep::FADE_FROM_BLACK;
 		}
 	} break;
-	case FadeStep::FADE_TO_BLACK_CP:
-	{
-		if (now >= totalTime)
-		{
-			if (loadState)app->LoadGameRequest();
-			else app->scene->ChangeScene(level);
-			app->render->SetBackgroundColor(app->render->background);
-			app->player->position.x = 515;
-			app->player->position.y = 176;
-			totalTime += totalTime;
-			startTime = SDL_GetTicks();
-
-			currentStep = FadeStep::FADE_FROM_BLACK;
-		}
-	} break;
-
 	case FadeStep::FADE_FROM_BLACK:
 	{
 		normalized = 1.0f - normalized;
@@ -84,49 +77,19 @@ bool FadeToBlack::Update(float dt)
 }
 
 // Fade to black. At mid point deactivate one module, then activate the other
-bool FadeToBlack::FadeToBlk(GameScene nextScene, float time)
-{
-	bool ret = false;
-	if (currentStep == FadeStep::NONE)
-	{
-		loadState = false;
-		currentStep = FadeStep::FADE_TO_BLACK_CP;
-		startTime = SDL_GetTicks();
-		totalTime = (Uint32)(time * 0.5f * 1000.0f);
-		level = nextScene;
-		ret = true;
-	}
-
-	return ret;
-}
-
-bool FadeToBlack::FadeToBlkLoad(float time)
+bool FadeToBlack::FadeToBlk(FadeType ft, GameScene nextScene, iPoint newPos, float time)
 {
 	bool ret = false;
 
+	fadeType = ft;
+	position = newPos;
+	level = nextScene;
+	
 	if (currentStep == FadeStep::NONE)
 	{
-		loadState = true;
 		currentStep = FadeStep::FADE_TO_BLACK;
 		startTime = SDL_GetTicks();
 		totalTime = (Uint32)(time * 0.5f * 1000.0f);
-		ret = true;
-	}
-
-	return ret;
-}
-
-bool FadeToBlack::FadeToBlkCp(float time)
-{
-	bool ret = false;
-
-	if (currentStep == FadeStep::NONE)
-	{
-		loadState = true;
-		currentStep = FadeStep::FADE_TO_BLACK_CP;
-		startTime = SDL_GetTicks();
-		totalTime = (Uint32)(time * 0.5f * 1000.0f);
-
 		ret = true;
 	}
 
