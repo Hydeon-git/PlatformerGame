@@ -24,6 +24,7 @@ class PathFinding;
 class Collision;
 class Player;
 class GroundEnemy;
+class AirEnemy;
 class FadeToBlack;
 
 class App
@@ -57,6 +58,10 @@ public:
 	const char* GetTitle() const;
 	const char* GetOrganization() const;
 	float GetFPS();
+
+	// Change cap
+	void ChangeCap();
+	void ChangeCap(bool capped);
 
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
@@ -104,6 +109,7 @@ public:
 	Collision* collision;
 	Player* player;
 	GroundEnemy* groundEnemy;
+	AirEnemy* airEnemy;
 	FadeToBlack* fade;
 
 private:
@@ -131,6 +137,8 @@ private:
 	float				dt = 0.0f;
 	float				avgFPS = -1;
 	int					cappedms = -1;
+
+	bool isCapped = true;
 
 	mutable bool saveGameRequested;
 	bool loadGameRequested;

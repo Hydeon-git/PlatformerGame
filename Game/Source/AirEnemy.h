@@ -1,5 +1,5 @@
-#ifndef __GROUNDENEMY_H__
-#define __GROUNDENEMY_H__
+#ifndef __AIRENEMY_H__
+#define __AIRENEMY_H__
 
 #include "Module.h"
 #include "Input.h"
@@ -10,23 +10,23 @@
 #include "Animation.h"
 #include "Collision.h"
 
-enum GroundEnemyStatus 
+enum AirEnemyStatus 
 {
-	GROUNDENEMY_IDLE,
-	GROUNDENEMY_MOVE,
-	GROUNDENEMY_ATTACK,
-	GROUNDENEMY_DEATH
+	AIRENEMY_IDLE,
+	AIRENEMY_MOVE,
+	AIRENEMY_ATTACK,
+	AIRENEMY_DEATH
 };
 
 
-class GroundEnemy : public Module
+class AirEnemy : public Module
 {
 public:
 
-	GroundEnemy();
+	AirEnemy();
 
 	// Destructor
-	virtual ~GroundEnemy();
+	virtual ~AirEnemy();
 
 	// Called before render is available
 	bool Awake(pugi::xml_node& config);
@@ -42,8 +42,8 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
-	bool DisableGroundEnemy();
-	bool EnableGroundEnemy();
+	bool DisableAirEnemy();
+	bool EnableAirEnemy();
 
 	// Load / Save
 	bool SaveState(pugi::xml_node&) const;
@@ -53,7 +53,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colGroundEnemy;
+	Collider* colAirEnemy;
 
 	fPoint position;
 	iPoint positionPixelPerfect;
@@ -64,7 +64,6 @@ private:
 
 	int life = 20;
 	float speed;
-	int gravity;
 	int deathLimit;
 	int damageFx;
 	int damage;
@@ -80,8 +79,6 @@ private:
 	bool flip = true;
 	bool dead = false;
 
-	bool onGround;
-
 	SString texPath;
 	SDL_Texture* graphics;
 
@@ -93,8 +90,8 @@ private:
 	Animation move;
 	Animation death;
 
-	GroundEnemyStatus status = GROUNDENEMY_IDLE;
+	AirEnemyStatus status = AIRENEMY_IDLE;
 
 	SDL_Rect r;
 };
-#endif //__GROUNDENEMY_H__
+#endif //__AIRENEMY_H__
