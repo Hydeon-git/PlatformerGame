@@ -20,6 +20,8 @@ bool Objects::Awake(pugi::xml_node& config)
 {
 	diamondTexPath = config.child("diamond").attribute("tex").as_string();
 	healthPotionTexPath = config.child("healthPotion").attribute("tex").as_string();
+	
+	diamondFx = app->audio->LoadFx(config.child("diamond").attribute("fx").as_string());
 
 	return true;
 }
@@ -107,8 +109,10 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 				break;
 			case DIAMOND:
 				LOG("Got a diamond");
+				app->audio->PlayFx(diamondFx);
 				break;
 			case HEALTH_POTION:
+				LOG("Got a potion");
 				app->player->life += 10;
 				break;
 			default:

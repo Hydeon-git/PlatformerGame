@@ -60,6 +60,8 @@ private:
 
 	SDL_Texture* diamondTex;
 	SDL_Texture* healthPotionTex;
+
+	int diamondFx;
 };
 
 #endif // __OBJECTS_H__
