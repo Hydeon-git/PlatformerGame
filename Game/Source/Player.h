@@ -98,7 +98,7 @@ private:
 	
 	float speed;
 	float jumpForce;
-	float gravity;
+	int gravity;
 	float deathTimerConfig;
 	float deathTimer;
 	int deathLimit;
@@ -117,6 +117,7 @@ private:
 	int jumpFx;
 	int shotFx;
 	int wallHitFx;
+	int damageFx;
 	int deathFx;
 
 	SString texPath;

@@ -45,14 +45,20 @@ bool Checkpoint::Awake(pugi::xml_node& config)
 bool Checkpoint::Load()
 {
 	bool ret = true;
+	LOG("Creating checkpoint");
 
-	//Loading assets and propierties from config file
+	//Loading assets and properties from config file
 	if (graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 
-	LOG("Creating collider");
 	rCollider = { position.x + 8, position.y, 16, 32 };
 	colCheckpoint = app->collision->AddCollider(rCollider, COLLIDER_CHECKPOINT, this);
 	
+	unchecked.Reset();
+	checking.Reset();
+	checked.Reset();
+
+	checkTimer = checkTime;
+
 	status = CHECKPOINT_UNCHECKED;
 
 	return ret;
@@ -84,12 +90,12 @@ bool Checkpoint::Draw(float dt)
 		break;
 	case CHECKPOINT_CHECKING:
 		currentAnimation = &checking;
-		if (checkTime <= 0)
+		if (checkTimer <= 0)
 		{
 			status = CHECKPOINT_CHECKED;
 			check = true;
 		}
-		else checkTime -= dt;
+		else checkTimer -= dt;
 		break;
 	case CHECKPOINT_CHECKED:
 		currentAnimation = &checked;

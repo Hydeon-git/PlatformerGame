@@ -11,6 +11,7 @@
 #include "Collision.h"
 #include "Player.h"
 #include "GroundEnemy.h"
+#include "AirEnemy.h"
 #include "Objects.h"
 #include "FadeToBlack.h"
 
@@ -36,6 +37,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	pathfinding = new PathFinding();
 	player = new Player();
 	groundEnemy = new GroundEnemy();
+	airEnemy = new AirEnemy();
 	obj = new Objects();
 	collision = new Collision();
 	fade = new FadeToBlack();
@@ -52,6 +54,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(pathfinding);
 	AddModule(player);
 	AddModule(groundEnemy);
+	AddModule(airEnemy);
 	AddModule(obj);
 	AddModule(collision);
 	AddModule(fade);
@@ -137,7 +140,8 @@ bool App::Start()
 
 	while(item != NULL && ret == true)
 	{
-		ret = item->data->Start();
+		if (item->data->active) ret = item->data->Start();
+		else ret = true;
 		item = item->next;
 	}
 
@@ -215,7 +219,7 @@ void App::FinishUpdate()
 		LOG("Av.FPS: %.2f Last Frame Ms: %u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %lu ", 
 			avgFPS, lastFramems, framesOnLastUpdate, dt, secondsSinceStartup, frameCount);
 
-	if (cappedms > 0 && lastFramems < cappedms)
+	if (isCapped && cappedms > 0 && lastFramems < cappedms)
 	{
 		PerfTimer t;
 		SDL_Delay(cappedms - lastFramems);
@@ -336,6 +340,17 @@ const char* App::GetOrganization() const
 float App::GetFPS()
 {
 	return avgFPS;
+}
+
+// Change Cap
+void App::ChangeCap() 
+{
+	isCapped = !isCapped;
+}
+
+void App::ChangeCap(bool capped)
+{
+	isCapped = capped;
 }
 
 // Load / Save

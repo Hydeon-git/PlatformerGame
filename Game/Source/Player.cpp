@@ -53,16 +53,16 @@ bool Player::Awake(pugi::xml_node& config)
 	LOG("Loading player from config_file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
-	life = config.child("propierties").attribute("life").as_int();
-	speed = config.child("propierties").attribute("speed").as_float();
-	jumpForce = config.child("propierties").attribute("jumpForce").as_float();
-	gravity = config.child("propierties").attribute("gravity").as_float();
+	life = config.child("properties").attribute("life").as_int();
+	speed = config.child("properties").attribute("speed").as_float();
+	jumpForce = config.child("properties").attribute("jumpForce").as_float();
 	deathTimerConfig = config.child("death").attribute("time").as_float();
 	initialPos.x = config.child("initialPos1").attribute("x").as_int();
 	initialPos.y = config.child("initialPos1").attribute("y").as_int();
 	jumpFx = app->audio->LoadFx(config.child("sounds").attribute("jumpFx").as_string());
 	shotFx = app->audio->LoadFx(config.child("sounds").attribute("shotFx").as_string());
 	wallHitFx = app->audio->LoadFx(config.child("sounds").attribute("wallHitFx").as_string());
+	damageFx = app->audio->LoadFx(config.child("sounds").attribute("damageFx").as_string());
 	deathFx = app->audio->LoadFx(config.child("sounds").attribute("deathFx").as_string());
 
 	//Bullet
@@ -71,6 +71,9 @@ bool Player::Awake(pugi::xml_node& config)
 	bulletDamage = config.child("bullets").attribute("damage").as_int();
 
 	deathLimit = app->scene->deathLimit;
+	gravity = app->scene->gravity;
+
+	active = false;
 	
 	return ret;
 }
@@ -78,13 +81,17 @@ bool Player::Awake(pugi::xml_node& config)
 bool Player::Start()
 {
 	bool ret = true;
+	LOG("Creating player");
 
-	//Loading assets and propierties from config file
+	//Loading assets and properties from config file
 	position.x = initialPos.x;
 	position.y = initialPos.y;
 
 	positionPixelPerfect.x = round(position.x);
 	positionPixelPerfect.y = round(position.y);
+
+	r.x = positionPixelPerfect.x;
+	r.y = positionPixelPerfect.y;
 
 	velocity.SetToZero();
 	onGround = true;
@@ -97,7 +104,6 @@ bool Player::Start()
 	gunOffset.x = 28;
 	gunOffset.y = 23;
 
-	LOG("Creating player colliders");
 	rCollider = { positionPixelPerfect.x + 13, positionPixelPerfect.y + 17, 6, 15 };
 	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
 	colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
@@ -353,6 +359,9 @@ void Player::Hit(int damage)
 	life -= damage;
 	status = PLAYER_HIT;
 	currentAnimation = &hit;
+
+	// Sound
+	app->audio->PlayFx(damageFx);
 }
 
 bool Player::OnCollision(Collider* c1, Collider* c2) 

@@ -89,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AirEnemy.cpp" />
     <ClCompile Include="Source\Checkpoint.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\GroundEnemy.cpp" />
@@ -107,6 +108,7 @@
     <ClCompile Include="Source\Textures.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\Window.cpp" />
+    <ClInclude Include="Source\AirEnemy.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Checkpoint.h" />
     <ClInclude Include="Source\Collision.h" />

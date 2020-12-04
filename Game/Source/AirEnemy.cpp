@@ -7,11 +7,11 @@
 #include "Pathfinding.h"
 #include "DynArray.h"
 #include "Player.h"
-#include "GroundEnemy.h"
+#include "AirEnemy.h"
 
-GroundEnemy::GroundEnemy() : Module()
+AirEnemy::AirEnemy() : Module()
 {
-	name.Create("groundEnemy");
+	name.Create("airEnemy");
 
 	//animations
 	idle.PushBack({ 1, 1, 18, 10 });
@@ -41,10 +41,10 @@ GroundEnemy::GroundEnemy() : Module()
 }
 
 // Destructor
-GroundEnemy::~GroundEnemy()
+AirEnemy::~AirEnemy()
 {}
 
-bool GroundEnemy::Awake(pugi::xml_node& config) 
+bool AirEnemy::Awake(pugi::xml_node& config) 
 {
 	bool ret = true;
 	LOG("Loading enemy from config_file");
@@ -59,17 +59,16 @@ bool GroundEnemy::Awake(pugi::xml_node& config)
 	damageFx = app->audio->LoadFx(config.child("sounds").attribute("damageFx").as_string());
 
 	deathLimit = app->scene->deathLimit;
-	gravity = app->scene->gravity;
 
 	active = false;
 	
 	return ret;
 }
 
-bool GroundEnemy::Start()
+bool AirEnemy::Start()
 {
 	bool ret = true;
-	LOG("Creating groundEnemy");
+	LOG("Creating AirEnemy");
 
 	//Loading assets and properties from config file
 	position.x = initialPos.x;
@@ -79,13 +78,12 @@ bool GroundEnemy::Start()
 	positionPixelPerfect.y = position.y;
 
 	velocity.SetToZero();
-	onGround = true;
 
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
 	r = { positionPixelPerfect.x, positionPixelPerfect.y, 16, 10 };
-	colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
+	colAirEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
 	currentAnimation = &idle;
 
@@ -93,51 +91,43 @@ bool GroundEnemy::Start()
 }
 
 // Unload assets
-bool GroundEnemy::CleanUp()
+bool AirEnemy::CleanUp()
 {
 	bool ret = false;
 	LOG("Unloading enemy");
-	if (colGroundEnemy != nullptr)
+	if (colAirEnemy != nullptr)
 	{
-		colGroundEnemy->toDelete = true;
-		colGroundEnemy = nullptr;
+		colAirEnemy->toDelete = true;
+		colAirEnemy = nullptr;
 	}
 	ret = app->tex->UnLoad(graphics);
 	graphics = nullptr;
 	return ret;
 }
 
-bool GroundEnemy::Update(float dt) 
+bool AirEnemy::Update(float dt) 
 {
 	bool ret = false;
 
 	if (!dead) 
 	{
 		// Input
-		if (onGround)
-		{			
-			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0) && (status != GROUNDENEMY_ATTACK))
+		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0) && (status != AIRENEMY_ATTACK))
+		{
+			if (canAttack && attackTimer <= 0)
 			{
-				if (canAttack && attackTimer <= 0)
-				{
-					status = GROUNDENEMY_ATTACK;
-				}
-				else
-				{
-					status = GROUNDENEMY_MOVE;
-					attackTimer -= dt;
-				}
+				status = AIRENEMY_ATTACK;
 			}
 			else
 			{
-				status = GROUNDENEMY_IDLE;
-				attackTimer = 0;
+				status = AIRENEMY_MOVE;
+				attackTimer -= dt;
 			}
 		}
 		else
 		{
-			velocity.y += gravity * dt;
-			status = GROUNDENEMY_IDLE;
+			status = AIRENEMY_IDLE;
+			attackTimer = 0;
 		}
 
 		if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
@@ -148,19 +138,20 @@ bool GroundEnemy::Update(float dt)
 		if (positionPixelPerfect.y > deathLimit || life <= 0)
 		{
 			velocity.x = 0;
-			status = GROUNDENEMY_DEATH;
+			status = AIRENEMY_DEATH;
 		}
+		canAttack = false;
 	}
-	else status = GROUNDENEMY_IDLE;
+	else status = AIRENEMY_IDLE;
 	
 	//Status
 	switch (status)
 	{
-	case GROUNDENEMY_IDLE:
-		velocity.x = 0;
+	case AIRENEMY_IDLE:
+		velocity.SetToZero();
 		currentAnimation = &idle;
 		break;
-	case GROUNDENEMY_MOVE:
+	case AIRENEMY_MOVE:
 	{
 		currentAnimation = &move;
 		static iPoint origin;
@@ -180,18 +171,25 @@ bool GroundEnemy::Update(float dt)
 			// Move Enemy to Player
 			if (path->At(1)->x < origin.x)
 			{
+				velocity.y = 0;
 				velocity.x = -speed;
 				flip = false;
 			}
 			else if (path->At(1)->x > origin.x)
 			{
+				velocity.y = 0;
 				velocity.x = speed;
 				flip = true;
 			}
-			if (path->At(1)->y < origin.y)
+			else if (path->At(1)->y < origin.y)
 			{
 				velocity.x = 0;
-				currentAnimation = &idle;
+				velocity.y = -speed;
+			}
+			else if (path->At(1)->y > origin.y)
+			{
+				velocity.x = 0;
+				velocity.y = speed;
 			}
 		}
 
@@ -207,18 +205,18 @@ bool GroundEnemy::Update(float dt)
 		}
 		break;
 	}
-	case GROUNDENEMY_ATTACK:
+	case AIRENEMY_ATTACK:
 		currentAnimation = &move;
 		app->player->Hit(damage);
 		attackTimer = attackTimerConfig;
-		status = GROUNDENEMY_IDLE;
+		status = AIRENEMY_IDLE;
 		break;
-	case GROUNDENEMY_DEATH:
+	case AIRENEMY_DEATH:
 		currentAnimation = &death;
 		if (death.Finished()) 
 		{
 			dead = true;
-			DisableGroundEnemy();
+			DisableAirEnemy();
 		}
 		break;
 	default:
@@ -237,19 +235,18 @@ bool GroundEnemy::Update(float dt)
 		positionPixelPerfect.y = round(position.y);
 
 		//Collider position
-		colGroundEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
+		colAirEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
 		r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
 
 		//Function to draw the player
 		ret = Draw(dt);
-		onGround = false;
 	}
 	else ret = true;
 	
 	return ret;
 }
 
-bool GroundEnemy::Draw(float dt)
+bool AirEnemy::Draw(float dt)
 {
 	bool ret = false;
 	r = currentAnimation->GetCurrentFrame(dt);
@@ -264,19 +261,11 @@ bool GroundEnemy::Draw(float dt)
 	return ret;
 }
 
-bool GroundEnemy::OnCollision(Collider* c1, Collider* c2) 
+bool AirEnemy::OnCollision(Collider* c1, Collider* c2) 
 {
 	bool ret = false;
 
-	if (c1 == colGroundEnemy && c2->type == COLLIDER_GROUND)
-	{
-		if (velocity.y != 0) position.y = c2->rect.y - c1->rect.h;
-		velocity.y = 0;
-		onGround = true;
-		ret = true;
-	}
-
-	if (c1 == colGroundEnemy && c2->type == COLLIDER_BULLET)
+	if (c1 == colAirEnemy && c2->type == COLLIDER_BULLET)
 	{
 		//Take damage
 		life -= app->player->bulletDamage;
@@ -286,37 +275,36 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 		ret = true;
 	}
 
-	if (!app->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
+	if (!app->player->godmode && (c1 == colAirEnemy && c2->type == COLLIDER_PLAYER))
 	{
-		velocity.x = 0;
+		velocity.SetToZero();
 		canAttack = true;
 	}
-	else canAttack = false;
 	return ret;
 }
 
-bool GroundEnemy::EnableGroundEnemy() //Enable function for changing scene
+bool AirEnemy::EnableAirEnemy() //Enable function for changing scene
 {
-	LOG("Enabling enemy");
+	LOG("Enabling air enemy");
 	bool ret = false;
 	active = true;
 	ret = Start();
 	return ret;
 }
 
-bool GroundEnemy::DisableGroundEnemy() //Disable function for changing scene
+bool AirEnemy::DisableAirEnemy() //Disable function for changing scene
 {
-	LOG("Disabling enemy");
+	LOG("Disabling air enemy");
 	active = false;
-	if (colGroundEnemy != nullptr)
+	if (colAirEnemy != nullptr)
 	{
-		colGroundEnemy->toDelete = true;
-		colGroundEnemy = nullptr;
+		colAirEnemy->toDelete = true;
+		colAirEnemy = nullptr;
 	}
 	return true;
 }
 
-bool GroundEnemy::ResetStates() //Reset all states before checking input
+bool AirEnemy::ResetStates() //Reset all states before checking input
 {
 	velocity.x = 0;
 	velocity.y = 0;
@@ -326,9 +314,9 @@ bool GroundEnemy::ResetStates() //Reset all states before checking input
 	return true;
 }
 
-bool GroundEnemy::SaveState(pugi::xml_node& data) const 
+bool AirEnemy::SaveState(pugi::xml_node& data) const 
 {
-	pugi::xml_node gEnemy = data.append_child("groundEnemy");
+	pugi::xml_node gEnemy = data.append_child("airEnemy");
 
 	gEnemy.append_attribute("x") = positionPixelPerfect.x;
 	gEnemy.append_attribute("y") = positionPixelPerfect.y;
@@ -339,10 +327,10 @@ bool GroundEnemy::SaveState(pugi::xml_node& data) const
 	return true;
 }
 
-bool GroundEnemy::LoadState(pugi::xml_node& data)
+bool AirEnemy::LoadState(pugi::xml_node& data)
 {
-	LOG("Loading ground enemy form savefile");
-	pugi::xml_node gEnemy = data.child("groundEnemy");
+	LOG("Loading air enemy form savefile");
+	pugi::xml_node gEnemy = data.child("airEnemy");
 
 	position.x = gEnemy.attribute("x").as_int();
 	position.y = gEnemy.attribute("y").as_int();
@@ -359,16 +347,14 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 		positionPixelPerfect.x = position.x;
 		positionPixelPerfect.y = position.y;
 
-		colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+		colAirEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
 
 		r.x = positionPixelPerfect.x + 13; r.y = positionPixelPerfect.y + 17;
 
 		r.x = positionPixelPerfect.x;
 		r.y = positionPixelPerfect.y;
 
-		onGround = false;
-
-		status = GROUNDENEMY_IDLE;
+		status = AIRENEMY_IDLE;
 	}
 
 	

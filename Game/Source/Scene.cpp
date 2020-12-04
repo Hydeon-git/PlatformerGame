@@ -10,6 +10,7 @@
 #include "Pathfinding.h"
 #include "Player.h"
 #include "GroundEnemy.h"
+#include "AirEnemy.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
 
@@ -42,6 +43,7 @@ bool Scene::Awake(pugi::xml_node& config)
 	winAudioPath = config.child("music").attribute("winMusic").as_string();
 	audioVol = config.child("properties").attribute("volume").as_int();
 	deathLimit = config.child("properties").attribute("deathLimit").as_int();
+	gravity = config.child("properties").attribute("gravity").as_int();
 
 	introTexturePath = config.child("textures").attribute("introTexture").as_string();
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
@@ -53,8 +55,6 @@ bool Scene::Awake(pugi::xml_node& config)
 // Called before the first frame
 bool Scene::Start()
 {	
-	app->player->DisablePlayer();
-	app->groundEnemy->DisableGroundEnemy();
 	introScreen = app->tex->Load(introTexturePath.GetString());
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
@@ -72,6 +72,10 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+	// Cap or Uncapp framerate
+	if (app->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
+		app->ChangeCap();
+
 	switch (currentScene)
 	{
 		case SCENE_INTRO:
@@ -86,20 +90,23 @@ bool Scene::Update(float dt)
 		} break;
 		case SCENE_1:
 		{
-			// Falta F1 Load first level
+			// Load first level
 			if (app->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 				app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
 
-			// Falta F3 Start from the beginning of the level
+			// Start from the beginning of the level
 			if (app->input->GetKey(SDL_SCANCODE_F3) == KEY_DOWN)
 				app->fade->FadeToBlk(CHANGE_SCENE ,currentScene);
 
+			//Save Game
 			if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 				app->SaveGameRequest();
 
+			//Load Game
 			if (app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN)
 				LoadLastSave();
 
+			// Activate and deactivate debug mode
 			if (app->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
 				app->debug = !app->debug;
 
@@ -147,22 +154,27 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 	delete fullscreenRect;
 	fullscreenRect = nullptr;
-	app->tex->UnLoad(endScreen);
+	if (introScreen) app->tex->UnLoad(introScreen);
+	if (endScreen) app->tex->UnLoad(endScreen);
 	return true;
 }
 
 void Scene::ChangeScene(GameScene nextScene)
 {
+	LOG("Changing scene");
 	app->checkpoint->CleanUp();
 	app->obj->DeleteObjects();
+	// Disabling player and enemies
 	app->player->DisablePlayer();
 	app->groundEnemy->DisableGroundEnemy();
-
+	app->airEnemy->DisableAirEnemy();
+	// Unloading menu and ending screens
 	if (introScreen) app->tex->UnLoad(introScreen);
 	if (endScreen) app->tex->UnLoad(endScreen);
 
+	// Deleting all ground and end colliders
 	ListItem<Collider*>* item;
-	for (item = app->map->groundCol.start; item != NULL; item = item->next) //deleting all colliders
+	for (item = app->map->groundCol.start; item != NULL; item = item->next) 
 		item->data->toDelete = true;
 	if (endCol != nullptr)
 	{
@@ -171,6 +183,7 @@ void Scene::ChangeScene(GameScene nextScene)
 	}
 	app->map->groundCol.Clear();
 	app->collision->CleanUp();
+	// Deleting map
 	app->map->CleanUp();
 
 	switch (nextScene)
@@ -190,6 +203,7 @@ void Scene::ChangeScene(GameScene nextScene)
 
 		app->player->EnablePlayer();
 		app->groundEnemy->EnableGroundEnemy();
+		app->airEnemy->EnableAirEnemy();
 
 		if (app->map->Load(mapLevel1.GetString()) == true)
 		{

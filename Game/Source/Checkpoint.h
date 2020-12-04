@@ -51,6 +51,7 @@ private:
 	bool check = false;
 	int checkpointFx;
 	float checkTime;
+	float checkTimer;
 
 	SString texPath;
 	SDL_Texture* graphics;

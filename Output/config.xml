@@ -28,37 +28,50 @@
    menuMusic="Assets/Audio/Music/8bit_menu.ogg" 
    gameMusic="Assets/Audio/Music/escaping_the_collapsing_universe.ogg"
    winMusic="Assets/Audio/Music/ship_under_attack.ogg"
-	/>
+   />
    <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
-    <maps level1="scifi_map.tmx"/>
-   <properties volume="40" deathLimit="300"/>
+   <maps level1="scifi_map.tmx"/>
+   <properties volume="50" deathLimit="300" gravity="350"/>
   </scene>
   
   <player>
     <initialPos1 x="8" y="189"/>
     <death time="4"/>
-    <propierties life="100" speed="70" jumpForce="125" gravity="350"/>
-    <bullets tex="Assets/Textures/Others/agent_mike_bullet.png" speed="130" damage="20"/>
+    <properties life="100" speed="70" jumpForce="125"/>
+    <bullets tex="Assets/Textures/Objects/agent_mike_bullet.png" speed="130" damage="20"/>
     <texPath tex="Assets/Textures/Characters/agent_mike_spritesheet.png"/>
-    <sounds jumpFx="Assets/Audio/Fx/jump_sfx.ogg" shotFx="Assets/Audio/Fx/shot_sfx.ogg" wallHitFx="Assets/Audio/Fx/hit_sfx.ogg" deathFx="Assets/Audio/Fx/death_sfx.ogg"/>
+    <sounds
+      jumpFx="Assets/Audio/Fx/jump_sfx.ogg" 
+      shotFx="Assets/Audio/Fx/shot_sfx.ogg" 
+      wallHitFx="Assets/Audio/Fx/hit_sfx.ogg" 
+      deathFx="Assets/Audio/Fx/death_sfx.ogg" 
+      damageFx="Assets/Audio/Fx/damage_sfx.ogg"
+     />
   </player>
 
   <groundEnemy>
-    <initialPos1 x="360" y="90"/>
-    <propierties life="100" speed="30" gravity="350" attackSpeed="2.0" damage="10"/>
+    <initialPos1 x="312" y="92"/>
+    <properties life="100" speed="30" attackSpeed="2.0" damage="10"/>
     <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
     <sounds damageFx="Assets/Audio/Fx/shot_enemy.ogg"/>
   </groundEnemy>
-  
+
+  <airEnemy>
+    <initialPos1 x="612" y="92"/>
+    <properties life="100" speed="30" attackSpeed="2.0" damage="20"/>
+    <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
+    <sounds damageFx="Assets/Audio/Fx/shot_enemy.ogg"/>
+  </airEnemy>
+
   <objects>
-    <diamond tex="Assets/Textures/Others/sheller_tex.png"/>
-    <healthPotion tex="Assets/Textures/Others/sheller_tex.png"/>
+    <diamond tex="Assets/Textures/Objects/diamond_tex.png"/>
+    <healthPotion tex="Assets/Textures/Objects/diamond_tex.png"/>
   </objects>
 
   <checkpoint>
     <position x="515" y="176"/>
     <properties time="1.8"/>
-    <texPath tex="Assets/Textures/Others/checkpoint.png"/>
+    <texPath tex="Assets/Textures/Objects/checkpoint.png"/>
     <sounds checkpointFx="Assets/Audio/Fx/checkpoint_sfx.ogg"/>
   </checkpoint>
 </config>

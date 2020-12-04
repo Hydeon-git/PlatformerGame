@@ -36,7 +36,9 @@
     <ClCompile Include="Source\Checkpoint.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Objects.cpp" />
+    <ClCompile Include="Source\AirEnemy.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Window.h" />
@@ -101,7 +103,9 @@
     <ClInclude Include="Source\Checkpoint.h">
       <Filter>Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Objects.h" />
+    <ClInclude Include="Source\AirEnemy.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
