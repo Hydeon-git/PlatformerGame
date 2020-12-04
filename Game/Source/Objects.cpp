@@ -122,11 +122,12 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 
 Object::Object(iPoint objectPos, ObjectType tp, SDL_Texture* tex)
 {
+	LOG("Creating object");
 	position = objectPos;
 	type = tp;
 	texture = tex;
 
-	rect = { 0,0,36,36 };
+	rect = { 0, 0, 16, 16 };
 	collider = app->collision->AddCollider(rect, COLLIDER_OBJECT, app->obj);
 	collider->SetPos(position.x, position.y);
 }

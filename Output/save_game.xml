@@ -9,17 +9,18 @@
 	<checkpoint />
 	<pathfinding />
 	<player>
-		<player x="503" y="176" life="100" />
+		<player x="502" y="176" life="50" />
 	</player>
 	<groundEnemy>
-		<groundEnemy x="354" y="198" life="100" dead="false" />
+		<groundEnemy x="487" y="214" life="20" dead="false" />
 	</groundEnemy>
 	<airEnemy>
 		<airEnemy x="612" y="92" life="100" dead="false" />
 	</airEnemy>
+	<objects />
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="-1210" y="-66" />
+		<camera x="-1205" y="-66" />
 	</renderer>
 </save_state>

@@ -62,7 +62,8 @@ private:
 
 	bool ResetStates();
 
-	int life = 20;
+	int life;
+	int lifeConfig;
 	float speed;
 	int deathLimit;
 	int damageFx;

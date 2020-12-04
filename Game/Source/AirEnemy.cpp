@@ -14,28 +14,18 @@ AirEnemy::AirEnemy() : Module()
 	name.Create("airEnemy");
 
 	//animations
-	idle.PushBack({ 1, 1, 18, 10 });
-	idle.PushBack({ 1, 1, 18, 10 });
-	idle.PushBack({ 1, 1, 18, 10 });
-	idle.PushBack({ 1, 1, 18, 10 });
-	idle.PushBack({ 21, 1, 18, 10 });
-	idle.PushBack({ 41, 1, 18, 10 });
-	idle.PushBack({ 61, 1, 18, 10 });
-	idle.PushBack({ 41, 1, 18, 10 });
-	idle.PushBack({ 21, 1, 18, 10 });
-	idle.speed = 0.3f;
+	idle.PushBack({ 80, 1, 18, 15 });
+	idle.PushBack({ 99, 1, 18, 15 });
+	idle.PushBack({ 118, 1, 18, 15 });
+	idle.PushBack({ 137, 1, 18, 15 });
+	idle.speed = 0.2f;
 
-	move.PushBack({ 1, 12, 18, 10 });
-	move.PushBack({ 21, 12, 18, 10 });
+	move.PushBack({ 80, 17, 18, 15 });
+	move.PushBack({ 99, 17, 18, 15 });
 	move.speed = 0.2f;
 
-	death.PushBack({ 41, 12, 18, 10 });
-	death.PushBack({ 41, 12, 18, 10 });
-	death.PushBack({ 41, 12, 18, 10 });
-	death.PushBack({ 21, 1, 18, 10 });
-	death.PushBack({ 41, 1, 18, 10 });
-	death.PushBack({ 61, 1, 18, 10 });
-	death.PushBack({ 61, 12, 18, 10 });
+	death.PushBack({ 118, 17, 18, 15 });
+	death.PushBack({ 138, 17, 18, 15 });
 	death.speed = 0.2f;
 	death.loop = false;
 }
@@ -50,7 +40,7 @@ bool AirEnemy::Awake(pugi::xml_node& config)
 	LOG("Loading enemy from config_file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
-	life = config.child("properties").attribute("life").as_int();
+	lifeConfig = config.child("properties").attribute("life").as_int();
 	speed = config.child("properties").attribute("speed").as_float();
 	attackTimerConfig = config.child("properties").attribute("attackSpeed").as_float();
 	damage = config.child("properties").attribute("damage").as_int();
@@ -82,10 +72,17 @@ bool AirEnemy::Start()
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
-	r = { positionPixelPerfect.x, positionPixelPerfect.y, 16, 10 };
+	r = { positionPixelPerfect.x, positionPixelPerfect.y, 18, 15 };
 	colAirEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
 	currentAnimation = &idle;
+
+	idle.Reset();
+	move.Reset();
+	death.Reset();
+
+	life = lifeConfig;
+	dead = false;
 
 	return ret;
 }
@@ -159,7 +156,7 @@ bool AirEnemy::Update(float dt)
 		iPoint playerPos = app->player->positionPixelPerfect;
 
 		// Convert World position to map position
-		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
+		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y + 7);
 		playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
 
 		// Create new path

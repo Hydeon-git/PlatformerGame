@@ -50,7 +50,7 @@ bool GroundEnemy::Awake(pugi::xml_node& config)
 	LOG("Loading enemy from config_file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
-	life = config.child("properties").attribute("life").as_int();
+	lifeConfig = config.child("properties").attribute("life").as_int();
 	speed = config.child("properties").attribute("speed").as_float();
 	attackTimerConfig = config.child("properties").attribute("attackSpeed").as_float();
 	damage = config.child("properties").attribute("damage").as_int();
@@ -87,7 +87,15 @@ bool GroundEnemy::Start()
 	r = { positionPixelPerfect.x, positionPixelPerfect.y, 16, 10 };
 	colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
+	idle.Reset();
+	move.Reset();
+	death.Reset();
+
+	status = GROUNDENEMY_IDLE;
 	currentAnimation = &idle;
+
+	life = lifeConfig;
+	dead = false;
 
 	return ret;
 }
@@ -243,6 +251,7 @@ bool GroundEnemy::Update(float dt)
 		//Function to draw the player
 		ret = Draw(dt);
 		onGround = false;
+		canAttack = false;
 	}
 	else ret = true;
 	
@@ -291,7 +300,6 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 		velocity.x = 0;
 		canAttack = true;
 	}
-	else canAttack = false;
 	return ret;
 }
 
@@ -318,10 +326,9 @@ bool GroundEnemy::DisableGroundEnemy() //Disable function for changing scene
 
 bool GroundEnemy::ResetStates() //Reset all states before checking input
 {
-	velocity.x = 0;
-	velocity.y = 0;
+	velocity.SetToZero();
 
-	app->scene->loaded = false;
+	//app->scene->loaded = false;
 
 	return true;
 }
@@ -361,8 +368,6 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 		colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
 
-		r.x = positionPixelPerfect.x + 13; r.y = positionPixelPerfect.y + 17;
-
 		r.x = positionPixelPerfect.x;
 		r.y = positionPixelPerfect.y;
 
@@ -370,8 +375,6 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 		status = GROUNDENEMY_IDLE;
 	}
-
-	
 
 	return true;
 }

@@ -219,8 +219,8 @@ void Scene::ChangeScene(GameScene nextScene)
 
 		// Object
 		iPoint diamondPos;
-		diamondPos.x = 80; diamondPos.y = 140;
-		app->obj->CreateObject(diamondPos, HEALTH_POTION);
+		diamondPos.x = 64; diamondPos.y = 94;
+		app->obj->CreateObject(diamondPos, DIAMOND);
 
 		endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 		ended = false;
