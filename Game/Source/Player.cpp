@@ -82,6 +82,10 @@ bool Player::Start()
 	//Loading assets and propierties from config file
 	position.x = initialPos.x;
 	position.y = initialPos.y;
+
+	positionPixelPerfect.x = round(position.x);
+	positionPixelPerfect.y = round(position.y);
+
 	velocity.SetToZero();
 	onGround = true;
 

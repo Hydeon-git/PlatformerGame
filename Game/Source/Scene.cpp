@@ -153,6 +153,14 @@ bool Scene::CleanUp()
 
 void Scene::ChangeScene(GameScene nextScene)
 {
+	app->checkpoint->CleanUp();
+	app->obj->DeleteObjects();
+	app->player->DisablePlayer();
+	app->groundEnemy->DisableGroundEnemy();
+
+	if (introScreen) app->tex->UnLoad(introScreen);
+	if (endScreen) app->tex->UnLoad(endScreen);
+
 	ListItem<Collider*>* item;
 	for (item = app->map->groundCol.start; item != NULL; item = item->next) //deleting all colliders
 		item->data->toDelete = true;
@@ -164,12 +172,6 @@ void Scene::ChangeScene(GameScene nextScene)
 	app->map->groundCol.Clear();
 	app->collision->CleanUp();
 	app->map->CleanUp();
-	app->checkpoint->CleanUp();
-	app->obj->DeleteObjects();
-	if (introScreen) app->tex->UnLoad(introScreen);
-	if (endScreen) app->tex->UnLoad(endScreen);
-	app->player->DisablePlayer();
-	app->groundEnemy->DisableGroundEnemy();
 
 	switch (nextScene)
 	{
@@ -184,7 +186,11 @@ void Scene::ChangeScene(GameScene nextScene)
 		break;
 	case SCENE_1:
 	{
-		app->audio->PlayMusic(gameAudioPath.GetString());
+ 		app->audio->PlayMusic(gameAudioPath.GetString());
+
+		app->player->EnablePlayer();
+		app->groundEnemy->EnableGroundEnemy();
+
 		if (app->map->Load(mapLevel1.GetString()) == true)
 		{
 			app->checkpoint->Load();
@@ -196,8 +202,6 @@ void Scene::ChangeScene(GameScene nextScene)
 
 			RELEASE_ARRAY(data);
 		}
-		app->player->EnablePlayer();
-		app->groundEnemy->EnableGroundEnemy();
 
 		// Object
 		iPoint diamondPos;
