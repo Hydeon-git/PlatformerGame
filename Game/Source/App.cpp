@@ -356,21 +356,14 @@ float App::GetFPS()
 	return avgFPS;
 }
 
-// Change Cap
-void App::Uncap() 
+void App::ChangeCapState()
 {
-	isCapped = !isCapped;
+	capState = !capState;
 }
 
 void App::ChangeCap()
 {
-	if (capState) capState = false;
-	else if (!capState) capState = true;
-}
-
-void App::ChangeCap(bool capped)
-{
-	isCapped = capped;
+	isCapped = !isCapped;
 }
 
 // Load / Save

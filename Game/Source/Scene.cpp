@@ -85,7 +85,8 @@ bool Scene::Update(float dt)
 {
 	// Cap or Uncapp framerate
 	if (app->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
-		app->ChangeCap();
+		if (app->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) app->ChangeCap();
+		else app->ChangeCapState();
 
 	switch (currentScene)
 	{

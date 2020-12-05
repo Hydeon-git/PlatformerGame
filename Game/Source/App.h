@@ -61,9 +61,8 @@ public:
 	float GetFPS();
 
 	// Change cap
+	void ChangeCapState();
 	void ChangeCap();
-	void Uncap();
-	void ChangeCap(bool capped);
 
     // L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();

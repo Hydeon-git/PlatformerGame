@@ -364,8 +364,6 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 
 		status = AIRENEMY_IDLE;
 	}
-
 	
-
 	return true;
 }

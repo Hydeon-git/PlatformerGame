@@ -47,7 +47,7 @@ GroundEnemy::~GroundEnemy()
 bool GroundEnemy::Awake(pugi::xml_node& config) 
 {
 	bool ret = true;
-	LOG("Loading enemy from config_file");
+	LOG("Loading ground enemy from config_file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
 	lifeConfig = config.child("properties").attribute("life").as_int();
@@ -308,7 +308,7 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 
 bool GroundEnemy::EnableGroundEnemy() //Enable function for changing scene
 {
-	LOG("Enabling enemy");
+	LOG("Enabling groundEnemy");
 	bool ret = false;
 	active = true;
 	ret = Start();
@@ -317,7 +317,7 @@ bool GroundEnemy::EnableGroundEnemy() //Enable function for changing scene
 
 bool GroundEnemy::DisableGroundEnemy() //Disable function for changing scene
 {
-	LOG("Disabling enemy");
+	LOG("Disabling groundEnemy");
 	active = false;
 	if (colGroundEnemy != nullptr)
 	{
