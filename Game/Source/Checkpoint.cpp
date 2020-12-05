@@ -51,7 +51,7 @@ bool Checkpoint::Load()
 	if (graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 
 	rCollider = { position.x + 8, position.y, 16, 32 };
-	colCheckpoint = app->collision->AddCollider(rCollider, COLLIDER_CHECKPOINT, this);
+	if (colCheckpoint == nullptr) colCheckpoint = app->collision->AddCollider(rCollider, COLLIDER_CHECKPOINT, this);
 	
 	unchecked.Reset();
 	checking.Reset();

@@ -51,9 +51,13 @@ bool Scene::Awake(pugi::xml_node& config)
 
 	for (pugi::xml_node& node = config.child("objects").child("level1").child("obj"); node && ret; node = node.next_sibling("obj")) 
 	{
-		LOG(node.attribute("x").as_string());
-		LOG(node.attribute("y").as_string());
-		LOG(node.attribute("type").as_string());
+		newobj* obj = new newobj;
+		obj->pos = iPoint(node.attribute("x").as_int(), node.attribute("y").as_int());
+		obj->type = node.attribute("type").as_int();
+		objects.Add(obj);
+		//LOG(node.attribute("x").as_string());
+		//LOG(node.attribute("y").as_string());
+		//LOG(node.attribute("type").as_string());
 	}
 
 	return ret;
@@ -163,6 +167,9 @@ bool Scene::CleanUp()
 	fullscreenRect = nullptr;
 	if (introScreen) app->tex->UnLoad(introScreen);
 	if (endScreen) app->tex->UnLoad(endScreen);
+
+	if (objects.Count() > 0) objects.Clear();
+
 	return true;
 }
 
@@ -225,13 +232,16 @@ void Scene::ChangeScene(GameScene nextScene)
 		}
 
 		// Objects
-		iPoint diamondPos;
-		diamondPos.x = 64; diamondPos.y = 94;
-		app->obj->CreateObject(diamondPos, DIAMOND);
+		for (int i = 0; i < objects.Count(); i++)
+		{
+			app->obj->CreateObject(objects[i]->pos, (ObjectType)objects[i]->type);
+		}
 
 		endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 		ended = false;
 		currentScene = SCENE_1;
+
+		app->SaveGameRequest();
 	} break;
 	case SCENE_END:
 	{

@@ -73,7 +73,7 @@ bool AirEnemy::Start()
 	flip = false;
 
 	r = { positionPixelPerfect.x, positionPixelPerfect.y, 18, 15 };
-	colAirEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
+	if (colAirEnemy == nullptr) colAirEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
 	currentAnimation = &idle;
 
@@ -160,36 +160,41 @@ bool AirEnemy::Update(float dt)
 		iPoint playerPos = app->player->positionPixelPerfect;
 
 		// Convert World position to map position
-		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y + 7);
+		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
 		playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
 
 		// Create new path
 		app->pathfinding->CreatePath(origin, playerPos);
-		const DynArray<iPoint> * path = app->pathfinding->GetLastPath();
+		const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
+
+		velocity.SetToZero();
+
+		//worldPosition
 
 		if (path->At(1) != NULL)
 		{
+			iPoint target = app->map->MapToWorld(path->At(1)->x, path->At(1)->y);
 			// Move Enemy to Player
-			if (path->At(1)->x < origin.x)
+			if (target.x + 9 < positionPixelPerfect.x + 9)
 			{
-				velocity.y = 0;
+				//Left
 				velocity.x = -speed;
 				flip = false;
 			}
-			else if (path->At(1)->x > origin.x)
+			else if (target.x + 7 > positionPixelPerfect.x + 9)
 			{
-				velocity.y = 0;
+				//Right
 				velocity.x = speed;
 				flip = true;
 			}
-			else if (path->At(1)->y < origin.y)
+			if (target.y + 16 < positionPixelPerfect.y + r.h)
 			{
-				velocity.x = 0;
+				//Up
 				velocity.y = -speed;
 			}
-			else if (path->At(1)->y > origin.y)
+			else if (target.y > positionPixelPerfect.y)
 			{
-				velocity.x = 0;
+				//Down
 				velocity.y = speed;
 			}
 		}
@@ -344,6 +349,8 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 	}
 	else 
 	{
+		EnableAirEnemy();
+
 		life = gEnemy.attribute("life").as_int();
 		positionPixelPerfect.x = position.x;
 		positionPixelPerfect.y = position.y;

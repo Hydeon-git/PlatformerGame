@@ -85,7 +85,7 @@ bool GroundEnemy::Start()
 	flip = false;
 
 	r = { positionPixelPerfect.x, positionPixelPerfect.y, 16, 10 };
-	colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
+	if (colGroundEnemy == nullptr) colGroundEnemy = app->collision->AddCollider(r, COLLIDER_ENEMY, this);
 
 	idle.Reset();
 	move.Reset();
@@ -365,6 +365,8 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 	}
 	else 
 	{
+		EnableGroundEnemy();
+
 		life = gEnemy.attribute("life").as_int();
 		positionPixelPerfect.x = position.x;
 		positionPixelPerfect.y = position.y;
@@ -373,8 +375,6 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 		r.x = positionPixelPerfect.x;
 		r.y = positionPixelPerfect.y;
-
-		onGround = false;
 
 		status = GROUNDENEMY_IDLE;
 	}
