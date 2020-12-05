@@ -105,11 +105,14 @@ bool App::Awake()
 		title.Create(configApp.child("title").child_value());
 		organization.Create(configApp.child("organization").child_value());
 
-		int cappedFPS = configApp.child("cap").attribute("fps").as_int();
+		int highCap = configApp.child("fps").attribute("highCap").as_int();
+		int lowCap = configApp.child("fps").attribute("lowCap").as_int();
 
-		if (cappedFPS > 0)
+		if (highCap > 0)
 		{
-			cappedms = 1000 / cappedFPS;
+			hCappedMs = 1000 / highCap;
+			lCappedMs = 1000 / lowCap;
+			capState = true;
 		}
 	}
 
@@ -223,10 +226,17 @@ void App::FinishUpdate()
 	
 	app->win->SetTitle(title);
 
-	if (isCapped && cappedms > 0 && lastFramems < cappedms)
+	if (isCapped && hCappedMs > 0 && lastFramems < hCappedMs)
 	{
 		PerfTimer t;
-		SDL_Delay(cappedms - lastFramems);
+		if (capState)
+		{
+			SDL_Delay(hCappedMs - lastFramems);
+		}
+		else if (!capState)
+		{
+			SDL_Delay(lCappedMs - lastFramems);
+		}
 	}
 }
 
@@ -347,9 +357,15 @@ float App::GetFPS()
 }
 
 // Change Cap
-void App::ChangeCap() 
+void App::Uncap() 
 {
 	isCapped = !isCapped;
+}
+
+void App::ChangeCap()
+{
+	if (capState) capState = false;
+	else if (!capState) capState = true;
 }
 
 void App::ChangeCap(bool capped)

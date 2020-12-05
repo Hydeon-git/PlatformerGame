@@ -3,7 +3,7 @@
   <app>
     <title>Space Thief</title>
     <organization>Random Team - UPC/CITM</organization>
-    <cap fps="60"/>
+    <fps highCap="60" lowCap="30"/>
   </app>
 
   <renderer>
