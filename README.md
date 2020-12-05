@@ -23,6 +23,24 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
 - Music for Logo Screen, Level 1 and Level Completed Screen
 - DEBUG Keys
 
+- Walking Enemy that can pathfind player
+- Fly enemy that can pathfind player and avoids non-walkeable areas
+- Load/Save cosiders each enemy state.
+- Enemies have a range to detect player
+
+- Game capped to 60 fps
+- Window title: FPS|Avg.FPS|LastFrameMS|Vsync
+- All movement normalized using DeltaTime
+- Destroy enemies: shooting, jumping onto them
+
+- Game items to recover health
+- Game score items (diamond)
+- Checkpoints, autosave with feedback
+- Checkpoints teleportation
+
+- [Optional] Player weapons to shot enemies
+- [Optional] Audio Feedback
+
 ## Controls
 
  - A for backward movement
@@ -35,6 +53,8 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
  - F6 ​Load the previous state
  - F9​ View colliders
  - F10​ God Mode
+ - F11 Enable/Disable FPS cap (60 to 30)
+ - 1 Teleport to Checkpoint
  - SPACE to start the game in the Logo Screen / leave Level Completed screen
  
 ## Developers
