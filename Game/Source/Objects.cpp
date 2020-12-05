@@ -22,6 +22,7 @@ bool Objects::Awake(pugi::xml_node& config)
 	healthPotionTexPath = config.child("healthPotion").attribute("tex").as_string();
 	
 	diamondFx = app->audio->LoadFx(config.child("diamond").attribute("fx").as_string());
+	healthPotionFx = app->audio->LoadFx(config.child("healthPotion").attribute("fx").as_string());
 
 	return true;
 }
@@ -101,7 +102,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 {
 	for (uint i = 0; i < objects.Count(); ++i)
 	{
-		if (objects[i] != nullptr && c1 == objects[i]->collider)
+		if ((objects[i] != nullptr) && (c1 == objects[i]->collider) && (!app->player->godmode))
 		{
 			switch (objects[i]->type)
 			{
@@ -115,6 +116,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 			case HEALTH_POTION:
 				LOG("Got a potion");
 				app->player->life += 10;
+				app->audio->PlayFx(healthPotionFx);
 				break;
 			default:
 				break;

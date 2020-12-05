@@ -54,6 +54,7 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
  - F9​ View colliders
  - F10​ God Mode
  - F11 Enable/Disable FPS cap (60 to 30)
+ - SHIFT + F11 Enable/Disable FPS cap
  - 1 Teleport to Checkpoint
  - SPACE to start the game in the Logo Screen / leave Level Completed screen
  

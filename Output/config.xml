@@ -71,7 +71,7 @@
 
   <objects>
     <diamond tex="Assets/Textures/Objects/diamond_tex.png" fx="Assets/Audio/Fx/diamond_sfx.ogg"/>
-    <healthPotion tex="Assets/Textures/Objects/health_potion_tex.png"/>
+    <healthPotion tex="Assets/Textures/Objects/health_potion_tex.png" fx="Assets/Audio/Fx/health_potion_sfx.ogg"/>
   </objects>
 
   <checkpoint>

@@ -55,13 +55,15 @@ private:
 	// List of objects
 	List<Object*> objects;
 
+	int healthPotionFx;
 	SString diamondTexPath;
 	SString healthPotionTexPath;
 
+	int diamondFx;
 	SDL_Texture* diamondTex;
 	SDL_Texture* healthPotionTex;
 
-	int diamondFx;
+	
 };
 
 #endif // __OBJECTS_H__
