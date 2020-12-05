@@ -70,6 +70,7 @@ Object* Objects::CreateObject(iPoint pos, ObjectType type)
 // Called before quitting
 bool Objects::CleanUp()
 {
+	DeleteObjects();
 
 	if (diamondTex != nullptr) app->tex->UnLoad(diamondTex);
 	if (healthPotionTex != nullptr) app->tex->UnLoad(healthPotionTex);
@@ -100,7 +101,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 {
 	for (uint i = 0; i < objects.Count(); ++i)
 	{
-		if (c1 == objects[i]->collider)
+		if (objects[i] != nullptr && c1 == objects[i]->collider)
 		{
 			switch (objects[i]->type)
 			{

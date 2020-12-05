@@ -34,8 +34,8 @@
     <properties volume="50" deathLimit="300" gravity="350"/>
     <objects>
       <level1>
-        <obj x="64" y="94" type="DIAMOND"/>
-        <obj x="360" y="124" type="HEALTH_POTION"/>
+        <obj x="64" y="94" type="1"/>
+        <obj x="472" y="126" type="2"/>
       </level1>
     </objects>
   </scene>

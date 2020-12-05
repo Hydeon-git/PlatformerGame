@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Point.h"
+#include <map>
 
 struct SDL_Texture;
 struct SDL_Rect;
@@ -75,8 +76,11 @@ private:
 	SString endTexturePath;
 	SString mapLevel1;
 
-	//DynArray<iPoint> objectsPosConfig;
-	//DynArray<SString> objectsTypeConfig;
+	struct newobj {
+		iPoint pos;
+		int type;
+	};
+	List<newobj*> objects;
 
 	bool ended;
 };

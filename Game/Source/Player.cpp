@@ -105,8 +105,8 @@ bool Player::Start()
 	gunOffset.y = 23;
 
 	rCollider = { positionPixelPerfect.x + 13, positionPixelPerfect.y + 17, 6, 15 };
-	colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
-	colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
+	if (colPlayer == nullptr) colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
+	if (colPlayerWalls == nullptr) colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
 
 	return ret;
 }
