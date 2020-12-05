@@ -215,9 +215,23 @@ void App::FinishUpdate()
 	uint32 lastFramems = frameTime.Read();
 	uint32 framesOnLastUpdate = prevLastSecFrameCount;
 
-	if(debug)
-		LOG("Av.FPS: %.2f Last Frame Ms: %u Last sec frames: %i Last dt: %.3f Time since startup: %.3f Frame Count: %lu ", 
-			avgFPS, lastFramems, framesOnLastUpdate, dt, secondsSinceStartup, frameCount);
+	// Change Window Title
+	static char title[256];
+	
+	if (app->render->vsyncState)
+	{
+		char vsyncOn[3] = "ON";
+		sprintf_s(title, 256, "Space Thief | FPS: %i | Av.FPS: %.2f | Last Frame Ms: %02u | VSync: %s",
+			framesOnLastUpdate, avgFPS, lastFramems, vsyncOn);
+	}
+	else if (!app->render->vsyncState)
+	{
+		char vsyncOff[4] = "OFF";
+		sprintf_s(title, 256, "Space Thief | FPS: %i | Av.FPS: %.2f | Last Frame Ms: %02u | VSync: %s",
+			framesOnLastUpdate, avgFPS, lastFramems, vsyncOff);
+	}
+	
+	app->win->SetTitle(title);
 
 	if (isCapped && cappedms > 0 && lastFramems < cappedms)
 	{

@@ -66,11 +66,11 @@
     <initialPos1 x="612" y="92"/>
     <properties life="100" speed="30" attackSpeed="2.0" damage="20"/>
     <texPath tex="Assets/Textures/Characters/aliens_spritesheet.png"/>
-    <sounds damageFx="Assets/Audio/Fx/shot_enemy.ogg"/>
+    <sounds damageFx="Assets/Audio/Fx/shot_fly_enemy.ogg"/>
   </airEnemy>
 
   <objects>
-    <diamond tex="Assets/Textures/Objects/diamond_tex.png"/>
+    <diamond tex="Assets/Textures/Objects/diamond_tex.png" fx="Assets/Audio/Fx/diamond_sfx.ogg"/>
     <healthPotion tex="Assets/Textures/Objects/health_potion_tex.png"/>
   </objects>
 
