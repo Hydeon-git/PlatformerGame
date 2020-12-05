@@ -62,6 +62,7 @@ public:
 
 	// Change cap
 	void ChangeCap();
+	void Uncap();
 	void ChangeCap(bool capped);
 
     // L02: DONE 1: Create methods to request Load / Save
@@ -138,7 +139,9 @@ private:
 	uint32				prevLastSecFrameCount = 0;
 	float				dt = 0.0f;
 	float				avgFPS = -1;
-	int					cappedms = -1;
+	int					hCappedMs = -1;
+	int					lCappedMs = -1;
+	bool				capState;					// If true cap is 60, if false cap is 30
 
 	bool isCapped = true;
 
