@@ -103,15 +103,18 @@ bool GroundEnemy::Start()
 // Unload assets
 bool GroundEnemy::CleanUp()
 {
-	bool ret = false;
-	LOG("Unloading enemy");
+	bool ret = true;
+	LOG("Unloading ground enemy");
 	if (colGroundEnemy != nullptr)
 	{
 		colGroundEnemy->toDelete = true;
 		colGroundEnemy = nullptr;
 	}
-	ret = app->tex->UnLoad(graphics);
-	graphics = nullptr;
+	if (graphics != nullptr)
+	{
+		ret = app->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
 	return ret;
 }
 

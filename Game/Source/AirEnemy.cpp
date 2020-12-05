@@ -90,15 +90,19 @@ bool AirEnemy::Start()
 // Unload assets
 bool AirEnemy::CleanUp()
 {
-	bool ret = false;
-	LOG("Unloading enemy");
+	bool ret = true;
+	LOG("Unloading air enemy");
 	if (colAirEnemy != nullptr)
 	{
 		colAirEnemy->toDelete = true;
 		colAirEnemy = nullptr;
 	}
-	ret = app->tex->UnLoad(graphics);
-	graphics = nullptr;
+	if (graphics != nullptr)
+	{
+		ret = app->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
+
 	return ret;
 }
 

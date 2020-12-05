@@ -67,15 +67,18 @@ bool Checkpoint::Load()
 // Unload assets
 bool Checkpoint::CleanUp()
 {
-	bool ret = false;
-	LOG("Unloading enemy");
+	bool ret = true;
+	LOG("Unloading checkpoint");
 	if (colCheckpoint != nullptr)
 	{
 		colCheckpoint->toDelete = true;
 		colCheckpoint = nullptr;
 	}
-	ret = app->tex->UnLoad(graphics);
-	graphics = nullptr;
+	if (graphics != nullptr)
+	{
+		ret = app->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
 	return ret;
 }
 

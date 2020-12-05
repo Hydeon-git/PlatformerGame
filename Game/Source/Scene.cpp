@@ -49,6 +49,13 @@ bool Scene::Awake(pugi::xml_node& config)
 	endTexturePath = config.child("textures").attribute("endTexture").as_string();
 	mapLevel1 = config.child("maps").attribute("level1").as_string();
 
+	for (pugi::xml_node& node = config.child("objects").child("level1").child("obj"); node && ret; node = node.next_sibling("obj")) 
+	{
+		LOG(node.attribute("x").as_string());
+		LOG(node.attribute("y").as_string());
+		LOG(node.attribute("type").as_string());
+	}
+
 	return ret;
 }
 
@@ -217,7 +224,7 @@ void Scene::ChangeScene(GameScene nextScene)
 			RELEASE_ARRAY(data);
 		}
 
-		// Object
+		// Objects
 		iPoint diamondPos;
 		diamondPos.x = 64; diamondPos.y = 94;
 		app->obj->CreateObject(diamondPos, DIAMOND);

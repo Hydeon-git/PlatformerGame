@@ -24,14 +24,20 @@
   </map>
   
   <scene>
-   <music 
-   menuMusic="Assets/Audio/Music/8bit_menu.ogg" 
-   gameMusic="Assets/Audio/Music/escaping_the_collapsing_universe.ogg"
-   winMusic="Assets/Audio/Music/ship_under_attack.ogg"
-   />
-   <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
-   <maps level1="scifi_map.tmx"/>
-   <properties volume="50" deathLimit="300" gravity="350"/>
+    <music 
+    menuMusic="Assets/Audio/Music/8bit_menu.ogg" 
+    gameMusic="Assets/Audio/Music/escaping_the_collapsing_universe.ogg"
+    winMusic="Assets/Audio/Music/ship_under_attack.ogg"
+    />
+    <textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
+    <maps level1="scifi_map.tmx"/>
+    <properties volume="50" deathLimit="300" gravity="350"/>
+    <objects>
+      <level1>
+        <obj x="64" y="94" type="DIAMOND"/>
+        <obj x="360" y="124" type="HEALTH_POTION"/>
+      </level1>
+    </objects>
   </scene>
   
   <player>
@@ -65,7 +71,7 @@
 
   <objects>
     <diamond tex="Assets/Textures/Objects/diamond_tex.png"/>
-    <healthPotion tex="Assets/Textures/Objects/diamond_tex.png"/>
+    <healthPotion tex="Assets/Textures/Objects/health_potion_tex.png"/>
   </objects>
 
   <checkpoint>

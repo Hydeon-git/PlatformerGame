@@ -114,9 +114,13 @@ bool Player::Start()
 // Unload assets
 bool Player::CleanUp()
 {
-	bool ret = false;
+	bool ret = true;
 	LOG("Unloading player");
-	ret = app->tex->UnLoad(graphics);
+	if (graphics != nullptr)
+	{
+		ret = app->tex->UnLoad(graphics);
+		graphics = nullptr;
+	}
 	if (colPlayer != nullptr)
 	{
 		colPlayer->toDelete = true;

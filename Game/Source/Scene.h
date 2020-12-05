@@ -75,6 +75,9 @@ private:
 	SString endTexturePath;
 	SString mapLevel1;
 
+	//DynArray<iPoint> objectsPosConfig;
+	//DynArray<SString> objectsTypeConfig;
+
 	bool ended;
 };
 
