@@ -12,7 +12,7 @@
 		<player x="503" y="176" life="90" />
 	</player>
 	<groundEnemy>
-		<groundEnemy x="370" y="198" life="0" dead="true" />
+		<groundEnemy x="404" y="214" life="-40" dead="true" />
 	</groundEnemy>
 	<airEnemy>
 		<airEnemy x="612" y="92" life="100" dead="false" />
@@ -21,6 +21,6 @@
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="-1207" y="-66" />
+		<camera x="-1209" y="-66" />
 	</renderer>
 </save_state>

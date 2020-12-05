@@ -216,20 +216,10 @@ void App::FinishUpdate()
 	uint32 framesOnLastUpdate = prevLastSecFrameCount;
 
 	// Change Window Title
-	static char title[256];
+	char title[256];
 	
-	if (app->render->vsyncState)
-	{
-		char vsyncOn[3] = "ON";
-		sprintf_s(title, 256, "Space Thief | FPS: %i | Av.FPS: %.2f | Last Frame Ms: %02u | VSync: %s",
-			framesOnLastUpdate, avgFPS, lastFramems, vsyncOn);
-	}
-	else if (!app->render->vsyncState)
-	{
-		char vsyncOff[4] = "OFF";
-		sprintf_s(title, 256, "Space Thief | FPS: %i | Av.FPS: %.2f | Last Frame Ms: %02u | VSync: %s",
-			framesOnLastUpdate, avgFPS, lastFramems, vsyncOff);
-	}
+	sprintf_s(title, 256, "Space Thief | FPS: %i | Av.FPS: %.2f | Last Frame Ms: %02u | VSync: %s",
+		framesOnLastUpdate, avgFPS, lastFramems, app->render->vsyncState ? "ON" : "OFF");
 	
 	app->win->SetTitle(title);
 
