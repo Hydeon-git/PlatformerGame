@@ -354,17 +354,17 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 	LOG("Loading ground enemy form savefile");
 	pugi::xml_node gEnemy = data.child("groundEnemy");
 
-	dead = gEnemy.attribute("dead").as_bool();
+	EnableGroundEnemy();
 
-	if (dead)
+	if (app->player->checkpoint != 0 || !app->player->dead)
 	{
-		life = 0;
-	}
-	else 
-	{
-		EnableGroundEnemy();
+		dead = gEnemy.attribute("dead").as_bool();
 
-		if (app->player->checkpoint != 0 || !app->player->dead)
+		if (dead)
+		{
+			life = 0;
+		}
+		else
 		{
 			life = gEnemy.attribute("life").as_int();
 

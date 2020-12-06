@@ -99,6 +99,7 @@ private:
 	bool ResetStates();
 	
 	int life = 100;
+	int lifeConfig = 100;
 	float speed;
 	float jumpForce;
 	int gravity;

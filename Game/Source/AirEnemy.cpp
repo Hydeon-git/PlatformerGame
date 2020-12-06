@@ -338,19 +338,17 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 	LOG("Loading air enemy form savefile");
 	pugi::xml_node gEnemy = data.child("airEnemy");
 
-	dead = gEnemy.attribute("dead").as_bool();
+	EnableAirEnemy();
 
-	
-
-	if (dead)
+	if (app->player->checkpoint != 0 || !app->player->dead)
 	{
-		life = 0;
-	}
-	else 
-	{
-		EnableAirEnemy();
+		dead = gEnemy.attribute("dead").as_bool();
 
-		if (app->player->checkpoint != 0 || !app->player->dead)
+		if (dead)
+		{
+			life = 0;
+		}
+		else
 		{
 			life = gEnemy.attribute("life").as_int();
 
@@ -368,6 +366,5 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 			status = AIRENEMY_IDLE;
 		}
 	}
-		
 	return true;
 }

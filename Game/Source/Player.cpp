@@ -53,7 +53,7 @@ bool Player::Awake(pugi::xml_node& config)
 	LOG("Loading player from config file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
-	life = config.child("properties").attribute("life").as_int();
+	lifeConfig = config.child("properties").attribute("life").as_int();
 	speed = config.child("properties").attribute("speed").as_float();
 	jumpForce = config.child("properties").attribute("jumpForce").as_float();
 	deathTimerConfig = config.child("death").attribute("time").as_float();
@@ -97,6 +97,16 @@ bool Player::Start()
 	onGround = true;
 	checkpoint = 0;
 
+	life = lifeConfig;
+
+	currentAnimation = &idle;
+
+	idle.Reset();
+	walk.Reset();
+	hit.Reset();
+	jump.Reset();
+	death.Reset();
+
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
 
@@ -108,6 +118,8 @@ bool Player::Start()
 	rCollider = { positionPixelPerfect.x + 13, positionPixelPerfect.y + 17, 6, 15 };
 	if (colPlayer == nullptr) colPlayer = app->collision->AddCollider(rCollider, COLLIDER_PLAYER, this);
 	if (colPlayerWalls == nullptr) colPlayerWalls = app->collision->AddCollider({ positionPixelPerfect.x+11, positionPixelPerfect.y+18, 10, 13 }, COLLIDER_PLAYER, this);
+
+	status = PLAYER_IDLE;
 
 	return ret;
 }
