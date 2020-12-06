@@ -2,6 +2,9 @@
 #define _OBJECTS_H_
 #include "Module.h"
 #include "Point.h"
+#include "Animation.h"
+
+struct SDL_Texture;
 
 enum ObjectType
 {
@@ -10,15 +13,13 @@ enum ObjectType
 	HEALTH_POTION
 };
 
-struct SDL_Texture;
-
 class Object
 {
 public:
 	Object(iPoint objectPos, ObjectType type, SDL_Texture* tex);
 	~Object();
 
-	bool Draw();
+	bool Draw(float dt);
 
 	ObjectType type;
 	Collider* collider;
@@ -26,6 +27,7 @@ private:
 	SDL_Rect rect = {};
 	iPoint position;
 	SDL_Texture* texture = nullptr;
+	Animation anim;
 };
 
 class Objects : public Module

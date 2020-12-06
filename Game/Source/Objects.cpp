@@ -41,7 +41,7 @@ bool Objects::Update(float dt)
 	{
 		if (objects[i] != nullptr)
 		{
-			ret = objects[i]->Draw();
+			ret = objects[i]->Draw(dt);
 		}
 	}
 	return ret;
@@ -137,6 +137,20 @@ Object::Object(iPoint objectPos, ObjectType tp, SDL_Texture* tex)
 	rect = { 0, 0, 16, 16 };
 	collider = app->collision->AddCollider(rect, COLLIDER_OBJECT, app->obj);
 	collider->SetPos(position.x, position.y);
+
+	anim.PushBack({ 0,0,16,16 });
+	anim.PushBack({ 16,0,16,16 });
+	anim.PushBack({ 32,0,16,16 });
+	anim.PushBack({ 48,0,16,16 });
+	anim.PushBack({ 32,0,16,16 });
+	anim.PushBack({ 16,0,16,16 });
+	anim.PushBack({ 0,0,16,16 });
+	anim.PushBack({ 16,16,16,16 });
+	anim.PushBack({ 32,16,16,16 });
+	anim.PushBack({ 48,16,16,16 });
+	anim.PushBack({ 32,16,16,16 });
+	anim.PushBack({ 16,16,16,16 });
+	anim.speed = 0.2f;
 }
 
 Object::~Object() 
@@ -144,9 +158,11 @@ Object::~Object()
 	collider->toDelete = true;
 }
 
-bool Object::Draw()
+bool Object::Draw(float dt)
 {
 	bool ret = false;
+
+	rect = anim.GetCurrentFrame(dt);
 	if (texture != nullptr)
 	{
 		ret = app->render->DrawTexture(texture, position.x, position.y, &rect, 1, 1.0f, 0.0f, INT_MAX, INT_MAX);
