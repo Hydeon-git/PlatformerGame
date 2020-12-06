@@ -127,7 +127,7 @@ bool GroundEnemy::Update(float dt)
 		// Input
 		if (onGround)
 		{			
-			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0) && (status != GROUNDENEMY_ATTACK))
+			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != GROUNDENEMY_ATTACK))
 			{
 				if (canAttack && attackTimer <= 0)
 				{
@@ -354,9 +354,6 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 	LOG("Loading ground enemy form savefile");
 	pugi::xml_node gEnemy = data.child("groundEnemy");
 
-	position.x = gEnemy.attribute("x").as_int();
-	position.y = gEnemy.attribute("y").as_int();
-
 	dead = gEnemy.attribute("dead").as_bool();
 
 	if (dead)
@@ -367,16 +364,23 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 	{
 		EnableGroundEnemy();
 
-		life = gEnemy.attribute("life").as_int();
-		positionPixelPerfect.x = position.x;
-		positionPixelPerfect.y = position.y;
+		if (app->player->checkpoint != 0 || !app->player->dead)
+		{
+			life = gEnemy.attribute("life").as_int();
 
-		colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+			position.x = gEnemy.attribute("x").as_int();
+			position.y = gEnemy.attribute("y").as_int();
 
-		r.x = positionPixelPerfect.x;
-		r.y = positionPixelPerfect.y;
+			positionPixelPerfect.x = position.x;
+			positionPixelPerfect.y = position.y;
 
-		status = GROUNDENEMY_IDLE;
+			colGroundEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+
+			r.x = positionPixelPerfect.x;
+			r.y = positionPixelPerfect.y;
+
+			status = GROUNDENEMY_IDLE;
+		}
 	}
 
 	return true;

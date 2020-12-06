@@ -64,7 +64,7 @@ public:
 	void ChangeCapState();
 	void ChangeCap();
 
-    // L02: DONE 1: Create methods to request Load / Save
+	// L02: DONE 1: Create methods to request Load / Save
 	void LoadGameRequest();
 	void SaveGameRequest() const;
 

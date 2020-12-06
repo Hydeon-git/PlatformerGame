@@ -95,6 +95,7 @@ bool Player::Start()
 
 	velocity.SetToZero();
 	onGround = true;
+	checkpoint = 0;
 
 	if(graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 	flip = false;
@@ -368,6 +369,11 @@ void Player::Hit(int damage)
 	app->audio->PlayFx(damageFx);
 }
 
+void Player::Heal(int lifeHealed)
+{
+	life += lifeHealed;
+}
+
 bool Player::OnCollision(Collider* c1, Collider* c2) 
 {
 	bool ret = false;
@@ -411,7 +417,6 @@ bool Player::OnCollision(Collider* c1, Collider* c2)
 			}
 			ret = true;
 		}
-		
 	}
 	else ret = true;
 	return ret;
@@ -472,26 +477,32 @@ bool Player::LoadState(pugi::xml_node& data)
 	LOG("Loading player form savefile");
 	pugi::xml_node ply = data.child("player");
 
-	position.x = ply.attribute("x").as_int();
-	position.y = ply.attribute("y").as_int();
+	if (checkpoint == 0 && dead == true)
+	{
+		Start();
+	}
+	else
+	{
+		position.x = ply.attribute("x").as_int();
+		position.y = ply.attribute("y").as_int();
 
-	life = ply.attribute("life").as_int();
+		life = ply.attribute("life").as_int();
 
-	positionPixelPerfect.x = round(position.x);
-	positionPixelPerfect.y = round(position.y);
+		positionPixelPerfect.x = round(position.x);
+		positionPixelPerfect.y = round(position.y);
 
-	colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
-	colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
+		colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+		colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
 
-	rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
+		rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
 
-	r.x = positionPixelPerfect.x;
-	r.y = positionPixelPerfect.y;
-
+		r.x = positionPixelPerfect.x;
+		r.y = positionPixelPerfect.y;
+	}
+	
 	onGround = false;
 	rightColliding = false;
 	leftColliding = false;
-	dead = false;
 	input = true;
 
 	status = PLAYER_IDLE;

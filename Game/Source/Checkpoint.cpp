@@ -128,6 +128,7 @@ bool Checkpoint::OnCollision(Collider* c1, Collider* c2)
 		//Sound
 		app->audio->PlayFx(checkpointFx);
 		app->SaveGameRequest();
+		app->player->checkpoint += 1;
 		status = CHECKPOINT_CHECKING;
 
 		ret = true;

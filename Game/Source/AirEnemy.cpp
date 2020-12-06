@@ -113,7 +113,7 @@ bool AirEnemy::Update(float dt)
 	if (!dead) 
 	{
 		// Input
-		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->life > 0) && (status != AIRENEMY_ATTACK))
+		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != AIRENEMY_ATTACK))
 		{
 			if (canAttack && attackTimer <= 0)
 			{
@@ -338,10 +338,9 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 	LOG("Loading air enemy form savefile");
 	pugi::xml_node gEnemy = data.child("airEnemy");
 
-	position.x = gEnemy.attribute("x").as_int();
-	position.y = gEnemy.attribute("y").as_int();
-
 	dead = gEnemy.attribute("dead").as_bool();
+
+	
 
 	if (dead)
 	{
@@ -351,19 +350,24 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 	{
 		EnableAirEnemy();
 
-		life = gEnemy.attribute("life").as_int();
-		positionPixelPerfect.x = position.x;
-		positionPixelPerfect.y = position.y;
+		if (app->player->checkpoint != 0 || !app->player->dead)
+		{
+			life = gEnemy.attribute("life").as_int();
 
-		colAirEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+			position.x = gEnemy.attribute("x").as_int();
+			position.y = gEnemy.attribute("y").as_int();
 
-		r.x = positionPixelPerfect.x + 13; r.y = positionPixelPerfect.y + 17;
+			positionPixelPerfect.x = position.x;
+			positionPixelPerfect.y = position.y;
 
-		r.x = positionPixelPerfect.x;
-		r.y = positionPixelPerfect.y;
+			colAirEnemy->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
 
-		status = AIRENEMY_IDLE;
+			r.x = positionPixelPerfect.x;
+			r.y = positionPixelPerfect.y;
+
+			status = AIRENEMY_IDLE;
+		}
 	}
-	
+		
 	return true;
 }

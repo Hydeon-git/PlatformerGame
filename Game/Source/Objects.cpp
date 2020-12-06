@@ -115,7 +115,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 				break;
 			case HEALTH_POTION:
 				LOG("Got a potion");
-				app->player->life += 10;
+				app->player->Heal(10);
 				app->audio->PlayFx(healthPotionFx);
 				break;
 			default:

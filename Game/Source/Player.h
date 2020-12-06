@@ -75,6 +75,7 @@ public:
 
 	// Player recibe hit
 	void Hit(int damage);
+	void Heal(int lifeHealed);
 
 	// Load / Save
 	bool SaveState(pugi::xml_node&) const;
@@ -89,13 +90,15 @@ public:
 	fPoint position;
 	iPoint positionPixelPerfect;
 
-	int life = 100;
+	int checkpoint = 0;
 	bool godmode = false;
+	bool dead = false;
 
 private:
 
 	bool ResetStates();
 	
+	int life = 100;
 	float speed;
 	float jumpForce;
 	int gravity;
@@ -108,7 +111,6 @@ private:
 	bool jumpEnable = true;
 	bool doubleJump = true;
 	bool flip = true;
-	bool dead = false;
 
 	bool onGround;
 	bool leftColliding;

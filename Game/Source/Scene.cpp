@@ -55,9 +55,6 @@ bool Scene::Awake(pugi::xml_node& config)
 		obj->pos = iPoint(node.attribute("x").as_int(), node.attribute("y").as_int());
 		obj->type = node.attribute("type").as_int();
 		objects.Add(obj);
-		//LOG(node.attribute("x").as_string());
-		//LOG(node.attribute("y").as_string());
-		//LOG(node.attribute("type").as_string());
 	}
 
 	return ret;
@@ -111,7 +108,7 @@ bool Scene::Update(float dt)
 				app->fade->FadeToBlk(CHANGE_SCENE ,currentScene);
 
 			//Save Game
-			if (app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
+			if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (app->player->dead == false))
 				app->SaveGameRequest();
 
 			//Load Game
@@ -241,8 +238,6 @@ void Scene::ChangeScene(GameScene nextScene)
 		endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 		ended = false;
 		currentScene = SCENE_1;
-
-		app->SaveGameRequest();
 	} break;
 	case SCENE_END:
 	{

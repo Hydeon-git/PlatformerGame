@@ -418,6 +418,7 @@ bool App::LoadGame()
 			ret = item->data->LoadState(root.child(item->data->name.GetString()));
 			item = item->next;
 		}
+		player->dead = false;
 	}
 	else
 	{
