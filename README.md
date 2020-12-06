@@ -50,21 +50,25 @@ Implementations to Highlight
   <obj x="x_position" y="y_position" type="type_of_object"/> types: 1 - diamond, 2 - healing potion.
 
 ## Controls
-
+### Game controls
  - A for backward movement
  - D for forward movement
  - SPACE for Jump
  - Double click on SPACE for Double Jump
+ - E to shoot
  - F1 to start the first level
  - F3 to start from the beggining of the current level
  - F5 ​Save the current game state
  - F6 ​Load the previous state
+
+### Debug controls
  - F9​ View colliders and pathfinding logic
  - F10​ God Mode
  - F11 Enable/Disable FPS cap (60 to 30)
  - SHIFT + F11 Enable/Disable FPS cap
  - 1 Teleport to Checkpoint
- - SPACE to start the game in the Logo Screen / Level Completed screen
+ - J to kill all enemies
+ - K to kill player
  
 ## Developers
 
