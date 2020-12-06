@@ -121,7 +121,7 @@ private:
 	SString title;
 	SString organization;
 
-	List<Module *> modules;
+	List<Module*> modules;
 
 	// L01: DONE 2: Create new variables from pugui namespace
 	// NOTE: Redesigned LoadConfig() to avoid storing this variables
@@ -129,18 +129,18 @@ private:
 	//pugi::xml_node config;
 	//pugi::xml_node configApp;
 
-	PerfTimer			pTimer;
-	uint64				frameCount = 0;
-	Timer				startupTime;
-	Timer				frameTime;
-	Timer				lastSecFrameTime;
-	uint32				lastSecFrameCount = 0;
-	uint32				prevLastSecFrameCount = 0;
-	float				dt = 0.0f;
-	float				avgFPS = -1;
-	int					hCappedMs = -1;
-	int					lCappedMs = -1;
-	bool				capState;					// If true cap is 60, if false cap is 30
+	PerfTimer pTimer;
+	uint64 frameCount = 0;
+	Timer startupTime;
+	Timer frameTime;
+	Timer lastSecFrameTime;
+	uint32 lastSecFrameCount = 0;
+	uint32 prevLastSecFrameCount = 0;
+	float dt = 0.0f;
+	float avgFPS = -1;
+	int	hCappedMs = -1;
+	int	lCappedMs = -1;
+	bool capState;					// If true cap is 60, if false cap is 30
 
 	bool isCapped = true;
 
