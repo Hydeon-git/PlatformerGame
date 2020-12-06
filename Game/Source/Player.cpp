@@ -50,7 +50,7 @@ Player::~Player()
 bool Player::Awake(pugi::xml_node& config) 
 {
 	bool ret = true;
-	LOG("Loading player from config_file");
+	LOG("Loading player from config file");
 
 	texPath = config.child("texPath").attribute("tex").as_string();
 	life = config.child("properties").attribute("life").as_int();

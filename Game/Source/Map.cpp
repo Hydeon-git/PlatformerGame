@@ -293,19 +293,19 @@ bool Map::LoadMap()
 		data.height = map.attribute("height").as_int();
 		data.tileWidth = map.attribute("tilewidth").as_int();
 		data.tileHeight = map.attribute("tileheight").as_int();
-		SString bg_color(map.attribute("backgroundcolor").as_string());
+		SString bgColor(map.attribute("backgroundcolor").as_string());
 
 		data.backgroundColor.r = 0;
 		data.backgroundColor.g = 0;
 		data.backgroundColor.b = 0;
 		data.backgroundColor.a = 0;
 
-		if (bg_color.Length() > 0)
+		if (bgColor.Length() > 0)
 		{
 			SString red, green, blue;
-			bg_color.SubString(1, 2, red);
-			bg_color.SubString(3, 4, green);
-			bg_color.SubString(5, 6, blue);
+			bgColor.SubString(1, 2, red);
+			bgColor.SubString(3, 4, green);
+			bgColor.SubString(5, 6, blue);
 
 			int v = 0;
 
@@ -493,8 +493,8 @@ bool Map::CreateWalkabilityMap(int& width, int& height, uchar** buffer) const
 				{
 					int i = (y * layer->width) + x;
 
-					int tile_id = layer->Get(x, y);
-					map[i] = (layer->data[tile_id] == 54) == true ? 1 : 0;
+					int tileID = layer->Get(x, y);
+					map[i] = (layer->data[tileID] == 54) == true ? 1 : 0;
 				}
 			}
 

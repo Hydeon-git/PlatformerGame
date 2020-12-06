@@ -92,7 +92,7 @@ void Audio::SetVolume(int volume) //It has to be a value between 0 and 100
 }
 
 // Play a music file
-bool Audio::PlayMusic(const char* path, float fade_time)
+bool Audio::PlayMusic(const char* path, float fadeTime)
 {
 	bool ret = true;
 
@@ -101,9 +101,9 @@ bool Audio::PlayMusic(const char* path, float fade_time)
 
 	if(music != nullptr)
 	{
-		if(fade_time > 0.0f)
+		if(fadeTime > 0.0f)
 		{
-			Mix_FadeOutMusic(int(fade_time * 1000.0f));
+			Mix_FadeOutMusic(int(fadeTime * 1000.0f));
 		}
 		else
 		{
@@ -123,9 +123,9 @@ bool Audio::PlayMusic(const char* path, float fade_time)
 	}
 	else
 	{
-		if(fade_time > 0.0f)
+		if(fadeTime > 0.0f)
 		{
-			if(Mix_FadeInMusic(music, -1, (int) (fade_time * 1000.0f)) < 0)
+			if(Mix_FadeInMusic(music, -1, (int) (fadeTime * 1000.0f)) < 0)
 			{
 				LOG("Cannot fade in music %s. Mix_GetError(): %s", path, Mix_GetError());
 				ret = false;
