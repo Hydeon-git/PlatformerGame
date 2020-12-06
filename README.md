@@ -7,39 +7,47 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
 
 ## Key Features
 
-- XML Config File loading
-- Load & Save the game using XML
-- Tiled TMX Map loading and drawing with various layers
-- Metadata Loaded using TMX Map layer "collision"
-- Map Collisions detection
+- XML Config File loading.
+- Load & Save the game using XML.
+- Tiled TMX Map loading and drawing with various layers.
+- Metadata Loaded using TMX Map layer "collision".
 
-- Map navigation: Player Movement and Jump
-- Player Idle/Jump/Walk animations
-- Player Double Jump
-- Player Jump sound
+- Map Collisions detection.
+- Map navigation: Player Movement and Jump.
+- Player Idle/Jump/Walk animations.
+- Player Double Jump.
 
-- Logo screen / Level Completed screen
-- Fade-in & Fade-out between scenes
-- Music for Logo Screen, Level 1 and Level Completed Screen
-- DEBUG Keys
+- Player Jump sound.
+- Logo screen / Level Completed screen.
+- Fade-in & Fade-out between scenes.
+- Music for Logo Screen, Level 1 and Level Completed Screen.
 
-- Walking Enemy that can pathfind player
-- Fly enemy that can pathfind player and avoids non-walkeable areas
+- DEBUG Keys.
+- Walking Enemy that can pathfind player and can fall down to other platforms.
+- Fly enemy that can pathfind player and avoids non-walkeable areas.
 - Load/Save cosiders each enemy state.
-- Enemies have a range to detect player
 
-- Game capped to 60 fps
-- Window title: FPS|Avg.FPS|LastFrameMS|Vsync
-- All movement normalized using DeltaTime
-- Destroy enemies: shooting, jumping onto them
+- Enemies have a range to detect player.
+- Game capped to 60 fps, it can be capped to 30 fps or just be uncapped.
+- Window title shows: FPS | Avg.FPS | LastFrameMS | Vsync. 
+- All movement normalized using DeltaTime.
 
-- Game items to recover health
-- Game score items (diamond)
-- Checkpoints, autosave with feedback
-- Checkpoints teleportation
+- Destroy enemies: shooting, jumping onto them.
+- Game items to recover health.
+- Game score items (diamond).
+- All collectible items have animations and audio feedback when collected.
 
-- [Optional] Player weapons to shot enemies
-- [Optional] Audio Feedback
+- Checkpoints have autosave and feedback when are reached by the player.
+- Checkpoints teleportation using 1 Key.
+- Player have a pistol that can shoot enemies and kill them.
+- Audio Feedback for the game mechanics implemented.
+
+Implementations to Highlight
+- Calculation of the pixel perfect position in order to move the player pixel per pixel in the scene.
+  This aligns all the pixels of the diferent sprites to match perfectly.
+- Checkpoint in the middle of the map. When it's reached by the player it saves automatically the game.
+- Collectable objects are created from the config file in the scene section with this configuration: 
+  <obj x="x position" y="y position" type="type of object"/> types: 1 - diamond 2 -healing potion
 
 ## Controls
 
@@ -56,7 +64,7 @@ His objective: Steal a prototype of a weapon capable of destroying planets. The 
  - F11 Enable/Disable FPS cap (60 to 30)
  - SHIFT + F11 Enable/Disable FPS cap
  - 1 Teleport to Checkpoint
- - SPACE to start the game in the Logo Screen / leave Level Completed screen
+ - SPACE to start the game in the Logo Screen / Leave Level Completed screen
  
 ## Developers
 
