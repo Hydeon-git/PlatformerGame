@@ -9,7 +9,7 @@
 #include "Player.h"
 #include "GroundEnemy.h"
 
-GroundEnemy::GroundEnemy() : Module()
+GroundEnemy::GroundEnemy() : Entity(EntityType::GROUND_ENEMY)
 {
 	name.Create("groundEnemy");
 
@@ -127,7 +127,7 @@ bool GroundEnemy::Update(float dt)
 		// Input
 		if (onGround)
 		{			
-			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != GROUNDENEMY_ATTACK))
+			if ((position.DistanceTo(app->scene->player->position) < 128) && (app->scene->player->godmode == false) && (app->scene->player->dead == false) && (status != GROUNDENEMY_ATTACK))
 			{
 				if (canAttack && attackTimer <= 0)
 				{
@@ -176,7 +176,7 @@ bool GroundEnemy::Update(float dt)
 		currentAnimation = &move;
 		static iPoint origin;
 		// Target is player position
-		iPoint playerPos = app->player->positionPixelPerfect;
+		iPoint playerPos = app->scene->player->positionPixelPerfect;
 
 		// Convert World position to map position
 		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
@@ -220,7 +220,7 @@ bool GroundEnemy::Update(float dt)
 	}
 	case GROUNDENEMY_ATTACK:
 		currentAnimation = &move;
-		app->player->Hit(damage);
+		app->scene->player->Hit(damage);
 		attackTimer = attackTimerConfig;
 		status = GROUNDENEMY_IDLE;
 		break;
@@ -291,14 +291,14 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 	if (c1 == colGroundEnemy && c2->type == COLLIDER_BULLET)
 	{
 		//Take damage
-		life -= app->player->bulletDamage;
+		life -= app->scene->player->bulletDamage;
 		//Sound
 		app->audio->PlayFx(damageFx);
 
 		ret = true;
 	}
 
-	if (!app->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
+	if (!app->scene->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
 	{
 		velocity.x = 0;
 		canAttack = true;
@@ -356,7 +356,7 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 	EnableGroundEnemy();
 
-	if (app->player->checkpoint != 0 || !app->player->dead)
+	if (app->scene->player->checkpoint != 0 || !app->scene->player->dead)
 	{
 		dead = gEnemy.attribute("dead").as_bool();
 

@@ -1,6 +1,7 @@
 #include "App.h"
 #include "Window.h"
 #include "Render.h"
+#include "Scene.h"
 #include "Player.h"
 
 #include "Defs.h"
@@ -74,10 +75,10 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
-	if (app->player->active)
+	if (app->scene->player->active)
 	{
-		camera.x = -(app->player->position.x - 100) * scale;
-		camera.y = -app->player->position.y + 110;
+		camera.x = -(app->scene->player->position.x - 100) * scale;
+		camera.y = -app->scene->player->position.y + 110;
 	}
 	else 
 	{

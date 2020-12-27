@@ -19,7 +19,7 @@ enum GroundEnemyStatus
 };
 
 
-class GroundEnemy : public Module
+class GroundEnemy : public Entity
 {
 public:
 
@@ -55,14 +55,10 @@ public:
 	//Public variables
 	Collider* colGroundEnemy;
 
-	fPoint position;
-	iPoint positionPixelPerfect;
-
 private:
 
 	bool ResetStates();
 
-	int life;
 	int lifeConfig;
 	float speed;
 	int gravity;
@@ -83,10 +79,6 @@ private:
 
 	bool onGround;
 
-	SString texPath;
-	SDL_Texture* graphics;
-
-	fPoint velocity;
 	iPoint initialPos;
 
 	Animation* currentAnimation = &idle;
@@ -95,7 +87,5 @@ private:
 	Animation death;
 
 	GroundEnemyStatus status = GROUNDENEMY_IDLE;
-
-	SDL_Rect r;
 };
 #endif //__GROUNDENEMY_H__

@@ -9,7 +9,7 @@
 #include "Player.h"
 #include "AirEnemy.h"
 
-AirEnemy::AirEnemy() : Module()
+AirEnemy::AirEnemy() : Entity(EntityType::AIR_ENEMY)
 {
 	name.Create("airEnemy");
 
@@ -113,7 +113,7 @@ bool AirEnemy::Update(float dt)
 	if (!dead) 
 	{
 		// Input
-		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != AIRENEMY_ATTACK))
+		if ((position.DistanceTo(app->scene->player->position) < 128) && (app->scene->player->godmode == false) && (app->scene->player->dead == false) && (status != AIRENEMY_ATTACK))
 		{
 			if (canAttack && attackTimer <= 0)
 			{
@@ -157,7 +157,7 @@ bool AirEnemy::Update(float dt)
 		currentAnimation = &move;
 		static iPoint origin;
 		// Target is player position
-		iPoint playerPos = app->player->positionPixelPerfect;
+		iPoint playerPos = app->scene->player->positionPixelPerfect;
 
 		// Convert World position to map position
 		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
@@ -213,7 +213,7 @@ bool AirEnemy::Update(float dt)
 	}
 	case AIRENEMY_ATTACK:
 		currentAnimation = &move;
-		app->player->Hit(damage);
+		app->scene->player->Hit(damage);
 		attackTimer = attackTimerConfig;
 		status = AIRENEMY_IDLE;
 		break;
@@ -274,14 +274,14 @@ bool AirEnemy::OnCollision(Collider* c1, Collider* c2)
 	if (c1 == colAirEnemy && c2->type == COLLIDER_BULLET)
 	{
 		//Take damage
-		life -= app->player->bulletDamage;
+		life -= app->scene->player->bulletDamage;
 		//Sound
 		app->audio->PlayFx(damageFx);
 
 		ret = true;
 	}
 
-	if (!app->player->godmode && (c1 == colAirEnemy && c2->type == COLLIDER_PLAYER))
+	if (!app->scene->player->godmode && (c1 == colAirEnemy && c2->type == COLLIDER_PLAYER))
 	{
 		velocity.SetToZero();
 		canAttack = true;
@@ -340,7 +340,7 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 
 	EnableAirEnemy();
 
-	if (app->player->checkpoint != 0 || !app->player->dead)
+	if (app->scene->player->checkpoint != 0 || !app->scene->player->dead)
 	{
 		dead = gEnemy.attribute("dead").as_bool();
 

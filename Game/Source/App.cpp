@@ -6,15 +6,11 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "Map.h"
-#include "Checkpoint.h"
 #include "Pathfinding.h"
 #include "Collision.h"
-#include "Player.h"
-#include "GroundEnemy.h"
-#include "AirEnemy.h"
 #include "Objects.h"
 #include "FadeToBlack.h"
-
+#include "EntityManager.h"
 #include "Defs.h"
 #include "Log.h"
 
@@ -33,12 +29,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	audio = new Audio();
 	scene = new Scene();
 	map = new Map();
-	checkpoint = new Checkpoint();
 	pathfinding = new PathFinding();
-	player = new Player();
-	groundEnemy = new GroundEnemy();
-	airEnemy = new AirEnemy();
 	obj = new Objects();
+	entityManager = new EntityManager();
 	collision = new Collision();
 	fade = new FadeToBlack();
 
@@ -50,12 +43,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(scene);
 	AddModule(map);
-	AddModule(checkpoint);
 	AddModule(pathfinding);
-	AddModule(player);
-	AddModule(groundEnemy);
-	AddModule(airEnemy);
 	AddModule(obj);
+	AddModule(entityManager);
 	AddModule(collision);
 	AddModule(fade);
 
@@ -418,7 +408,7 @@ bool App::LoadGame()
 			ret = item->data->LoadState(root.child(item->data->name.GetString()));
 			item = item->next;
 		}
-		player->dead = false;
+		scene->player->dead = false;
 	}
 	else
 	{

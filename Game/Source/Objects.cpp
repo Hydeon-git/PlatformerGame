@@ -3,6 +3,7 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Objects.h"
+#include "Scene.h"
 #include "Player.h"
 
 
@@ -102,7 +103,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 {
 	for (uint i = 0; i < objects.Count(); ++i)
 	{
-		if ((objects[i] != nullptr) && (c1 == objects[i]->collider) && (!app->player->godmode))
+		if ((objects[i] != nullptr) && (c1 == objects[i]->collider) && (!app->scene->player->godmode))
 		{
 			switch (objects[i]->type)
 			{
@@ -115,7 +116,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 				break;
 			case HEALTH_POTION:
 				LOG("Got a potion");
-				app->player->Heal(10);
+				app->scene->player->Heal(10);
 				app->audio->PlayFx(healthPotionFx);
 				break;
 			default:

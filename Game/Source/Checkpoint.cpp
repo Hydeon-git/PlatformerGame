@@ -2,10 +2,11 @@
 #include "Log.h"
 #include "App.h"
 #include "Render.h"
+#include "Scene.h"
 #include "Player.h"
 #include "Checkpoint.h"
 
-Checkpoint::Checkpoint() : Module()
+Checkpoint::Checkpoint() : Entity(EntityType::CHECKPOINT)
 {
 	name.Create("checkpoint");
 
@@ -50,7 +51,7 @@ bool Checkpoint::Load()
 	//Loading assets and properties from config file
 	if (graphics == nullptr) graphics = app->tex->Load(texPath.GetString());
 
-	rCollider = { position.x + 8, position.y, 16, 32 };
+	rCollider = { (int)position.x + 8, (int)position.y, 16, 32 };
 	if (colCheckpoint == nullptr) colCheckpoint = app->collision->AddCollider(rCollider, COLLIDER_CHECKPOINT, this);
 	
 	unchecked.Reset();
@@ -128,7 +129,7 @@ bool Checkpoint::OnCollision(Collider* c1, Collider* c2)
 		//Sound
 		app->audio->PlayFx(checkpointFx);
 		app->SaveGameRequest();
-		app->player->checkpoint += 1;
+		app->scene->player->checkpoint += 1;
 		status = CHECKPOINT_CHECKING;
 
 		ret = true;

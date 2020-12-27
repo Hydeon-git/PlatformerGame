@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "Objects.h"
 
-Player::Player() : Module()
+Player::Player() : Entity(EntityType::PLAYER)
 {
 	name.Create("player");
 

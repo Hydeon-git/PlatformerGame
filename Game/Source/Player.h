@@ -6,9 +6,9 @@
 #include "Textures.h"
 #include "Audio.h"
 #include "Point.h"
-#include "Module.h"
 #include "Animation.h"
 #include "Collision.h"
+#include "Entity.h"
 
 enum PlayerStatus 
 {
@@ -44,7 +44,7 @@ private:
 	int wallHitFx;
 };
 
-class Player : public Module
+class Player : public Entity
 {
 public:
 
@@ -87,9 +87,6 @@ public:
 	//Public variables
 	Collider* colPlayer;
 
-	fPoint position;
-	iPoint positionPixelPerfect;
-
 	int checkpoint = 0;
 	bool godmode = false;
 	bool dead = false;
@@ -98,7 +95,6 @@ private:
 
 	bool ResetStates();
 	
-	int life = 100;
 	int lifeConfig = 100;
 	float speed;
 	float jumpForce;
@@ -123,10 +119,6 @@ private:
 	int damageFx;
 	int deathFx;
 
-	SString texPath;
-	SDL_Texture* graphics;
-
-	fPoint velocity;
 	iPoint initialPos;
 
 	Animation* currentAnimation = &idle;
@@ -139,9 +131,6 @@ private:
 	PlayerStatus status = PLAYER_IDLE;
 
 	Collider* colPlayerWalls;
-
-	SDL_Rect rCollider;
-	SDL_Rect r;	
 
 	iPoint gunOffset;
 

@@ -19,7 +19,7 @@ enum AirEnemyStatus
 };
 
 
-class AirEnemy : public Module
+class AirEnemy : public Entity
 {
 public:
 
@@ -62,7 +62,6 @@ private:
 
 	bool ResetStates();
 
-	int life;
 	int lifeConfig;
 	float speed;
 	int deathLimit;
@@ -80,10 +79,6 @@ private:
 	bool flip = true;
 	bool dead = false;
 
-	SString texPath;
-	SDL_Texture* graphics;
-
-	fPoint velocity;
 	iPoint initialPos;
 
 	Animation* currentAnimation = &idle;
@@ -92,7 +87,5 @@ private:
 	Animation death;
 
 	AirEnemyStatus status = AIRENEMY_IDLE;
-
-	SDL_Rect r;
 };
 #endif //__AIRENEMY_H__

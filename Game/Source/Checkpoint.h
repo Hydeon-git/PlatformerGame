@@ -6,7 +6,6 @@
 #include "Textures.h"
 #include "Audio.h"
 #include "Point.h"
-#include "Module.h"
 #include "Animation.h"
 #include "Collision.h"
 
@@ -18,7 +17,7 @@ enum CheckpointStatus
 };
 
 
-class Checkpoint : public Module
+class Checkpoint : public Entity
 {
 public:
 
@@ -44,17 +43,12 @@ public:
 	//Public variables
 	Collider* colCheckpoint = nullptr;
 
-	iPoint position;
-
 private:
 
 	bool check = false;
 	int checkpointFx;
 	float checkTime;
 	float checkTimer;
-
-	SString texPath;
-	SDL_Texture* graphics;
 
 	Animation unchecked;
 	Animation checking;
@@ -63,8 +57,5 @@ private:
 	Animation* currentAnimation = &unchecked;
 
 	CheckpointStatus status = CHECKPOINT_UNCHECKED;
-
-	SDL_Rect r;
-	SDL_Rect rCollider;
 };
 #endif //__CHECKPOINT_H__

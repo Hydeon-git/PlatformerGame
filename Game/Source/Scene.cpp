@@ -6,11 +6,8 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
-#include "Checkpoint.h"
 #include "Pathfinding.h"
-#include "Player.h"
-#include "GroundEnemy.h"
-#include "AirEnemy.h"
+#include "EntityManager.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
 
@@ -56,6 +53,11 @@ bool Scene::Awake(pugi::xml_node& config)
 		obj->type = node.attribute("type").as_int();
 		objects.Add(obj);
 	}
+
+	player = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
+	airEnemy = (AirEnemy*)app->entityManager->CreateEntity(EntityType::AIR_ENEMY);
+	groundEnemy = (GroundEnemy*)app->entityManager->CreateEntity(EntityType::GROUND_ENEMY);
+	checkpoint = (Checkpoint*)app->entityManager->CreateEntity(EntityType::CHECKPOINT);
 
 	return ret;
 }
@@ -108,7 +110,7 @@ bool Scene::Update(float dt)
 				app->fade->FadeToBlk(CHANGE_SCENE ,currentScene);
 
 			//Save Game
-			if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (app->player->dead == false))
+			if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (player->dead == false))
 				app->SaveGameRequest();
 
 			//Load Game
@@ -121,12 +123,12 @@ bool Scene::Update(float dt)
 
 			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 			{
-				app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, app->checkpoint->position);
+				app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, iPoint(checkpoint->position.x, checkpoint->position.y));
 			}
 			
 			// Draw map
 			app->map->Draw();
-			app->checkpoint->Draw(dt);
+			checkpoint->Draw(dt);
 		} break;
 		case SCENE_END:
 		{
@@ -174,12 +176,12 @@ bool Scene::CleanUp()
 void Scene::ChangeScene(GameScene nextScene)
 {
 	LOG("Changing scene");
-	app->checkpoint->CleanUp();
+	checkpoint->CleanUp();
 	app->obj->DeleteObjects();
 	// Disabling player and enemies
-	app->player->DisablePlayer();
-	app->groundEnemy->DisableGroundEnemy();
-	app->airEnemy->DisableAirEnemy();
+	player->DisablePlayer();
+	groundEnemy->DisableGroundEnemy();
+	airEnemy->DisableAirEnemy();
 	// Unloading menu and ending screens
 	if (introScreen) app->tex->UnLoad(introScreen);
 	if (endScreen) app->tex->UnLoad(endScreen);
@@ -213,13 +215,13 @@ void Scene::ChangeScene(GameScene nextScene)
 	{
  		app->audio->PlayMusic(gameAudioPath.GetString());
 
-		app->player->EnablePlayer();
-		app->groundEnemy->EnableGroundEnemy();
-		app->airEnemy->EnableAirEnemy();
+		player->EnablePlayer();
+		groundEnemy->EnableGroundEnemy();
+		airEnemy->EnableAirEnemy();
 
 		if (app->map->Load(mapLevel1.GetString()) == true)
 		{
-			app->checkpoint->Load();
+			checkpoint->Load();
 
 			int w, h;
 			uchar* data = NULL;
@@ -266,6 +268,6 @@ bool Scene::MovePlayer(iPoint pos)
 	fPoint newPos;
 	newPos.x = pos.x;
 	newPos.y = pos.y;
-	app->player->position = newPos;
+	player->position = newPos;
 	return true;
 }

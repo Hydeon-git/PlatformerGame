@@ -19,13 +19,10 @@ class Textures;
 class Audio;
 class Scene;
 class Map;
-class Checkpoint;
 class PathFinding;
 class Collision;
-class Player;
-class GroundEnemy;
-class AirEnemy;
 class Objects;
+class EntityManager;
 class FadeToBlack;
 
 class App
@@ -105,13 +102,10 @@ public:
 	Audio* audio;
 	Scene* scene;
 	Map* map;
-	Checkpoint* checkpoint;
 	PathFinding* pathfinding;
 	Collision* collision;
-	Player* player;
-	GroundEnemy* groundEnemy;
-	AirEnemy* airEnemy;
 	Objects* obj;
+	EntityManager* entityManager;
 	FadeToBlack* fade;
 
 private:
