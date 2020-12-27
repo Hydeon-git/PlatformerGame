@@ -6,7 +6,7 @@
 
 ModuleGUI::ModuleGUI() : Module()
 {
-	
+	name.Create("gui");
 }
 
 // Destructor

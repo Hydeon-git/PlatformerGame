@@ -17,6 +17,7 @@ class Input;
 class Render;
 class Textures;
 class Audio;
+class ModuleGUI;
 class Scene;
 class Map;
 class Checkpoint;
@@ -103,6 +104,7 @@ public:
 	Render* render;
 	Textures* tex;
 	Audio* audio;
+	ModuleGUI* gui;
 	Scene* scene;
 	Map* map;
 	Checkpoint* checkpoint;

@@ -14,6 +14,7 @@
 #include "AirEnemy.h"
 #include "Objects.h"
 #include "FadeToBlack.h"
+#include "ModuleGUI.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -31,6 +32,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	render = new Render();
 	tex = new Textures();
 	audio = new Audio();
+	gui = new ModuleGUI();
 	scene = new Scene();
 	map = new Map();
 	checkpoint = new Checkpoint();
@@ -46,8 +48,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	// Reverse order of CleanUp
 	AddModule(win);
 	AddModule(input);
-	AddModule(tex);
+	AddModule(tex);	
 	AddModule(audio);
+	AddModule(gui);
 	AddModule(scene);
 	AddModule(map);
 	AddModule(checkpoint);
