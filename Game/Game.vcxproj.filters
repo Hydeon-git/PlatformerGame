@@ -40,6 +40,19 @@
     <ClCompile Include="Source\Timer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ModuleGUI.cpp" />
+    <ClCompile Include="Source\Button.cpp">
+      <Filter>Entities\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Checkbox.cpp">
+      <Filter>Entities\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Slider.cpp">
+      <Filter>Entities\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Text.cpp">
+      <Filter>Entities\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Collision.h" />
@@ -108,6 +121,19 @@
     <ClInclude Include="Source\SString.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ModuleGUI.h" />
+    <ClInclude Include="Source\Button.h">
+      <Filter>Entities\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Checkbox.h">
+      <Filter>Entities\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Slider.h">
+      <Filter>Entities\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Text.h">
+      <Filter>Entities\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Entities">
@@ -121,6 +147,9 @@
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{61822d7d-c44a-431d-94c6-7b72248482e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\GUI">
+      <UniqueIdentifier>{0a2beea8-bd89-4445-97e7-ded4cf188af7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
