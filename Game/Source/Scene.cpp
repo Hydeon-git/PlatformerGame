@@ -22,6 +22,11 @@ Scene::Scene() : Module()
 	fullscreenRect = nullptr;
 	ended = false;
 	currentScene = GameScene::SCENE_INTRO;
+
+	player = nullptr;
+	airEnemy = nullptr;
+	groundEnemy = nullptr;
+	checkpoint = nullptr;
 }
 
 // Destructor
@@ -53,11 +58,6 @@ bool Scene::Awake(pugi::xml_node& config)
 		obj->type = node.attribute("type").as_int();
 		objects.Add(obj);
 	}
-
-	player = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
-	airEnemy = (AirEnemy*)app->entityManager->CreateEntity(EntityType::AIR_ENEMY);
-	groundEnemy = (GroundEnemy*)app->entityManager->CreateEntity(EntityType::GROUND_ENEMY);
-	checkpoint = (Checkpoint*)app->entityManager->CreateEntity(EntityType::CHECKPOINT);
 
 	return ret;
 }
@@ -176,12 +176,19 @@ bool Scene::CleanUp()
 void Scene::ChangeScene(GameScene nextScene)
 {
 	LOG("Changing scene");
-	checkpoint->CleanUp();
 	app->obj->DeleteObjects();
-	// Disabling player and enemies
-	player->DisablePlayer();
-	groundEnemy->DisableGroundEnemy();
-	airEnemy->DisableAirEnemy();
+	// Delete player and enemies
+	if (currentScene == SCENE_1)
+	{
+		app->entityManager->DeleteEntity(player);
+		app->entityManager->DeleteEntity(groundEnemy);
+		app->entityManager->DeleteEntity(airEnemy);
+		app->entityManager->DeleteEntity(checkpoint);
+		player = nullptr;
+		groundEnemy = nullptr;
+		airEnemy = nullptr;
+		checkpoint = nullptr;
+	}
 	// Unloading menu and ending screens
 	if (introScreen) app->tex->UnLoad(introScreen);
 	if (endScreen) app->tex->UnLoad(endScreen);
@@ -214,6 +221,10 @@ void Scene::ChangeScene(GameScene nextScene)
 	case SCENE_1:
 	{
  		app->audio->PlayMusic(gameAudioPath.GetString());
+		player = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
+		airEnemy = (AirEnemy*)app->entityManager->CreateEntity(EntityType::AIR_ENEMY);
+		groundEnemy = (GroundEnemy*)app->entityManager->CreateEntity(EntityType::GROUND_ENEMY);
+		checkpoint = (Checkpoint*)app->entityManager->CreateEntity(EntityType::CHECKPOINT);
 
 		player->EnablePlayer();
 		groundEnemy->EnableGroundEnemy();

@@ -75,7 +75,7 @@ bool Render::PreUpdate()
 
 bool Render::Update(float dt)
 {
-	if (app->scene->player->active)
+	if (app->scene->player != nullptr && app->scene->player->active)
 	{
 		camera.x = -(app->scene->player->position.x - 100) * scale;
 		camera.y = -app->scene->player->position.y + 110;

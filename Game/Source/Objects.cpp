@@ -6,10 +6,6 @@
 #include "Scene.h"
 #include "Player.h"
 
-
-#define SPAWN_MARGIN 50
-
-
 Objects::Objects() : Module() 
 {
 	name.Create("objects");
@@ -112,6 +108,7 @@ bool Objects::OnCollision(Collider* c1, Collider* c2)
 				break;
 			case DIAMOND:
 				LOG("Got a diamond");
+				app->scene->player->diamonds++;
 				app->audio->PlayFx(diamondFx);
 				break;
 			case HEALTH_POTION:

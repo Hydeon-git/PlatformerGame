@@ -37,10 +37,10 @@ public:
 	bool CleanUp();
 
 	//Called when loading the game
-	bool Load(pugi::xml_node&);
+	bool LoadState(pugi::xml_node&);
 
 	//Called when saving the game
-	bool Save(pugi::xml_node&) const;
+	bool SaveState(pugi::xml_node&) const;
 
 	//Called when creating a new Entity
 	Entity* CreateEntity(EntityType type);

@@ -46,13 +46,13 @@ public:
 	}
 
 	//Called when loading the game
-	virtual bool Load(pugi::xml_node&)
+	virtual bool LoadState(pugi::xml_node&)
 	{
 		return true;
 	}
 
 	//Called when saving the game
-	virtual bool Save(pugi::xml_node&) const
+	virtual bool SaveState(pugi::xml_node&) const
 	{
 		return true;
 	}

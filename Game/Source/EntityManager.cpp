@@ -56,21 +56,21 @@ bool EntityManager::CleanUp()
 }
 
 //Called when loading the game
-bool EntityManager::Load(pugi::xml_node& n)
+bool EntityManager::LoadState(pugi::xml_node& n)
 {
 	for (unsigned int i = 0; i < entities.Count(); i++)
 	{
-		entities.At(i)->data->Load(n.child(entities.At(i)->data->name.GetString()));
+		entities.At(i)->data->LoadState(n.child(entities.At(i)->data->name.GetString()));
 	}
 	return true;
 }
 
 //Called when saving the game
-bool EntityManager::Save(pugi::xml_node& s) const
+bool EntityManager::SaveState(pugi::xml_node& s) const
 {
 	for (unsigned int i = 0; i < entities.Count(); i++)
 	{
-		entities.At(i)->data->Save(s.append_child(entities.At(i)->data->name.GetString()));
+		entities.At(i)->data->SaveState(s.append_child(entities.At(i)->data->name.GetString()));
 	}
 	return true;
 }
@@ -98,10 +98,6 @@ Entity* EntityManager::CreateEntity(EntityType type)
 		ret = new Checkpoint();
 		ret->type = EntityType::CHECKPOINT;
 		break;
-	//case EntityType::ITEM_DIAMOND:
-	//	ret = new Coin();
-	//	ret->type = EntityType::ITEM_DIAMOND;
-	//	break;
 	}
 
 	if (ret != nullptr)

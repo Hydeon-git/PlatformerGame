@@ -88,6 +88,7 @@ public:
 	Collider* colPlayer;
 
 	int checkpoint = 0;
+	int diamonds = 0;
 	bool godmode = false;
 	bool dead = false;
 

@@ -6,21 +6,23 @@
 	<audio />
 	<scene />
 	<map />
-	<checkpoint />
 	<pathfinding />
-	<player>
-		<player x="504" y="176" life="100" />
-	</player>
-	<groundEnemy>
-		<groundEnemy x="430" y="214" life="-40" dead="true" />
-	</groundEnemy>
-	<airEnemy>
-		<airEnemy x="612" y="92" life="100" dead="false" />
-	</airEnemy>
 	<objects />
+	<entitymanager>
+		<player>
+			<player x="503" y="176" life="90" diamonds="0" />
+		</player>
+		<airEnemy>
+			<airEnemy x="612" y="92" life="100" dead="false" />
+		</airEnemy>
+		<groundEnemy>
+			<groundEnemy x="365" y="198" life="100" dead="false" />
+		</groundEnemy>
+		<checkpoint />
+	</entitymanager>
 	<collision />
 	<fadetoblack />
 	<renderer>
-		<camera x="-1211" y="-66" />
+		<camera x="-1210" y="-66" />
 	</renderer>
 </save_state>
