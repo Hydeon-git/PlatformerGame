@@ -53,6 +53,9 @@
     <ClCompile Include="Source\Text.cpp">
       <Filter>Entities\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Fonts.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Collision.h" />
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="Source\Text.h">
       <Filter>Entities\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Fonts.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

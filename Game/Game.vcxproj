@@ -94,6 +94,7 @@
     <ClCompile Include="Source\Checkbox.cpp" />
     <ClCompile Include="Source\Checkpoint.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Fonts.cpp" />
     <ClCompile Include="Source\GroundEnemy.cpp" />
     <ClCompile Include="Source\FadeToBlack.cpp" />
     <ClCompile Include="Source\Main.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="Source\Checkbox.h" />
     <ClInclude Include="Source\Checkpoint.h" />
     <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Fonts.h" />
     <ClInclude Include="Source\GroundEnemy.h" />
     <ClInclude Include="Source\FadeToBlack.h" />
     <ClInclude Include="Source\Map.h" />

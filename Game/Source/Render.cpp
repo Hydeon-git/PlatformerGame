@@ -215,6 +215,12 @@ bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint
 	return ret;
 }
 
+void Render::BlitInRect(SDL_Texture* texture, SDL_Rect sprite, SDL_Rect quad)
+{
+	SDL_Point p = { 0, 0 };
+	SDL_RenderCopyEx(renderer, texture, &sprite, &quad, 0, &p, SDL_FLIP_NONE);
+}
+
 bool Render::DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a, bool useCamera) const
 {
 	bool ret = true;

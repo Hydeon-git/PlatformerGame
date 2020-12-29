@@ -7,6 +7,7 @@
 
 class App;
 struct Collider;
+class UI;
 
 class Module
 {
@@ -61,6 +62,8 @@ public:
 	{
 		return true;
 	}
+
+	virtual void OnClick(UI* element) {}
 
 	// L02: DONE 2: Create new virtual methods to Load / Save state
 	virtual bool LoadState(pugi::xml_node&)
