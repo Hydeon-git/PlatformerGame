@@ -93,7 +93,7 @@ const SDL_Texture* ModuleGUI::GetAtlas() const
 
 // class Gui ---------------------------------------------------
 
-UI* ModuleGUI::CreateUIElement(Type type, UI* parent, SDL_Rect r, SDL_Rect sprite, SString element_name, SDL_Rect spritePushed, SDL_Rect spriteNormal, bool drageable, SDL_Rect dragArea, Module* s_listener)
+UI* ModuleGUI::CreateUIElement(Type type, UI* parent, SDL_Rect r, SDL_Rect sprite, SString textString, SDL_Rect spritePushed, SDL_Rect spriteNormal, bool drageable, SDL_Rect dragArea, Module* s_listener)
 {
 	UI* ui = nullptr;
 	switch (type)
@@ -108,11 +108,11 @@ UI* ModuleGUI::CreateUIElement(Type type, UI* parent, SDL_Rect r, SDL_Rect sprit
 		ui = new WindowUI(Type::WINDOW, parent, r, sprite, drageable, drageable, dragArea);
 		break;
 	case Type::TEXT:
-		ui = new TextUI(Type::TEXT, parent, r, element_name, drageable, drageable, dragArea);
+		ui = new TextUI(Type::TEXT, parent, r, textString, drageable, drageable, dragArea);
 		break;
 	}
 
-	ui->name = element_name;
+	ui->name = textString;
 
 	if (s_listener)
 	{
@@ -431,7 +431,7 @@ bool WindowUI::PostUpdate()
 {
 	iPoint dif_sprite = { 0,0 };
 	SDL_Rect sprite = UI::Check_Printable_Rect(spriteOver, dif_sprite);
-	app->render->DrawTexture((SDL_Texture*)app->gui->GetAtlas(), GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 0.f);
+	app->render->DrawTexture((SDL_Texture*)app->gui->GetAtlas(), GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 1);
 	UI::PostUpdate();
 	return true;
 }
@@ -454,7 +454,7 @@ bool TextUI::PostUpdate()
 
 
 	SDL_Rect sprite = UI::Check_Printable_Rect(rect, dif_sprite);
-	app->render->DrawTexture(text, GetScreenToWorldPos().x + dif_sprite.x, GetScreenToWorldPos().y + dif_sprite.y, &sprite, 0.f);
+	app->render->DrawTexture(text, GetScreenToWorldPos().x + dif_sprite.x, GetScreenToWorldPos().y + dif_sprite.y, &sprite, 1);
 	UI::PostUpdate();
 
 	app->tex->UnLoad(text);
@@ -468,7 +468,7 @@ ButtonUI::ButtonUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite_over, SDL_Rect 
 	spriteOver = sprite_over;
 	spritePushed = sprite_pushed;
 	spriteNormal = sprite_normal;
-	over = false;
+	isMouseOver = false;
 	pushed = false;
 	quad = r;
 }
@@ -480,7 +480,7 @@ bool ButtonUI::PostUpdate()
 	if (pushed == true) {
 		sprite = UI::Check_Printable_Rect(spritePushed, dif_sprite);
 	}
-	else if (over == true) {
+	else if (isMouseOver == true) {
 		sprite = UI::Check_Printable_Rect(spriteOver, dif_sprite);
 	}
 	else {
@@ -502,18 +502,12 @@ bool ButtonUI::PreUpdate()
 	app->input->GetMousePosition(x, y);
 
 	if ((x >= GetScreenPos().x && x <= GetScreenPos().x + GetScreenRect().w && y >= GetScreenPos().y && y <= GetScreenPos().y + GetScreenRect().h) || focus == true)
-		over = true;
-	else over = false;
+		isMouseOver = true;
+	else isMouseOver = false;
 
-	bool button = false;
-
-	if (app->input->GetMouseButtonDown(1) == KEY_UP || app->input->GetKey(SDL_SCANCODE_RETURN))
-		button = true;
-	if (over == true && button == true)
+	if (app->input->GetMouseButtonDown(1) == KEY_DOWN && isMouseOver == true)
 		pushed = true;
-	else pushed = false;
-
-	if (pushed)
+	else if (pushed == true && app->input->GetMouseButtonDown(1) == KEY_UP)
 	{
 		app->audio->PlayFx(app->gui->clickSfx);
 		//Button clicked
@@ -522,6 +516,7 @@ bool ButtonUI::PreUpdate()
 			listener->OnClick(this);
 		}
 		LOG("Click");
+		pushed = false;
 	}
 
 	UI::PreUpdate();

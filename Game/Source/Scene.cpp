@@ -13,6 +13,7 @@
 #include "AirEnemy.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
+#include "ModuleGUI.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -67,6 +68,8 @@ bool Scene::Start()
 
 	app->audio->PlayMusic(menuAudioPath.GetString());
 	app->audio->SetVolume(audioVol);
+
+	CreateUI();
 
 	return true;
 }
@@ -207,10 +210,12 @@ void Scene::ChangeScene(GameScene nextScene)
 	case SCENE_INTRO:
 		app->audio->PlayMusic(menuAudioPath.GetString());
 		introScreen = app->tex->Load(introTexturePath.GetString());
+		CreateUI();
 		currentScene = SCENE_INTRO;
 		break;
 	case SCENE_1:
 	{
+		app->gui->ClearUI();
  		app->audio->PlayMusic(gameAudioPath.GetString());
 
 		app->player->EnablePlayer();
@@ -246,6 +251,27 @@ void Scene::ChangeScene(GameScene nextScene)
 		currentScene = SCENE_END;
 	} break;
 	}
+}
+
+bool Scene::CreateUI() {
+
+	app->gui->ClearUI();
+
+	menu = true;
+
+	int window_pos_x = 0;
+	int window_pos_y = 0;
+
+	//image = app->gui->CreateUIElement(Type::IMAGE, nullptr, { window_pos_x, window_pos_y, 46*2, 14*2 }, { 145, 81, 46, 14 });
+	//image2 = app->gui->CreateUIElement(Type::TEXT, nullptr, { window_pos_x, window_pos_y+50, 44, 44 }, { 2, 34, 44, 44 }, "Options");
+	//window = app->gui->CreateUIElement(Type::WINDOW, nullptr, { window_pos_x, window_pos_y, 48, 42 }, { 34, 0, 48, 42 });
+	startButton = app->gui->CreateUIElement(Type::BUTTON, nullptr, { window_pos_x, window_pos_y, 92, 28}, { 145, 81, 46, 14 }, "Options", { 145, 97, 46, 14 }, { 145, 81, 46, 14 }, false, { 0,0,0,0 }, this);
+	image2 = app->gui->CreateUIElement(Type::TEXT, startButton, { window_pos_x+20, window_pos_y+70, 44, 44 }, { 2, 34, 44, 44 }, "Options");
+	//optionsButton = app->gui->CreateUIElement(Type::BUTTON, window, { window_pos_x + 8, window_pos_y + 5, 32, 9 }, { 0, 9, 32, 9 }, "OPTIONS", { 0, 9, 32, 9 }, { 0, 9, 32, 9 }, false, { 0,0,0,0 }, this);
+	//creditsButton = app->gui->CreateUIElement(Type::BUTTON, window, { window_pos_x + 8, window_pos_y + 17, 32, 9 }, { 0, 18, 32, 9 }, "CREDITS", { 0, 18, 32, 9 }, { 0, 18, 32, 9 }, false, { 0,0,0,0 }, this);
+	//quitButton = app->gui->CreateUIElement(Type::BUTTON, window, { window_pos_x + 8, window_pos_y + 29, 32, 9 }, { 0, 27, 32, 9 }, "QUIT", { 0, 27, 32, 9 }, { 0, 27, 32, 9 }, false, { 0,0,0,0 }, this);
+
+	return true;
 }
 
 bool Scene::OnCollision(Collider* c1, Collider* c2)

@@ -18,7 +18,7 @@
 	<fullscreenWindow value="false"/>
   </window>
   <fonts>
-    <font file="Assets/Textures/Gui/OpenSans-Light.ttf" size="15"/>
+    <font file="Assets/Textures/Gui/8bitwonder.ttf" size="12"/>
   </fonts>
   <gui atlas="Assets/Textures/Gui/gui_atlas.png" clickFx="Assets/Audio/Fx/click_sfx.ogg"/>
   <!-- L03: Added maps folder as config option -->

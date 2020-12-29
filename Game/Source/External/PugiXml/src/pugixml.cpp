@@ -2470,7 +2470,7 @@ PUGI__NS_BEGIN
 						if (PUGI__OPTSET(parse_comments))
 							*s = 0; // Zero-terminate this segment at the first terminating '-'.
 
-						s += (s[2] == '>' ? 3 : 2); // Step over the '\0->'.
+						s += (s[2] == '>' ? 3 : 2); // Step isMouseOver the '\0->'.
 					}
 				}
 				else PUGI__THROW_ERROR(status_bad_comment, s);
@@ -2511,7 +2511,7 @@ PUGI__NS_BEGIN
 						++s;
 					}
 
-					s += (s[1] == '>' ? 2 : 1); // Step over the last ']>'.
+					s += (s[1] == '>' ? 2 : 1); // Step isMouseOver the last ']>'.
 				}
 				else PUGI__THROW_ERROR(status_bad_cdata, s);
 			}
@@ -2612,7 +2612,7 @@ PUGI__NS_BEGIN
 					}
 					else
 					{
-						// store value and step over >
+						// store value and step isMouseOver >
 						cursor->value = value;
 						PUGI__POPNODE();
 
@@ -2661,7 +2661,7 @@ PUGI__NS_BEGIN
 						cursor->name = s;
 
 						PUGI__SCANWHILE_UNROLL(PUGI__IS_CHARTYPE(ss, ct_symbol)); // Scan for a terminator.
-						PUGI__ENDSEG(); // Save char in 'ch', terminate & step over.
+						PUGI__ENDSEG(); // Save char in 'ch', terminate & step isMouseOver.
 
 						if (ch == '>')
 						{
@@ -2682,7 +2682,7 @@ PUGI__NS_BEGIN
 									a->name = s; // Save the offset.
 
 									PUGI__SCANWHILE_UNROLL(PUGI__IS_CHARTYPE(ss, ct_symbol)); // Scan for a terminator.
-									PUGI__ENDSEG(); // Save char in 'ch', terminate & step over.
+									PUGI__ENDSEG(); // Save char in 'ch', terminate & step isMouseOver.
 
 									if (PUGI__IS_CHARTYPE(ch, ct_space))
 									{
@@ -2699,7 +2699,7 @@ PUGI__NS_BEGIN
 										if (*s == '"' || *s == '\'') // '<... #="...'
 										{
 											ch = *s; // Save quote char to avoid breaking on "''" -or- '""'.
-											++s; // Step over the quote.
+											++s; // Step isMouseOver the quote.
 											a->value = s; // Save the offset.
 
 											s = strconv_attribute(s, ch);
@@ -2757,7 +2757,7 @@ PUGI__NS_BEGIN
 						}
 						else if (ch == 0)
 						{
-							// we stepped over null terminator, backtrack & handle closing tag
+							// we stepped isMouseOver null terminator, backtrack & handle closing tag
 							--s;
 							
 							if (endch != '>') PUGI__THROW_ERROR(status_bad_start_element, s);

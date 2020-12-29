@@ -143,7 +143,7 @@ public:
 	SDL_Rect spritePushed;
 	SDL_Rect spriteNormal;
 	bool pushed;
-	bool over;
+	bool isMouseOver;
 };
 // ---------------------------------------------------
 class ModuleGUI : public Module

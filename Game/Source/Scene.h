@@ -7,6 +7,7 @@
 
 struct SDL_Texture;
 struct SDL_Rect;
+class UI;
 
 enum GameScene
 {
@@ -53,6 +54,8 @@ public:
 	// Detects collisions
 	bool OnCollision(Collider* c1, Collider* c2);
 
+	bool CreateUI();
+
 	// Public variables
 	bool loaded = false;
 	int deathLimit;
@@ -83,6 +86,32 @@ private:
 	List<newobj*> objects;
 
 	bool ended;
+
+	//UI	
+	bool menu = true;
+	bool pause_menu = false;
+	bool quit = false;
+	bool fullscreen = false;
+	UI* window = nullptr;
+	UI* image = nullptr;
+	UI* image2 = nullptr;
+	UI* startButton = nullptr;
+	UI* optionsButton = nullptr;
+	UI* creditsButton = nullptr;
+	UI* quitButton = nullptr;
+	UI* backButton = nullptr;
+	UI* resumeButton = nullptr;
+	UI* saveButton = nullptr;
+	UI* loadButton = nullptr;
+	UI* menuButton = nullptr;
+	UI* fullscreeenButton = nullptr;
+	UI* audioText = nullptr;
+	UI* audioSlider = nullptr;
+	UI* tick = nullptr;
+	UI* coinImage[6];
+	int coinOffset = 5;
+	UI* lifeBar = nullptr;
+	UI* lifeUI = nullptr;
 };
 
 #endif // __SCENE_H__

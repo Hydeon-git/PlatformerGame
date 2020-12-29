@@ -727,7 +727,7 @@ namespace pugi
 	bool PUGIXML_FUNCTION operator||(const xml_text& lhs, bool rhs);
 #endif
 
-	// Child node iterator (a bidirectional iterator over a collection of xml_node)
+	// Child node iterator (a bidirectional iterator isMouseOver a collection of xml_node)
 	class PUGIXML_CLASS xml_node_iterator
 	{
 		friend class xml_node;
@@ -769,7 +769,7 @@ namespace pugi
 		xml_node_iterator operator--(int);
 	};
 
-	// Attribute iterator (a bidirectional iterator over a collection of xml_attribute)
+	// Attribute iterator (a bidirectional iterator isMouseOver a collection of xml_attribute)
 	class PUGIXML_CLASS xml_attribute_iterator
 	{
 		friend class xml_node;
