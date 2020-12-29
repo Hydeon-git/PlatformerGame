@@ -7,6 +7,10 @@
 #include "Audio.h"
 #include "Point.h"
 #include "Module.h"
+#include "Button.h"
+#include "Checkbox.h"
+#include "Slider.h"
+#include "Text.h"
 
 class ModuleGUI : public Module
 {
@@ -38,6 +42,12 @@ public:
 	// Load - Save Settings XML
 	bool SaveState(pugi::xml_node&) const;
 	bool LoadState(pugi::xml_node&);
+
+	// Add Widgets
+	bool AddButton();
+	bool AddCbox();
+	bool AddSlider();
+	bool AddText();
 
 private:	
 	bool input = true;
