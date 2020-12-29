@@ -3,7 +3,7 @@
 
 #include "Module.h"
 #include "List.h"
-#include "External\SDL\include\SDL_pixels.h"
+#include "SDL/include/SDL_pixels.h"
 
 #define DEFAULT_FONT "Assets/Textures/Gui/OpenSans-Regular.ttf"
 #define DEFAULT_FONT_SIZE 12

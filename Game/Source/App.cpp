@@ -15,6 +15,7 @@
 #include "Objects.h"
 #include "FadeToBlack.h"
 #include "ModuleGUI.h"
+#include "Fonts.h"
 
 #include "Defs.h"
 #include "Log.h"
@@ -33,6 +34,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new Textures();
 	audio = new Audio();
 	gui = new ModuleGUI();
+	fonts = new Fonts();
 	scene = new Scene();
 	map = new Map();
 	checkpoint = new Checkpoint();
@@ -50,7 +52,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(input);
 	AddModule(tex);	
 	AddModule(audio);
-	AddModule(gui);
+	AddModule(fonts);
 	AddModule(scene);
 	AddModule(map);
 	AddModule(checkpoint);
@@ -60,6 +62,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(airEnemy);
 	AddModule(obj);
 	AddModule(collision);
+	AddModule(gui);
 	AddModule(fade);
 
 	// Render last to swap buffer

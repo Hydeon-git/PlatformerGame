@@ -4,9 +4,8 @@
 #include "Textures.h"
 #include "Fonts.h"
 
-#include "External\SDL\include\SDL.h"
-#include "External\SDL_ttf\include\SDL_ttf.h"
-#pragma comment( lib, "External/SDL_ttf/libx86/SDL2_ttf.lib" )
+#include "SDL/include/SDL.h"
+#include "SDL_ttf/include/SDL_ttf.h"
 
 Fonts::Fonts() : Module()
 {
@@ -18,7 +17,7 @@ Fonts::~Fonts()
 {}
 
 // Called before render is available
-bool Fonts::Awake(pugi::xml_node& conf)
+bool Fonts::Awake(pugi::xml_node& config)
 {
 	LOG("Init True Type Font library");
 	bool ret = true;
@@ -30,8 +29,8 @@ bool Fonts::Awake(pugi::xml_node& conf)
 	}
 	else
 	{
-		const char* path = conf.child("font").attribute("file").as_string(DEFAULT_FONT);
-		int size = conf.child("font").attribute("size").as_int(DEFAULT_FONT_SIZE);
+		const char* path = config.child("font").attribute("file").as_string(DEFAULT_FONT);
+		int size = config.child("font").attribute("size").as_int(DEFAULT_FONT_SIZE);
 		default = Load(path, size);
 	}
 

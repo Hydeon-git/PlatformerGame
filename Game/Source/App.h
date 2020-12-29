@@ -18,6 +18,7 @@ class Render;
 class Textures;
 class Audio;
 class ModuleGUI;
+class Fonts;
 class Scene;
 class Map;
 class Checkpoint;
@@ -105,6 +106,7 @@ public:
 	Textures* tex;
 	Audio* audio;
 	ModuleGUI* gui;
+	Fonts* fonts;
 	Scene* scene;
 	Map* map;
 	Checkpoint* checkpoint;

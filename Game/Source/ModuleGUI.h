@@ -54,7 +54,7 @@ public:
 	SDL_Rect Check_Printable_Rect(SDL_Rect sprite, iPoint& dif_sprite);
 
 public:
-	SDL_Rect sprite1;
+	SDL_Rect spriteOver;
 	SDL_Rect quad;
 	bool debug;
 	bool focus;
@@ -140,8 +140,8 @@ public:
 	bool CleanUp() { return true; };
 
 public:
-	SDL_Rect sprite2;
-	SDL_Rect sprite3;
+	SDL_Rect spritePushed;
+	SDL_Rect spriteNormal;
 	bool pushed;
 	bool over;
 };
@@ -170,7 +170,7 @@ public:
 	bool CleanUp();
 
 	// Gui creation functions
-	UI* CreateUIElement(Type type, UI* p, SDL_Rect r, SDL_Rect sprite = { 0,0,0,0 }, SString str = "", SDL_Rect sprite2 = { 0,0,0,0 }, SDL_Rect sprite3 = { 0,0,0,0 }, bool drageable = false,
+	UI* CreateUIElement(Type type, UI* p, SDL_Rect r, SDL_Rect sprite = { 0,0,0,0 }, SString str = "", SDL_Rect spritePushed = { 0,0,0,0 }, SDL_Rect spriteNormal = { 0,0,0,0 }, bool drageable = false,
 		SDL_Rect dragArea = { 0,0,0,0 }, Module* s_listener = nullptr);
 	bool DeleteUIElement(UI*);
 
@@ -185,7 +185,7 @@ public:
 	void ClearUI();
 
 private:
-	List <UI*> UiElements;
+	List <UI*> uiElements;
 	SDL_Texture* atlas;
 	SString atlasFileName;
 
