@@ -330,10 +330,38 @@ bool Scene::GameUI()
 	return true;
 }
 
+bool Scene::CreditsUI()
+{
+	app->gui->ClearUI();
+
+	int x_offset = 140;
+	int y_offset = 40;
+
+	image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset, y_offset, 146, 168 }, { 2, 34, 73, 83 });
+
+	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 37, y_offset + 15, 44, 44 }, { 8, 0, 0, 0 }, "Made by");
+
+	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 15, y_offset + 45, 44, 44 }, { 10, 0, 0, 0 }, "Oscar Royo");
+
+	text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 15, y_offset + 75, 44, 44 }, { 10, 0, 0, 0 }, "Albert Pou");
+
+	//Back
+	button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset + 130, 92, 28 }, { 1, 1, 46, 14 }, "Back", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+	text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 48, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Back");
+
+	optionsMenu = true;
+	return true;
+}
+
 bool Scene::PauseMenu() 
 {
 	app->gui->ClearUI();
-	if (currentScene == SCENE_1)image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
+	if (currentScene == SCENE_1)
+	{
+		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 4, 1, 1 }, { 7, 0, 0, 0 }, std::to_string(player->life).c_str());
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 17, 1, 1 }, { 5, 0, 0, 0 }, std::to_string(player->diamonds).c_str());
+	}
 
 	int x_offset = 140;
 	int y_offset = 50;
@@ -370,7 +398,7 @@ bool Scene::PauseMenu()
 		button2 = app->gui->CreateUIElement(UiType::SLIDER, nullptr, { x_offset + 14, y_offset + 98, 118, 6 }, { 79, 30, 59, 3 }, "Sound", { 79, 36, 5, 9 });
 		//Back
 		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset + 130, 92, 28 }, { 1, 1, 46, 14 }, "Back", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Back");
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 48, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Back");
 	}
 	
 	pauseMenu = true;
@@ -398,7 +426,7 @@ void Scene::OnClick(UI* interaction)
 		}
 		else if (interaction == button3)
 		{
-			//credits
+			CreditsUI();
 		}
 		else if (interaction == button4)
 		{

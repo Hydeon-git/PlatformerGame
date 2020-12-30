@@ -61,6 +61,7 @@ public:
 	bool PauseMenu();
 	bool GameUI();
 	bool MenuUI();
+	bool CreditsUI();
 
 	void OnClick(UI* interaction);
 

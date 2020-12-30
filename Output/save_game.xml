@@ -10,7 +10,7 @@
 	<objects />
 	<entitymanager>
 		<player>
-			<player x="45" y="192" life="100" diamonds="0" />
+			<player x="8" y="192" life="100" diamonds="0" />
 		</player>
 		<airEnemy>
 			<airEnemy x="612" y="92" life="100" dead="false" />
