@@ -116,8 +116,6 @@ bool Scene::Update(float dt)
 			if (pauseMenu)
 			{
 				GameUI();
-				app->player->godmode = false;
-				app->player->input = true;
 				pauseMenu = false;
 			}
 			else PauseMenu();
@@ -317,9 +315,6 @@ bool Scene::PauseMenu()
 	app->gui->ClearUI();
 	if (currentScene == SCENE_1)image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
 
-	app->player->godmode = true;
-	app->player->input = false;
-
 	int x_offset = 140;
 	int y_offset = 40;
 	
@@ -395,8 +390,6 @@ void Scene::OnClick(UI* interaction)
 			{
 				optionsMenu = false;
 				pauseMenu = false;
-				app->player->godmode = false;
-				app->player->input = true;
 				MenuUI();
 			}
 		}
@@ -416,8 +409,6 @@ void Scene::OnClick(UI* interaction)
 				else
 				{
 					GameUI();
-					app->player->godmode = false;
-					app->player->input = true;
 					pauseMenu = false;
 				}
 			}

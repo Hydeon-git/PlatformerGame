@@ -554,7 +554,7 @@ bool Bullet::Update(float dt)
 {
 	bool ret = false;
 
-	position.x += speed * dt;
+	if(!app->scene->pauseMenu) position.x += speed * dt;
 
 	bulletCollider->SetPos(position.x, position.y);
 
