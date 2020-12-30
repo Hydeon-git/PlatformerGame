@@ -90,13 +90,7 @@ bool Scene::Update(float dt)
 	{
 	case SCENE_INTRO:
 	{
-		pauseMenu = false;
 		app->render->DrawTexture(introScreen, 0, 51, fullscreenRect, 3);
-
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
-		}
 
 	} break;
 	case SCENE_1:
@@ -113,26 +107,26 @@ bool Scene::Update(float dt)
 		if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (app->player->dead == false))
 			app->SaveGameRequest();
 
-			if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, app->checkpoint->position);
+		}
+		if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+		{
+			if (pauseMenu)
 			{
-				app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, app->checkpoint->position);
+				GameUI();
+				app->player->godmode = false;
+				app->player->input = true;
+				pauseMenu = false;
 			}
-			if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-			{
-				if (pauseMenu)
-				{
-					GameUI();
-					app->player->godmode = false;
-					app->player->input = true;
-					pauseMenu = false;
-				}
-				else PauseMenu();
-			}
-			
-			// Draw map
-			app->map->Draw();
-			app->checkpoint->Draw(dt);
-		} break;
+			else PauseMenu();
+		}
+		
+		// Draw map
+		app->map->Draw();
+		app->checkpoint->Draw(dt);
+	} break;
 	case SCENE_END:
 	{
 		pauseMenu = false;

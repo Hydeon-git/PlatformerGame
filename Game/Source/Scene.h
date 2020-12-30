@@ -94,7 +94,6 @@ private:
 	bool ended;
 
 	//UI	
-	bool pauseMenu = false;
 	bool optionsMenu = false;
 	bool fullscreen = false;
 	UI* image1 = nullptr;
