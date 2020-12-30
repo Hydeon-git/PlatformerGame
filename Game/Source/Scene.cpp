@@ -290,13 +290,13 @@ bool Scene::MenuUI()
 	int y_offset = 182;
 
 	button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Start", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Start");
+	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 6, 44, 44 }, { 10, 0, 0, 0 }, "Start");
 	button2 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 90, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 98, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Options");
+	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 98, y_offset + 6, 44, 44 }, { 10, 0, 0, 0 }, "Options");
 	button3 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 180, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Credits", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 187, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Credits");
+	text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 187, y_offset + 6, 44, 44 }, { 10, 0, 0, 0 }, "Credits");
 	button4 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 270, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Exit", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 294, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Exit");
+	text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 294, y_offset + 6, 44, 44 }, { 10, 0, 0, 0 }, "Exit");
 
 	return true;
 }
@@ -305,6 +305,10 @@ bool Scene::GameUI()
 {
 	app->gui->ClearUI();
 	image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
+
+	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 4, 1, 1 }, { 7, 0, 0, 0 }, "100");
+	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 17, 1, 1 }, { 5, 0, 0, 0 }, "0");
+
 	button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { 405, 5, 18, 18 }, { 48, 1, 18, 18 }, "Pause", { 48, 1, 18, 18 }, { 48, 1, 18, 18 }, false, { 0,0,0,0 }, this);
 	image2 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 411, 10, 6, 8 }, { 54, 22, 6, 8 });
 	return true;
@@ -316,7 +320,7 @@ bool Scene::PauseMenu()
 	if (currentScene == SCENE_1)image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
 
 	int x_offset = 140;
-	int y_offset = 40;
+	int y_offset = 50;
 	
 	image2 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset, y_offset, 146, 168 }, { 2, 34, 73, 83 });
 
@@ -325,32 +329,32 @@ bool Scene::PauseMenu()
 		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,50,40,19 });
 		//Resume
 		button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset + 10, 92, 28 }, { 1, 1, 46, 14 }, "Resume", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+15, 44, 44 }, { 0, 0, 44, 44 }, "Resume");
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+15, 44, 44 }, { 10, 0, 0, 0 }, "Resume");
 		//Save
 		button2 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+40, 92, 28 }, { 1, 1, 46, 14 }, "Save", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+45, 44, 44 }, { 0, 0, 44, 44 }, "Save");
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+45, 44, 44 }, { 10, 0, 0, 0 }, "Save");
 		//Load
 		button3 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+70, 92, 28 }, { 1, 1, 46, 14 }, "Load", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+75, 44, 44 }, { 0, 0, 44, 44 }, "Load");
+		text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+75, 44, 44 }, { 10, 0, 0, 0 }, "Load");
 		//Options
 		button4 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+100, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+105, 44, 44 }, { 0, 0, 44, 44 }, "Options");
+		text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+105, 44, 44 }, { 10, 0, 0, 0 }, "Options");
 		//Menu
 		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset+130, 92, 28 }, { 1, 1, 46, 14 }, "Menu", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 0, 0, 44, 44 }, "Menu");
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Menu");
 	}
 	else
 	{
 		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,70,40,19 });
 		//Checkbox
-		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+14, y_offset + 15, 44, 44 }, { 0, 0, 44, 44 }, "Fullscreen");
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+14, y_offset + 15, 44, 44 }, { 10, 0, 0, 0 }, "Fullscreen");
 		button1 = app->gui->CreateUIElement(UiType::CHECKBOX, nullptr, { x_offset + 54, y_offset + 34, 36, 36 }, { 48, 1, 18, 18 }, "Fullscreen", { 90, 38, 6, 5 }, { 48, 1, 18, 18 }, fullscreen, { 0,0,0,0 }, this);
 		//Slider
-		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+45, y_offset + 75, 44, 44 }, { 0, 0, 44, 44 }, "Sound");
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+45, y_offset + 75, 44, 44 }, { 10, 0, 0, 0 }, "Sound");
 		button2 = app->gui->CreateUIElement(UiType::SLIDER, nullptr, { x_offset + 14, y_offset + 98, 118, 6 }, { 79, 30, 59, 3 }, "Sound", { 79, 36, 5, 9 });
 		//Back
 		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset + 130, 92, 28 }, { 1, 1, 46, 14 }, "Back", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 0, 0, 44, 44 }, "Back");
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Back");
 	}
 	
 	pauseMenu = true;

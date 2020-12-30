@@ -97,7 +97,7 @@ private:
 class TextUI : public UI
 {
 public:
-	TextUI(UiType type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area);
+	TextUI(UiType type, UI* p, SDL_Rect r, float size, SString str, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~TextUI() {}
@@ -106,7 +106,7 @@ public:
 	bool Draw();
 
 public:
-
+	float size;
 	SString stri;
 };
 class ButtonUI : public UI

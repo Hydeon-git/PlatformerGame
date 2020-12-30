@@ -37,7 +37,7 @@ bool ModuleGUI::Awake(pugi::xml_node& config)
 bool ModuleGUI::Start()
 {
 	atlas = app->tex->Load(atlasFileName.GetString());
-
+	app->audio->SetVolume(slider);
 	return true;
 }
 
@@ -105,7 +105,7 @@ UI* ModuleGUI::CreateUIElement(UiType type, UI* parent, SDL_Rect r, SDL_Rect spr
 		ui = new ImageUI(UiType::IMAGE, parent, r, sprite, drageable, drageable, dragArea);
 		break;
 	case UiType::TEXT:
-		ui = new TextUI(UiType::TEXT, parent, r, textString, drageable, drageable, dragArea);
+		ui = new TextUI(UiType::TEXT, parent, r, (float)sprite.x/10, textString, drageable, drageable, dragArea);
 		break;
 	case UiType::CHECKBOX:
 		ui = new CheckboxUI(UiType::CHECKBOX, parent, r, sprite, spritePushed, drageable, drageable, dragArea);
@@ -272,6 +272,8 @@ bool UI::Draw()
 	if (app->debug == true)
 	{
 		SDL_Rect scr = screenRect;
+		scr.x *= app->win->GetScale();
+		scr.y *= app->win->GetScale();
 		scr.w *= app->win->GetScale();
 		scr.h *= app->win->GetScale();
 		app->render->DrawRectangle(scr, 255, 0, 0, 255, false, false);
@@ -376,10 +378,11 @@ bool ImageUI::Draw()
 	return true;
 }
 
-TextUI::TextUI(UiType type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area) : UI(type, r, p, d, f, d_area)
+TextUI::TextUI(UiType type, UI* p, SDL_Rect r, float s, SString str, bool d, bool f, SDL_Rect d_area) : UI(type, r, p, d, f, d_area)
 {
 	stri = str;
 	quad = r;
+	size = s;
 }
 
 bool TextUI::Draw() 
@@ -388,7 +391,7 @@ bool TextUI::Draw()
 	iPoint dif_sprite = { 0,0 };
 
 	SDL_Texture* text = app->fonts->Print(stri.GetString());
-
+	
 	SDL_QueryTexture(text, NULL, NULL, &rect.w, &rect.h);
 
 
@@ -397,8 +400,8 @@ bool TextUI::Draw()
 	//app->render->DrawTexture(text, GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 1);
 	quad.x = GetScreenPos().x + dif_sprite.x;
 	quad.y = GetScreenPos().y + dif_sprite.y;
-	quad.w = rect.w;
-	quad.h = rect.h;
+	quad.w = rect.w*size;
+	quad.h = rect.h*size;
 	app->render->BlitInRect(text, sprite, quad);
 	UI::Draw();
 
