@@ -165,191 +165,197 @@ bool Player::PreUpdate()
 bool Player::Update(float dt) 
 {
 	bool ret = false;
-	if (positionPixelPerfect.y > deathLimit || life <= 0) 
-	{
-		if (!dead) 
-		{
-			ResetStates();
-			velocity.x = 0;
-			death.Reset();
-			deathTimer = deathTimerConfig;
-			status = PLAYER_DEATH;
 
-			app->audio->PlayFx(deathFx);
-
-			input = false;
-			dead = true;
-		}
-	}
-	//Input
-	if (input) 
+	if (!app->scene->pauseMenu)
 	{
-		if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
-		{ 
-			ResetStates();
-			status = PLAYER_IDLE;
-			godmode = !godmode;
-		}
-		if (!godmode) 
+		if (positionPixelPerfect.y > deathLimit || life <= 0)
 		{
-			if (onGround) 
+			if (!dead)
 			{
 				ResetStates();
+				velocity.x = 0;
+				death.Reset();
+				deathTimer = deathTimerConfig;
+				status = PLAYER_DEATH;
 
-				if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				app->audio->PlayFx(deathFx);
+
+				input = false;
+				dead = true;
+			}
+		}
+		//Input
+		if (input)
+		{
+			if (app->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) //Activate godmode
+			{
+				ResetStates();
+				status = PLAYER_IDLE;
+				godmode = !godmode;
+			}
+			if (!godmode)
+			{
+				if (onGround)
 				{
-					status = PLAYER_JUMP;
+					ResetStates();
+
+					if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+					{
+						status = PLAYER_JUMP;
+					}
+					else status = PLAYER_IDLE;
 				}
-				else status = PLAYER_IDLE;
-			}
 
-			if (app->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
-			{
-				life = 0;
-			}
-
-			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-			{
-				if(!leftColliding) status = PLAYER_BACKWARD;
-				if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+				if (app->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
 				{
-					status = PLAYER_JUMP;
-					doubleJump = true;
+					life = 0;
 				}
-			}
-			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-			{
-				if(!rightColliding) status = PLAYER_FORWARD;
-				if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+
+				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 				{
-					status = PLAYER_JUMP;
-					doubleJump = true;
+					if (!leftColliding) status = PLAYER_BACKWARD;
+					if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+					{
+						status = PLAYER_JUMP;
+						doubleJump = true;
+					}
+				}
+				else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+				{
+					if (!rightColliding) status = PLAYER_FORWARD;
+					if (onGround && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+					{
+						status = PLAYER_JUMP;
+						doubleJump = true;
+					}
+				}
+
+				if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+				{
+					fPoint spawnPoint;
+					spawnPoint.x = (flip) == false ? positionPixelPerfect.x + gunOffset.x : positionPixelPerfect.x;
+					spawnPoint.y = positionPixelPerfect.y + gunOffset.y;
+					bullets.Add(new Bullet(bulletGraphics, bulletSpeed, spawnPoint, flip, wallHitFx));
+
+					// Sound
+					app->audio->PlayFx(shotFx);
+				}
+
+				if (!onGround)
+				{
+					velocity.y += gravity * dt;
+					if (doubleJump && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+					{
+						doubleJump = false;
+						jumpEnable = true;
+						status = PLAYER_JUMP;
+					}
+				}
+
+				if (currentAnimation == &hit) status = PLAYER_HIT;
+			}
+			else
+			{ //Godmode input
+				if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+				{
+					position.x -= 2;
+				}
+				else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+				{
+					position.x += 3;
+				}
+
+				if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+				{
+					position.y -= 2;
+				}
+				else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+				{
+					position.y += 2;
 				}
 			}
 
-			if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN) 
+		}
+		//Status
+		switch (status)
+		{
+		case PLAYER_IDLE:
+			velocity.x = 0;
+			currentAnimation = &idle;
+			break;
+		case PLAYER_FORWARD:
+			velocity.x = speed;
+			flip = false;
+			if (onGround)currentAnimation = &walk;
+			else currentAnimation = &jump;
+			break;
+		case PLAYER_BACKWARD:
+			velocity.x = -speed;
+			flip = true;
+			if (onGround)currentAnimation = &walk;
+			else currentAnimation = &jump;
+			break;
+		case PLAYER_JUMP:
+			if (jumpEnable == true)
 			{
-				fPoint spawnPoint;
-				spawnPoint.x = (flip) == false ? positionPixelPerfect.x + gunOffset.x : positionPixelPerfect.x;
-				spawnPoint.y = positionPixelPerfect.y + gunOffset.y;
-				bullets.Add(new Bullet(bulletGraphics, bulletSpeed, spawnPoint, flip, wallHitFx));
-
+				jumpEnable = false;
+				currentAnimation = &jump;
+				position.y -= 1;
+				velocity.y = -jumpForce;
 				// Sound
-				app->audio->PlayFx(shotFx);
+				app->audio->PlayFx(jumpFx);
 			}
+			else jump.Reset();
+			break;
+		case PLAYER_HIT:
+			currentAnimation = &hit;
+			if (hit.Finished())
+			{
+				status = PLAYER_IDLE;
+				currentAnimation = &jump;
+			}
+			break;
+		case PLAYER_DEATH:
+			//Death animation
+			currentAnimation = &death;
+			if (death.Finished())
+			{
+				app->scene->LoadLastSave();
+			}
+			break;
 
-			if (!onGround)
-			{
-				velocity.y += gravity * dt;
-				if (doubleJump && app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-				{
-					doubleJump = false;
-					jumpEnable = true;
-					status = PLAYER_JUMP;
-				}
-			}
-
-			if (currentAnimation == &hit) status = PLAYER_HIT;
-		}
-		else 
-		{ //Godmode input
-			if (app->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) 
-			{
-				position.x -= 2;
-			}
-			else if (app->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) 
-			{
-				position.x += 3;
-			}
-
-			if (app->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) 
-			{
-				position.y -= 2;
-			}
-			else if (app->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) 
-			{
-				position.y += 2;
-			}
+		default:
+			break;
 		}
 
+		//Change position from velocity
+		position.x += (velocity.x * dt);
+		position.y += (velocity.y * dt);
+
+		positionPixelPerfect.x = round(position.x);
+		positionPixelPerfect.y = round(position.y);
+
+		//Collider position
+		colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
+		colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
+
+		rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
+
+		onGround = false;
+		rightColliding = false;
+		leftColliding = false;
 	}
-	//Status
-	switch (status)
-	{
-	case PLAYER_IDLE:
-		velocity.x = 0;
-		currentAnimation = &idle;
-		break;
-	case PLAYER_FORWARD:
-		velocity.x = speed;
-		flip = false;
-		if (onGround)currentAnimation = &walk;
-		else currentAnimation = &jump;
-		break;
-	case PLAYER_BACKWARD:
-		velocity.x = -speed;
-		flip = true;
-		if(onGround)currentAnimation = &walk;
-		else currentAnimation = &jump;
-		break;
-	case PLAYER_JUMP:
-		if (jumpEnable == true) 
-		{
-			jumpEnable = false;
-			currentAnimation = &jump;
-			position.y -= 1;
-			velocity.y = -jumpForce;
-			// Sound
-			app->audio->PlayFx(jumpFx);
-		}
-		else jump.Reset();
-		break;
-	case PLAYER_HIT:
-		currentAnimation = &hit;
-		if (hit.Finished())
-		{
-			status = PLAYER_IDLE;
-			currentAnimation = &jump;
-		}
-		break;
-	case PLAYER_DEATH:
-		//Death animation
-		currentAnimation = &death;
-		if (death.Finished()) 
-		{
-			app->scene->LoadLastSave();
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	//Change position from velocity
-	position.x += (velocity.x * dt);
-	position.y += (velocity.y * dt);
-
-	positionPixelPerfect.x = round(position.x);
-	positionPixelPerfect.y = round(position.y);
-
-	//Collider position
-	colPlayer->SetPos(positionPixelPerfect.x + 13, positionPixelPerfect.y + 17);
-	colPlayerWalls->SetPos(positionPixelPerfect.x + 11, positionPixelPerfect.y + 18);
-
-	rCollider.x = positionPixelPerfect.x + 13; rCollider.y = positionPixelPerfect.y + 17;
-
 	//Function to draw the player
 	ret = Draw(dt);
-	onGround = false;
-	rightColliding = false;
-	leftColliding = false;
 	return true;
 }
 
 bool Player::Draw(float dt)
 {
 	bool ret = false;
-	r = currentAnimation->GetCurrentFrame(dt);
+
+	r = currentAnimation->GetCurrentFrame(dt);		
+	
 	if (graphics != nullptr) 
 	{
 		ret = app->render->DrawTexture(graphics, positionPixelPerfect.x, positionPixelPerfect.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);

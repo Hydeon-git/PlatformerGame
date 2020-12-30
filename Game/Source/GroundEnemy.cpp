@@ -122,141 +122,145 @@ bool GroundEnemy::Update(float dt)
 {
 	bool ret = false;
 
-	if (!dead) 
+	if (!app->scene->pauseMenu)
 	{
-		// Input
-		if (onGround)
-		{			
-			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != GROUNDENEMY_ATTACK))
+		if (!dead)
+		{
+			// Input
+			if (onGround)
 			{
-				if (canAttack && attackTimer <= 0)
+				if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != GROUNDENEMY_ATTACK))
 				{
-					status = GROUNDENEMY_ATTACK;
+					if (canAttack && attackTimer <= 0)
+					{
+						status = GROUNDENEMY_ATTACK;
+					}
+					else
+					{
+						status = GROUNDENEMY_MOVE;
+						attackTimer -= dt;
+					}
 				}
 				else
 				{
-					status = GROUNDENEMY_MOVE;
-					attackTimer -= dt;
+					status = GROUNDENEMY_IDLE;
+					attackTimer = 0;
 				}
 			}
 			else
 			{
+				velocity.y += gravity * dt;
 				status = GROUNDENEMY_IDLE;
-				attackTimer = 0;
 			}
-		}
-		else
-		{
-			velocity.y += gravity * dt;
-			status = GROUNDENEMY_IDLE;
-		}
 
-		if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
-		{
-			life = 0;
-		}
-
-		if (positionPixelPerfect.y > deathLimit || life <= 0)
-		{
-			velocity.x = 0;
-			status = GROUNDENEMY_DEATH;
-		}
-	}
-	else status = GROUNDENEMY_IDLE;
-	
-	//Status
-	switch (status)
-	{
-	case GROUNDENEMY_IDLE:
-		velocity.x = 0;
-		currentAnimation = &idle;
-		break;
-	case GROUNDENEMY_MOVE:
-	{
-		currentAnimation = &move;
-		static iPoint origin;
-		// Target is player position
-		iPoint playerPos = app->player->positionPixelPerfect;
-
-		// Convert World position to map position
-		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
-		playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
-
-		// Create new path
-		app->pathfinding->CreatePath(origin, playerPos);
-		const DynArray<iPoint> * path = app->pathfinding->GetLastPath();
-
-		if (path->At(1) != NULL)
-		{
-			// Move Enemy to Player
-			if (path->At(1)->x < origin.x)
+			if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
 			{
-				velocity.x = -speed;
-				flip = false;
+				life = 0;
 			}
-			else if (path->At(1)->x > origin.x)
-			{
-				velocity.x = speed;
-				flip = true;
-			}
-			if (path->At(1)->y < origin.y)
+
+			if (positionPixelPerfect.y > deathLimit || life <= 0)
 			{
 				velocity.x = 0;
-				currentAnimation = &idle;
+				status = GROUNDENEMY_DEATH;
 			}
 		}
+		else status = GROUNDENEMY_IDLE;
 
-		// Draw path
-		if (app->debug)
+		//Status
+		switch (status)
 		{
-			for (uint i = 0; i < path->Count(); ++i)
+		case GROUNDENEMY_IDLE:
+			velocity.x = 0;
+			currentAnimation = &idle;
+			break;
+		case GROUNDENEMY_MOVE:
+		{
+			currentAnimation = &move;
+			static iPoint origin;
+			// Target is player position
+			iPoint playerPos = app->player->positionPixelPerfect;
+
+			// Convert World position to map position
+			origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
+			playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
+
+			// Create new path
+			app->pathfinding->CreatePath(origin, playerPos);
+			const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
+
+			if (path->At(1) != NULL)
 			{
-				iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
-				SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
-				app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
+				// Move Enemy to Player
+				if (path->At(1)->x < origin.x)
+				{
+					velocity.x = -speed;
+					flip = false;
+				}
+				else if (path->At(1)->x > origin.x)
+				{
+					velocity.x = speed;
+					flip = true;
+				}
+				if (path->At(1)->y < origin.y)
+				{
+					velocity.x = 0;
+					currentAnimation = &idle;
+				}
 			}
+
+			// Draw path
+			if (app->debug)
+			{
+				for (uint i = 0; i < path->Count(); ++i)
+				{
+					iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
+					SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
+					app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
+				}
+			}
+			break;
 		}
-		break;
-	}
-	case GROUNDENEMY_ATTACK:
-		currentAnimation = &move;
-		app->player->Hit(damage);
-		attackTimer = attackTimerConfig;
-		status = GROUNDENEMY_IDLE;
-		break;
-	case GROUNDENEMY_DEATH:
-		currentAnimation = &death;
-		if (death.Finished()) 
+		case GROUNDENEMY_ATTACK:
+			currentAnimation = &move;
+			app->player->Hit(damage);
+			attackTimer = attackTimerConfig;
+			status = GROUNDENEMY_IDLE;
+			break;
+		case GROUNDENEMY_DEATH:
+			currentAnimation = &death;
+			if (death.Finished())
+			{
+				dead = true;
+				DisableGroundEnemy();
+			}
+			break;
+		default:
+			break;
+		}
+
+		if (!dead)
 		{
-			dead = true;
-			DisableGroundEnemy();
+			if (velocity.x != 0) idle.Reset();
+
+			//Change position from velocity
+			position.x += (velocity.x * dt);
+			position.y += (velocity.y * dt);
+
+			positionPixelPerfect.x = round(position.x);
+			positionPixelPerfect.y = round(position.y);
+
+			//Collider position
+			colGroundEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
+			r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
+
+			onGround = false;
+			canAttack = false;
 		}
-		break;
-	default:
-		break;
-	}
-
-	if (!dead)
-	{
-		if (velocity.x != 0) idle.Reset();
-
-		//Change position from velocity
-		position.x += (velocity.x * dt);
-		position.y += (velocity.y * dt);
-
-		positionPixelPerfect.x = round(position.x);
-		positionPixelPerfect.y = round(position.y);
-
-		//Collider position
-		colGroundEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
-		r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
-
-		//Function to draw the player
-		ret = Draw(dt);
-		onGround = false;
-		canAttack = false;
 	}
 	else ret = true;
+
+	//Function to draw the player
+	ret = Draw(dt);	
 	
 	return ret;
 }
@@ -264,7 +268,9 @@ bool GroundEnemy::Update(float dt)
 bool GroundEnemy::Draw(float dt)
 {
 	bool ret = false;
-	r = currentAnimation->GetCurrentFrame(dt);
+
+	r = currentAnimation->GetCurrentFrame(dt);		
+		
 	if (graphics != nullptr) 
 	{
 		ret = app->render->DrawTexture(graphics, positionPixelPerfect.x, positionPixelPerfect.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);
