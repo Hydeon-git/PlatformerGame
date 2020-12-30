@@ -108,12 +108,6 @@ private:
 	UI* text4 = nullptr;
 	UI* button5 = nullptr;
 	UI* text5 = nullptr;
-	UI* fullscreeenCheckbox = nullptr;
-	UI* fullscreenText = nullptr;
-	UI* audioText = nullptr;
-	UI* audioSlider = nullptr;
-	UI* backButton = nullptr;
-	UI* backText = nullptr;
 };
 
 #endif // __SCENE_H__
