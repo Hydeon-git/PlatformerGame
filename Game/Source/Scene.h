@@ -55,6 +55,8 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	bool PauseMenu();
+	bool GameUI();
+	bool MenuUI();
 
 	void OnClick(UI* interaction);
 
@@ -76,7 +78,6 @@ private:
 	SString menuAudioPath;
 	SString gameAudioPath;
 	SString winAudioPath;
-	int audioVol;
 
 	SString introTexturePath;
 	SString endTexturePath;
@@ -91,28 +92,21 @@ private:
 	bool ended;
 
 	//UI	
-	bool menu = true;
 	bool pauseMenu = false;
 	bool optionsMenu = false;
 	bool fullscreen = false;
-	UI* window = nullptr;
-	UI* menuTitle = nullptr;
-	UI* startButton = nullptr;
-	UI* startText = nullptr;
-	UI* optionsButton = nullptr;
-	UI* optionsText = nullptr;
-	UI* creditsButton = nullptr;
-	UI* creditsText = nullptr;
-	UI* exitButton = nullptr;
-	UI* exitText = nullptr;
-	UI* resumeButton = nullptr;
-	UI* resumeText = nullptr;
-	UI* saveButton = nullptr;
-	UI* saveText = nullptr;
-	UI* loadButton = nullptr;
-	UI* loadText = nullptr;
-	UI* menuButton = nullptr;
-	UI* menuText = nullptr;
+	UI* image1 = nullptr;
+	UI* image2 = nullptr;
+	UI* button1 = nullptr;
+	UI* text1 = nullptr;
+	UI* button2 = nullptr;
+	UI* text2 = nullptr;
+	UI* button3 = nullptr;
+	UI* text3 = nullptr;
+	UI* button4 = nullptr;
+	UI* text4 = nullptr;
+	UI* button5 = nullptr;
+	UI* text5 = nullptr;
 	UI* fullscreeenCheckbox = nullptr;
 	UI* fullscreenText = nullptr;
 	UI* audioText = nullptr;

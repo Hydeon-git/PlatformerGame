@@ -20,7 +20,7 @@
   <fonts>
     <font file="Assets/Textures/Gui/8bitwonder.ttf" size="12"/>
   </fonts>
-  <gui atlas="Assets/Textures/Gui/gui_atlas2.png" clickFx="Assets/Audio/Fx/click_sfx.ogg"/>
+  <gui atlas="Assets/Textures/Gui/gui_atlas2.png" clickFx="Assets/Audio/Fx/click_sfx.ogg" defaultVolume="50"/>
   <!-- L03: Added maps folder as config option -->
   <map>
 	<folder>Assets/Maps/</folder>
@@ -34,7 +34,7 @@
 	/>
 	<textures introTexture="Assets/Textures/Screens/intro_image.png" endTexture="Assets/Textures/Screens/ending_image.png"/>
 	<maps level1="scifi_map.tmx"/>
-	<properties volume="50" deathLimit="300" gravity="350"/>
+	<properties deathLimit="300" gravity="350"/>
 	<objects>
 	  <level1>
 		<obj x="64" y="94" type="1"/>

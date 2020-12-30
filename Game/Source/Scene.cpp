@@ -42,7 +42,6 @@ bool Scene::Awake(pugi::xml_node& config)
 	menuAudioPath = config.child("music").attribute("menuMusic").as_string();
 	gameAudioPath = config.child("music").attribute("gameMusic").as_string();
 	winAudioPath = config.child("music").attribute("winMusic").as_string();
-	audioVol = config.child("properties").attribute("volume").as_int();
 	deathLimit = config.child("properties").attribute("deathLimit").as_int();
 	gravity = config.child("properties").attribute("gravity").as_int();
 
@@ -125,8 +124,9 @@ bool Scene::Update(float dt)
 			{
 				if (pauseMenu)
 				{
-					app->gui->ClearUI(); 
-					//GameUI
+					GameUI();
+					app->player->godmode = false;
+					app->player->input = true;
 					pauseMenu = false;
 				}
 				else PauseMenu();
@@ -152,6 +152,10 @@ bool Scene::Update(float dt)
 void Scene::LoadLastSave()
 {
 	app->gui->ClearUI();
+	GameUI();
+	app->player->godmode = false;
+	app->player->input = true;
+	pauseMenu = false;
 	app->fade->FadeToBlk(LOAD_SAVE);
 }
 
@@ -170,6 +174,7 @@ bool Scene::PostUpdate()
 bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
+	app->gui->ClearUI();
 	delete fullscreenRect;
 	fullscreenRect = nullptr;
 	if (introScreen) app->tex->UnLoad(introScreen);
@@ -220,18 +225,7 @@ void Scene::ChangeScene(GameScene nextScene)
 		app->audio->PlayMusic(menuAudioPath.GetString());
 		introScreen = app->tex->Load(introTexturePath.GetString());
 
-		//UI
-		int x_offset = 33;
-		int y_offset = 182;
-
-		startButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Start", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		startText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Start");
-		optionsButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 90, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		optionsText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 98, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Options");
-		creditsButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 180, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Credits", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		creditsText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 187, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Credits");
-		exitButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 270, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Exit", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		exitText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 294, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Exit");
+		MenuUI();
 
 		currentScene = SCENE_INTRO;
 	}
@@ -261,6 +255,8 @@ void Scene::ChangeScene(GameScene nextScene)
 		{
 			app->obj->CreateObject(objects[i]->pos, (ObjectType)objects[i]->type);
 		}
+
+		GameUI();
 
 		endCol = app->collision->AddCollider({ 960, 194, 15, 30 }, COLLIDER_END, this);
 		ended = false;
@@ -297,22 +293,79 @@ bool Scene::MovePlayer(iPoint pos)
 	return true;
 }
 
+bool Scene::MenuUI()
+{
+	app->gui->ClearUI();
+
+	int x_offset = 33;
+	int y_offset = 182;
+
+	button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Start", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Start");
+	button2 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 90, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 98, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Options");
+	button3 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 180, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Credits", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+	text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 187, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Credits");
+	button4 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 270, y_offset, 92, 28 }, { 1, 1, 46, 14 }, "Exit", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+	text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 294, y_offset + 6, 44, 44 }, { 0, 0, 44, 44 }, "Exit");
+
+	return true;
+}
+
+bool Scene::GameUI()
+{
+	app->gui->ClearUI();
+	image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
+	button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { 405, 5, 18, 18 }, { 48, 1, 18, 18 }, "Pause", { 48, 1, 18, 18 }, { 48, 1, 18, 18 }, false, { 0,0,0,0 }, this);
+	image2 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 411, 10, 6, 8 }, { 54, 22, 6, 8 });
+	return true;
+}
+
 bool Scene::PauseMenu() 
 {
+	app->gui->ClearUI();
+	if (currentScene == SCENE_1)image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
+
+	app->player->godmode = true;
+	app->player->input = false;
+
 	int x_offset = 140;
 	int y_offset = 40;
-	menuTitle = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,50,40,19 });
-	window = app->gui->CreateUIElement(UiType::WINDOW, nullptr, { x_offset, y_offset, 146, 168 }, { 2, 34, 73, 83 });
-	resumeButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset + 10, 92, 28 }, { 1, 1, 46, 14 }, "Resume", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	resumeText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+15, 44, 44 }, { 0, 0, 44, 44 }, "Resume");
-	saveButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+40, 92, 28 }, { 1, 1, 46, 14 }, "Save", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	saveText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+45, 44, 44 }, { 0, 0, 44, 44 }, "Save");
-	loadButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+70, 92, 28 }, { 1, 1, 46, 14 }, "Load", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	loadText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+75, 44, 44 }, { 0, 0, 44, 44 }, "Load");
-	optionsButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+100, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	optionsText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+105, 44, 44 }, { 0, 0, 44, 44 }, "Options");
-	menuButton = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset+130, 92, 28 }, { 1, 1, 46, 14 }, "Menu", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-	menuText = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 0, 0, 44, 44 }, "Menu");
+	
+	image2 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset, y_offset, 146, 168 }, { 2, 34, 73, 83 });
+
+	if (!optionsMenu)
+	{ 
+		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,50,40,19 });
+		//Resume
+		button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset + 10, 92, 28 }, { 1, 1, 46, 14 }, "Resume", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+15, 44, 44 }, { 0, 0, 44, 44 }, "Resume");
+		//Save
+		button2 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+40, 92, 28 }, { 1, 1, 46, 14 }, "Save", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+45, 44, 44 }, { 0, 0, 44, 44 }, "Save");
+		//Load
+		button3 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+70, 92, 28 }, { 1, 1, 46, 14 }, "Load", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+50, y_offset+75, 44, 44 }, { 0, 0, 44, 44 }, "Load");
+		//Options
+		button4 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+100, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+105, 44, 44 }, { 0, 0, 44, 44 }, "Options");
+		//Menu
+		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset+130, 92, 28 }, { 1, 1, 46, 14 }, "Menu", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 0, 0, 44, 44 }, "Menu");
+	}
+	else
+	{
+		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,70,40,19 });
+		//Checkbox
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+14, y_offset + 15, 44, 44 }, { 0, 0, 44, 44 }, "Fullscreen");
+		button1 = app->gui->CreateUIElement(UiType::CHECKBOX, nullptr, { x_offset + 54, y_offset + 34, 36, 36 }, { 48, 1, 18, 18 }, "Fullscreen", { 90, 38, 6, 5 }, { 48, 1, 18, 18 }, fullscreen, { 0,0,0,0 }, this);
+		//Slider
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+45, y_offset + 75, 44, 44 }, { 0, 0, 44, 44 }, "Sound");
+		button2 = app->gui->CreateUIElement(UiType::SLIDER, nullptr, { x_offset + 14, y_offset + 98, 118, 6 }, { 79, 30, 59, 3 }, "Sound", { 79, 36, 5, 9 });
+		//Back
+		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset + 130, 92, 28 }, { 1, 1, 46, 14 }, "Back", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 46, y_offset + 135, 44, 44 }, { 0, 0, 44, 44 }, "Back");
+	}
 	
 	pauseMenu = true;
 	return true;
@@ -320,37 +373,86 @@ bool Scene::PauseMenu()
 
 void Scene::OnClick(UI* interaction)
 {
-	if(interaction == startButton)
+	if (currentScene == SCENE_INTRO)
 	{
-		app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
+		if (interaction == button1)
+		{
+			if (optionsMenu)
+			{
+				fullscreen = !fullscreen;
+				if (fullscreen) SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_FULLSCREEN);
+				else SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_RESIZABLE);
+			}
+			else app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
+		}
+		else if (interaction == button2)
+		{
+			optionsMenu = true;
+			PauseMenu();
+		}
+		else if (interaction == button3)
+		{
+			//credits
+		}
+		else if (interaction == button4)
+		{
+			exitGame = true;
+		}
+		else if (interaction == button5)
+		{
+			if (optionsMenu)
+			{
+				optionsMenu = false;
+				pauseMenu = false;
+				app->player->godmode = false;
+				app->player->input = true;
+				MenuUI();
+			}
+		}
 	}
-	else if (interaction == optionsButton)
+	else if (currentScene == SCENE_1)
 	{
-		optionsMenu = !optionsMenu;
-	}
-	else if (interaction == creditsButton)
-	{
-
-	}
-	else if (interaction == exitButton)
-	{
-		exitGame = true;
-	}
-	else if (interaction == resumeButton)
-	{
-		app->gui->ClearUI(); //GameUI
-		pauseMenu = false;
-	}
-	else if (interaction == saveButton)
-	{
-		app->SaveGameRequest();
-	}
-	else if (interaction == loadButton)
-	{
-		LoadLastSave();
-	}
-	else if (interaction == menuButton)
-	{
-		app->fade->FadeToBlk(CHANGE_SCENE, SCENE_INTRO);
+		if (interaction == button1)
+		{
+			if (pauseMenu)
+			{
+				if (optionsMenu)
+				{
+					fullscreen = !fullscreen;
+					if (fullscreen) SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_FULLSCREEN);
+					else SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_RESIZABLE);
+				}
+				else
+				{
+					GameUI();
+					app->player->godmode = false;
+					app->player->input = true;
+					pauseMenu = false;
+				}
+			}
+			else PauseMenu();
+		}
+		else if (interaction == button2)
+		{
+			app->SaveGameRequest();
+		}
+		else if (interaction == button3)
+		{
+			LoadLastSave();
+		}
+		else if (interaction == button4)
+		{
+			optionsMenu = true;
+			PauseMenu();
+		}
+		else if (interaction == button5)
+		{
+			if (optionsMenu)
+			{
+				optionsMenu = false;
+				PauseMenu();
+			}
+			else app->fade->FadeToBlk(CHANGE_SCENE, SCENE_INTRO);
+		}
 	}
 }

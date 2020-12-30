@@ -104,11 +104,14 @@ UI* ModuleGUI::CreateUIElement(UiType type, UI* parent, SDL_Rect r, SDL_Rect spr
 	case UiType::IMAGE:
 		ui = new ImageUI(UiType::IMAGE, parent, r, sprite, drageable, drageable, dragArea);
 		break;
-	case UiType::WINDOW:
-		ui = new WindowUI(UiType::WINDOW, parent, r, sprite, drageable, drageable, dragArea);
-		break;
 	case UiType::TEXT:
 		ui = new TextUI(UiType::TEXT, parent, r, textString, drageable, drageable, dragArea);
+		break;
+	case UiType::CHECKBOX:
+		ui = new CheckboxUI(UiType::CHECKBOX, parent, r, sprite, spritePushed, drageable, drageable, dragArea);
+		break;
+	case UiType::SLIDER:
+		ui = new SliderUI(UiType::SLIDER, parent, r, sprite, spritePushed, drageable, drageable, dragArea);
 		break;
 	}
 
@@ -353,71 +356,13 @@ SDL_Rect UI::CheckPrintableRect(SDL_Rect sprite, iPoint& dif_sprite)
 	return sprite;
 }
 
-ImageUI::ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) 
+ImageUI::ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) : UI(type, r, p, d, f, d_area)
 {
 	spriteOver = sprite;
 	quad = r;
-	SDL_Rect dragArea = GetDragArea();
-	dragPosition0 = { dragArea.x, dragArea.y };
-	dragPosition1 = { dragArea.w + dragArea.x - GetLocalRect().w,dragArea.h + dragArea.y - GetLocalRect().h };
-}
-
-bool ImageUI::PreUpdate() {
-	int x, y;
-	iPoint initial_position = GetScreenPos();
-	app->input->GetMousePosition(x, y);
-	if (CheckFocusable() == true && (x >= GetScreenPos().x && x <= GetScreenPos().x + GetScreenRect().w && y >= GetScreenPos().y && y <= GetScreenPos().y + GetScreenRect().h)) 
-	{
-		if (app->input->GetMouseButtonDown(1) == KEY_DOWN)
-		{
-			app->gui->DeleteFocus();
-			focus = true;
-		}
-	}
-	if (focus == true && app->input->GetMouseButtonDown(1) == KEY_UP) 
-	{
-		focus = false;
-	}
-
-	UI::PreUpdate();
-
-	if (initial_position != GetScreenPos()) 
-	{
-		fPoint drag_position = GetDragPositionNormalized();
-		/////HERE LISTENER WITH DRAG POSITION
-	}
-	return true;
 }
 
 bool ImageUI::Draw() 
-{
-	iPoint dif_sprite = { 0,0 };
-	SDL_Rect sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
-	quad.x = GetScreenPos().x + dif_sprite.x;
-	quad.y = GetScreenPos().y + dif_sprite.y;
-
-	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
-	UI::Draw();
-	return true;
-}
-
-fPoint ImageUI::GetDragPositionNormalized() 
-{
-	fPoint position_normalized;
-	position_normalized.x = GetScreenPos().x - dragPosition0.x;
-	position_normalized.y = GetScreenPos().y - dragPosition0.y;
-	position_normalized.x /= dragPosition1.x - dragPosition0.x;
-	position_normalized.y /= dragPosition1.y - dragPosition0.y;
-	return position_normalized;
-}
-
-WindowUI::WindowUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area)
-{
-	spriteOver = sprite;
-	quad = r;
-}
-
-bool WindowUI::Draw() 
 {
 	iPoint dif_sprite = { 0,0 };
 	SDL_Rect sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
@@ -513,7 +458,6 @@ bool ButtonUI::PreUpdate()
 		{
 			listener->OnClick(this);
 		}
-		LOG("Click");
 		pushed = false;
 	}
 
@@ -522,18 +466,73 @@ bool ButtonUI::PreUpdate()
 	return true;
 }
 
-SliderUI::SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) {
+CheckboxUI::CheckboxUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect sprite2, bool checked, bool f, SDL_Rect d_area) : UI(type, r, p, false, f, d_area)
+{
 	spriteOver = sprite;
-	sprite2 = spriten2;
-	base.x = r.x;
-	base.y = r.y;
-	base.w = r.w;
-	base.h = r.h;
+	spriteTick = sprite2;
+
+	state = checked;
+
+	base = r;
+	quad.x = r.x;
+	quad.y = r.y;
+	quad.w = spriteTick.w*2;
+	quad.h = spriteTick.h*2;
+}
+
+bool CheckboxUI::Draw()
+{
+	SDL_Rect sprite;
+	iPoint dif_sprite = { 0,0 };
+	sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
+	base.x = GetScreenPos().x + dif_sprite.x;
+	base.y = GetScreenPos().y + dif_sprite.y;
+	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, base);
+	if (state) 
+	{
+		sprite = UI::CheckPrintableRect(spriteTick, dif_sprite);
+		quad.x = GetScreenPos().x + dif_sprite.x + 12;
+		quad.y = GetScreenPos().y + dif_sprite.y + 13;
+		app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
+	}
+
+	UI::Draw();
+	return true;
+}
+
+bool CheckboxUI::PreUpdate()
+{
+	int x, y;
+	app->input->GetMousePosition(x, y);
+	if ((x >= GetScreenPos().x && x <= GetScreenPos().x + GetScreenRect().w && y >= GetScreenPos().y && y <= GetScreenPos().y + GetScreenRect().h) || focus == true)
+		isMouseOver = true;
+	else isMouseOver = false;
+
+	if (app->input->GetMouseButtonDown(1) == KEY_DOWN && isMouseOver == true)
+	{
+		state = !state;
+		app->audio->PlayFx(app->gui->clickSfx);
+		//Button clicked
+		if (listener)
+		{
+			listener->OnClick(this);
+		}
+	}
+
+	UI::PreUpdate();
+
+	return true;
+}
+
+SliderUI::SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriteHandle, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) {
+	spriteOver = sprite;
+	sprite2 = spriteHandle;
+	base = r;
 
 	quad.x = app->gui->slider + base.x;
-	quad.y = r.y - 2;
-	quad.w = spriten2.w;
-	quad.h = spriten2.h;
+	quad.y = r.y - 6;
+	quad.w = spriteHandle.w*2;
+	quad.h = spriteHandle.h*2;
 
 	clickRet = false;
 }
@@ -553,13 +552,13 @@ bool SliderUI::Draw()
 		int xpos;
 		int ypos;
 		app->input->GetMousePosition(xpos, ypos);
-		if (xpos<base.x + base.w - 5 && xpos>base.x + 5)
-			quad.x = xpos - 5;
+		app->render->Clamp(&xpos, base.x + 2, base.x + base.w-8);
+		quad.x = xpos - 2;
 	}
 
 	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite_, quad);
-
-	app->gui->slider = quad.x - base.x;
+	float vol = ((float)(quad.x - base.x) / (base.w - 10))*100;
+	app->gui->slider = vol;
 
 	UI::Draw();
 	return true;
@@ -567,13 +566,7 @@ bool SliderUI::Draw()
 
 bool SliderUI::PreUpdate()
 {
-	Mix_VolumeMusic((int)app->gui->slider * 1.28);
-
-	ListItem<Mix_Chunk*>* item = app->audio->fx.start;
-	while (item != nullptr) {
-		Mix_VolumeChunk(item->data, (int)app->gui->slider * 1.28);
-		item = item->next;
-	}
+	app->audio->SetVolume(app->gui->slider);
 	UI::PreUpdate();
 	return true;
 }
@@ -581,7 +574,7 @@ bool SliderUI::PreUpdate()
 bool SliderUI::OnClick()
 {
 	app->input->GetMousePosition(mouse.x, mouse.y);
-	if (mouse.x<quad.x + quad.w && mouse.x>quad.x) {
+	if (mouse.x < quad.x + quad.w && mouse.x > quad.x) {
 		if (mouse.y<quad.y + quad.h && mouse.y>quad.y) {
 			if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT))
 				clickRet = true;

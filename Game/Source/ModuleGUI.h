@@ -9,11 +9,11 @@
 enum class UiType
 {
 	NONE,
-	WINDOW,
 	BUTTON,
 	IMAGE,
 	CHECKBOX,
 	TEXT,
+	SLIDER,
 	UNKNOWN
 };
 
@@ -72,28 +72,27 @@ public:
 	// Destructor
 	virtual ~ImageUI() {}
 
+	// Called after all Updates
+	bool Draw();
+};
+class CheckboxUI : public UI
+{
+public:
+	CheckboxUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area);
+
+	// Destructor
+	virtual ~CheckboxUI() {}
+
 	// Called before all Updates
 	bool PreUpdate();
 
 	// Called after all Updates
 	bool Draw();
-
-	fPoint GetDragPositionNormalized();
-
-public:
-	iPoint dragPosition0;
-	iPoint dragPosition1;
-};
-class WindowUI :public UI
-{
-public:
-	WindowUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
-
-	// Destructor
-	virtual ~WindowUI() {}
-
-	// Called after all Updates
-	bool Draw();
+private:
+	SDL_Rect spriteTick;
+	SDL_Rect base;
+	bool isMouseOver;
+	bool state = false;
 };
 class TextUI : public UI
 {

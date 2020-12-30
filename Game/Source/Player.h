@@ -93,6 +93,7 @@ public:
 	int checkpoint = 0;
 	bool godmode = false;
 	bool dead = false;
+	bool input = true;
 
 private:
 
@@ -107,7 +108,6 @@ private:
 	float deathTimer;
 	int deathLimit;
 
-	bool input = true;
 
 	bool jumpEnable = true;
 	bool doubleJump = true;
