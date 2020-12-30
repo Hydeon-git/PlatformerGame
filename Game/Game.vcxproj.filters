@@ -8,15 +8,31 @@
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\Map.cpp" />
+    <ClCompile Include="Source\ModuleGUI.cpp" />
     <ClCompile Include="Source\Pathfinding.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Render.cpp" />
     <ClCompile Include="Source\Textures.cpp" />
     <ClCompile Include="Source\Window.cpp" />
+    <ClCompile Include="Source\Fonts.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Log.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PerfTimer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\PugiXml\src\pugixml.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
     <ClCompile Include="Source\AirEnemy.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Checkpoint.cpp">
+    <ClCompile Include="Source\EntityManager.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Source\GroundEnemy.cpp">
@@ -28,27 +44,15 @@
     <ClCompile Include="Source\Objects.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Source\External\PugiXml\src\pugixml.cpp">
-      <Filter>External\PugiXML</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Log.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\PerfTimer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Timer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ModuleGUI.cpp" />
-    <ClCompile Include="Source\Fonts.cpp">
-      <Filter>Utils</Filter>
+    <ClCompile Include="Source\Checkpoint.cpp">
+      <Filter>Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\FadeToBlack.h" />
     <ClInclude Include="Source\Map.h" />
+    <ClInclude Include="Source\ModuleGUI.h" />
     <ClInclude Include="Source\Pathfinding.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Audio.h" />
@@ -58,34 +62,13 @@
     <ClInclude Include="Source\Render.h" />
     <ClInclude Include="Source\Textures.h" />
     <ClInclude Include="Source\Window.h" />
-    <ClInclude Include="Source\AirEnemy.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Checkpoint.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GroundEnemy.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Player.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Objects.h">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\PugiXml\src\pugiconfig.hpp">
-      <Filter>External\PugiXML</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\PugiXml\src\pugixml.hpp">
-      <Filter>External\PugiXML</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Animation.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Defs.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\DynArray.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Fonts.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\List.h">
@@ -97,13 +80,16 @@
     <ClInclude Include="Source\PerfTimer.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Timer.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Point.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\PQueue.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\PugiXml\src\pugiconfig.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\PugiXml\src\pugixml.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Queue.h">
@@ -112,23 +98,40 @@
     <ClInclude Include="Source\SString.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ModuleGUI.h" />
-    <ClInclude Include="Source\Fonts.h">
+    <ClInclude Include="Source\Timer.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AirEnemy.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entity.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EntityManager.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GroundEnemy.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Objects.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Animation.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Checkpoint.h">
+      <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Entities">
-      <UniqueIdentifier>{c1da43f5-6fae-41ee-b618-94ab84a8fc1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External">
-      <UniqueIdentifier>{1ef526b2-a01b-4cfa-b4c0-957c312221b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\PugiXML">
-      <UniqueIdentifier>{6d522eac-5da0-4d2e-a99b-7c33df6f9e9c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils">
-      <UniqueIdentifier>{61822d7d-c44a-431d-94c6-7b72248482e4}</UniqueIdentifier>
+      <UniqueIdentifier>{4d3203fa-cc80-4c16-ae84-ece5b41db78a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{140d46b1-9c2a-4441-a515-72023894a1b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

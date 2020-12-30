@@ -3,11 +3,15 @@
 
 #include "Module.h"
 #include "Point.h"
-#include <map>
 
 struct SDL_Texture;
 struct SDL_Rect;
 class UI;
+
+class Player;
+class AirEnemy;
+class GroundEnemy;
+class Checkpoint;
 
 enum GameScene
 {
@@ -65,6 +69,11 @@ public:
 	int deathLimit;
 	int gravity;
 	bool pauseMenu = false;
+
+	Player* player;
+	GroundEnemy* groundEnemy;
+	AirEnemy* airEnemy;
+	Checkpoint* checkpoint;
 
 private:
 

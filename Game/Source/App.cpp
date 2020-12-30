@@ -6,17 +6,13 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "Map.h"
-#include "Checkpoint.h"
 #include "Pathfinding.h"
 #include "Collision.h"
-#include "Player.h"
-#include "GroundEnemy.h"
-#include "AirEnemy.h"
 #include "Objects.h"
 #include "FadeToBlack.h"
 #include "ModuleGUI.h"
 #include "Fonts.h"
-
+#include "EntityManager.h"
 #include "Defs.h"
 #include "Log.h"
 
@@ -37,12 +33,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	fonts = new Fonts();
 	scene = new Scene();
 	map = new Map();
-	checkpoint = new Checkpoint();
 	pathfinding = new PathFinding();
-	player = new Player();
-	groundEnemy = new GroundEnemy();
-	airEnemy = new AirEnemy();
 	obj = new Objects();
+	entityManager = new EntityManager();
 	collision = new Collision();
 	fade = new FadeToBlack();
 
@@ -54,12 +47,9 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	AddModule(audio);
 	AddModule(scene);
 	AddModule(map);
-	AddModule(checkpoint);
 	AddModule(pathfinding);
-	AddModule(player);
-	AddModule(groundEnemy);
-	AddModule(airEnemy);
 	AddModule(obj);
+	AddModule(entityManager);
 	AddModule(collision);
 	AddModule(gui);
 	AddModule(fonts);
@@ -93,10 +83,6 @@ void App::AddModule(Module* module)
 // Called before render is available
 bool App::Awake()
 {
-	pugi::xml_document configFile;
-	pugi::xml_node config;
-	pugi::xml_node configApp;
-
 	bool ret = false;
 
 	// L01: DONE 3: Load config from XML
@@ -424,7 +410,7 @@ bool App::LoadGame()
 			ret = item->data->LoadState(root.child(item->data->name.GetString()));
 			item = item->next;
 		}
-		player->dead = false;
+		scene->player->dead = false;
 	}
 	else
 	{
@@ -458,13 +444,10 @@ bool App::SaveGame() const
 
 	if (ret == true) 
 	{
-		data.save_file(SAVE_STATE_FILENAME);
+		ret = data.save_file(SAVE_STATE_FILENAME);
 	}
 
 	saveGameRequested = false;
 
 	return ret;
 }
-
-
-

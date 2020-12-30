@@ -9,7 +9,7 @@
 #include "Player.h"
 #include "GroundEnemy.h"
 
-GroundEnemy::GroundEnemy() : Module()
+GroundEnemy::GroundEnemy() : Entity(EntityType::GROUND_ENEMY)
 {
 	name.Create("groundEnemy");
 
@@ -129,7 +129,7 @@ bool GroundEnemy::Update(float dt)
 			// Input
 			if (onGround)
 			{
-				if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != GROUNDENEMY_ATTACK))
+				if ((position.DistanceTo(app->scene->player->position) < 128) && (app->scene->player->godmode == false) && (app->scene->player->dead == false) && (status != GROUNDENEMY_ATTACK))
 				{
 					if (canAttack && attackTimer <= 0)
 					{
@@ -165,7 +165,7 @@ bool GroundEnemy::Update(float dt)
 			}
 		}
 		else status = GROUNDENEMY_IDLE;
-
+	
 		//Status
 		switch (status)
 		{
@@ -178,57 +178,58 @@ bool GroundEnemy::Update(float dt)
 			currentAnimation = &move;
 			static iPoint origin;
 			// Target is player position
-			iPoint playerPos = app->player->positionPixelPerfect;
+			iPoint playerPos = app->scene->player->positionPixelPerfect;
 
-			// Convert World position to map position
-			origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
-			playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
+				// Convert World position to map position
+				origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
+				playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
 
-			// Create new path
-			app->pathfinding->CreatePath(origin, playerPos);
-			const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
+				// Create new path
+				app->pathfinding->CreatePath(origin, playerPos);
+				const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
 
-			if (path->At(1) != NULL)
-			{
-				// Move Enemy to Player
-				if (path->At(1)->x < origin.x)
+				if (path->At(1) != NULL)
 				{
-					velocity.x = -speed;
-					flip = false;
+					// Move Enemy to Player
+					if (path->At(1)->x < origin.x)
+					{
+						velocity.x = -speed;
+						flip = false;
+					}
+					else if (path->At(1)->x > origin.x)
+					{
+						velocity.x = speed;
+						flip = true;
+					}
+					if (path->At(1)->y < origin.y)
+					{
+						velocity.x = 0;
+						currentAnimation = &idle;
+					}
 				}
-				else if (path->At(1)->x > origin.x)
+
+				// Draw path
+				if (app->debug)
 				{
-					velocity.x = speed;
-					flip = true;
+					for (uint i = 0; i < path->Count(); ++i)
+					{
+						iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
+						SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
+						app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
+					}
 				}
-				if (path->At(1)->y < origin.y)
-				{
-					velocity.x = 0;
-					currentAnimation = &idle;
-				}
+				break;
 			}
 
-			// Draw path
-			if (app->debug)
-			{
-				for (uint i = 0; i < path->Count(); ++i)
-				{
-					iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
-					SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
-					app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
-				}
-			}
-			break;
-		}
 		case GROUNDENEMY_ATTACK:
 			currentAnimation = &move;
-			app->player->Hit(damage);
+			app->scene->player->Hit(damage);
 			attackTimer = attackTimerConfig;
 			status = GROUNDENEMY_IDLE;
 			break;
 		case GROUNDENEMY_DEATH:
 			currentAnimation = &death;
-			if (death.Finished())
+			if (death.Finished()) 
 			{
 				dead = true;
 				DisableGroundEnemy();
@@ -257,10 +258,9 @@ bool GroundEnemy::Update(float dt)
 			canAttack = false;
 		}
 	}
-	else ret = true;
 
 	//Function to draw the player
-	ret = Draw(dt);	
+	if (!dead) ret = Draw(dt);	
 	
 	return ret;
 }
@@ -297,14 +297,14 @@ bool GroundEnemy::OnCollision(Collider* c1, Collider* c2)
 	if (c1 == colGroundEnemy && c2->type == COLLIDER_BULLET)
 	{
 		//Take damage
-		life -= app->player->bulletDamage;
+		life -= app->scene->player->bulletDamage;
 		//Sound
 		app->audio->PlayFx(damageFx);
 
 		ret = true;
 	}
 
-	if (!app->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
+	if (!app->scene->player->godmode && (c1 == colGroundEnemy && c2->type == COLLIDER_PLAYER))
 	{
 		velocity.x = 0;
 		canAttack = true;
@@ -362,7 +362,7 @@ bool GroundEnemy::LoadState(pugi::xml_node& data)
 
 	EnableGroundEnemy();
 
-	if (app->player->checkpoint != 0 || !app->player->dead)
+	if (app->scene->player->checkpoint != 0 || !app->scene->player->dead)
 	{
 		dead = gEnemy.attribute("dead").as_bool();
 

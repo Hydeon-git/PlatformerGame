@@ -7,7 +7,7 @@
 #include "Player.h"
 #include "Objects.h"
 
-Player::Player() : Module()
+Player::Player() : Entity(EntityType::PLAYER)
 {
 	name.Create("player");
 
@@ -96,6 +96,7 @@ bool Player::Start()
 	velocity.SetToZero();
 	onGround = true;
 	checkpoint = 0;
+	diamonds = 0;
 
 	life = lifeConfig;
 
@@ -133,6 +134,11 @@ bool Player::CleanUp()
 	{
 		ret = app->tex->UnLoad(graphics);
 		graphics = nullptr;
+	}
+	if (bulletGraphics != nullptr)
+	{
+		ret = app->tex->UnLoad(bulletGraphics);
+		bulletGraphics = nullptr;
 	}
 	if (colPlayer != nullptr)
 	{
@@ -385,6 +391,7 @@ void Player::Hit(int damage)
 
 	// Sound
 	app->audio->PlayFx(damageFx);
+	app->scene->GameUI();
 }
 
 void Player::Heal(int lifeHealed)
@@ -486,6 +493,7 @@ bool Player::SaveState(pugi::xml_node& data) const
 	ply.append_attribute("y") = positionPixelPerfect.y;
 
 	ply.append_attribute("life") = life;
+	ply.append_attribute("diamonds") = diamonds;
 
 	return true;
 }
@@ -505,6 +513,7 @@ bool Player::LoadState(pugi::xml_node& data)
 		position.y = ply.attribute("y").as_int();
 
 		life = ply.attribute("life").as_int();
+		diamonds = ply.attribute("diamonds").as_int();
 
 		positionPixelPerfect.x = round(position.x);
 		positionPixelPerfect.y = round(position.y);
@@ -522,6 +531,8 @@ bool Player::LoadState(pugi::xml_node& data)
 	rightColliding = false;
 	leftColliding = false;
 	input = true;
+
+	app->scene->GameUI();
 
 	status = PLAYER_IDLE;
 

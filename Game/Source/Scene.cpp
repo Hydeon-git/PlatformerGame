@@ -6,11 +6,8 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Map.h"
-#include "Checkpoint.h"
 #include "Pathfinding.h"
-#include "Player.h"
-#include "GroundEnemy.h"
-#include "AirEnemy.h"
+#include "EntityManager.h"
 #include "FadeToBlack.h"
 #include "Objects.h"
 #include "ModuleGUI.h"
@@ -26,6 +23,11 @@ Scene::Scene() : Module()
 	fullscreenRect = nullptr;
 	ended = false;
 	currentScene = GameScene::SCENE_INTRO;
+
+	player = nullptr;
+	airEnemy = nullptr;
+	groundEnemy = nullptr;
+	checkpoint = nullptr;
 }
 
 // Destructor
@@ -104,13 +106,18 @@ bool Scene::Update(float dt)
 			app->fade->FadeToBlk(CHANGE_SCENE, currentScene);
 
 		//Save Game
-		if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (app->player->dead == false))
+		if ((app->input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) && (player->dead == false))
 			app->SaveGameRequest();
+
+		//Load Game
+		if ((app->input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) && (player->dead == false))
+			LoadLastSave();
 
 		if (app->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
-			app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, app->checkpoint->position);
+			app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, iPoint(checkpoint->position.x, checkpoint->position.y));
 		}
+
 		if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		{
 			if (pauseMenu)
@@ -123,7 +130,7 @@ bool Scene::Update(float dt)
 		
 		// Draw map
 		app->map->Draw();
-		app->checkpoint->Draw(dt);
+		checkpoint->Draw(dt);
 	} break;
 	case SCENE_END:
 	{
@@ -142,8 +149,6 @@ void Scene::LoadLastSave()
 {
 	app->gui->ClearUI();
 	GameUI();
-	app->player->godmode = false;
-	app->player->input = true;
 	pauseMenu = false;
 	app->fade->FadeToBlk(LOAD_SAVE);
 }
@@ -177,12 +182,19 @@ bool Scene::CleanUp()
 void Scene::ChangeScene(GameScene nextScene)
 {
 	LOG("Changing scene");
-	app->checkpoint->CleanUp();
 	app->obj->DeleteObjects();
-	// Disabling player and enemies
-	app->player->DisablePlayer();
-	app->groundEnemy->DisableGroundEnemy();
-	app->airEnemy->DisableAirEnemy();
+	// Delete player and enemies
+	if (currentScene == SCENE_1)
+	{
+		app->entityManager->DeleteEntity(player);
+		app->entityManager->DeleteEntity(groundEnemy);
+		app->entityManager->DeleteEntity(airEnemy);
+		app->entityManager->DeleteEntity(checkpoint);
+		player = nullptr;
+		groundEnemy = nullptr;
+		airEnemy = nullptr;
+		checkpoint = nullptr;
+	}
 	// Unloading menu and ending screens
 	if (introScreen) app->tex->UnLoad(introScreen);
 	if (endScreen) app->tex->UnLoad(endScreen);
@@ -222,14 +234,18 @@ void Scene::ChangeScene(GameScene nextScene)
 	case SCENE_1:
 	{
  		app->audio->PlayMusic(gameAudioPath.GetString());
+		player = (Player*)app->entityManager->CreateEntity(EntityType::PLAYER);
+		airEnemy = (AirEnemy*)app->entityManager->CreateEntity(EntityType::AIR_ENEMY);
+		groundEnemy = (GroundEnemy*)app->entityManager->CreateEntity(EntityType::GROUND_ENEMY);
+		checkpoint = (Checkpoint*)app->entityManager->CreateEntity(EntityType::CHECKPOINT);
 
-		app->player->EnablePlayer();
-		app->groundEnemy->EnableGroundEnemy();
-		app->airEnemy->EnableAirEnemy();
+		player->EnablePlayer();
+		groundEnemy->EnableGroundEnemy();
+		airEnemy->EnableAirEnemy();
 
 		if (app->map->Load(mapLevel1.GetString()) == true)
 		{
-			app->checkpoint->Load();
+			checkpoint->Load();
 
 			int w, h;
 			uchar* data = NULL;
@@ -278,7 +294,7 @@ bool Scene::MovePlayer(iPoint pos)
 	fPoint newPos;
 	newPos.x = pos.x;
 	newPos.y = pos.y;
-	app->player->position = newPos;
+	player->position = newPos;
 	return true;
 }
 
@@ -306,8 +322,8 @@ bool Scene::GameUI()
 	app->gui->ClearUI();
 	image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 2, 2, 72, 24 }, { 67, 1, 72, 24 });
 
-	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 4, 1, 1 }, { 7, 0, 0, 0 }, "100");
-	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 17, 1, 1 }, { 5, 0, 0, 0 }, "0");
+	text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 4, 1, 1 }, { 7, 0, 0, 0 }, std::to_string(player->life).c_str());
+	text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { 37, 17, 1, 1 }, { 5, 0, 0, 0 }, std::to_string(player->diamonds).c_str());
 
 	button1 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { 405, 5, 18, 18 }, { 48, 1, 18, 18 }, "Pause", { 48, 1, 18, 18 }, { 48, 1, 18, 18 }, false, { 0,0,0,0 }, this);
 	image2 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { 411, 10, 6, 8 }, { 54, 22, 6, 8 });

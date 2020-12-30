@@ -21,13 +21,10 @@ class ModuleGUI;
 class Fonts;
 class Scene;
 class Map;
-class Checkpoint;
 class PathFinding;
 class Collision;
-class Player;
-class GroundEnemy;
-class AirEnemy;
 class Objects;
+class EntityManager;
 class FadeToBlack;
 
 class App
@@ -109,13 +106,10 @@ public:
 	Fonts* fonts;
 	Scene* scene;
 	Map* map;
-	Checkpoint* checkpoint;
 	PathFinding* pathfinding;
 	Collision* collision;
-	Player* player;
-	GroundEnemy* groundEnemy;
-	AirEnemy* airEnemy;
 	Objects* obj;
+	EntityManager* entityManager;
 	FadeToBlack* fade;
 
 private:
@@ -129,9 +123,10 @@ private:
 
 	// L01: DONE 2: Create new variables from pugui namespace
 	// NOTE: Redesigned LoadConfig() to avoid storing this variables
-	//pugi::xml_document configFile;
-	//pugi::xml_node config;
-	//pugi::xml_node configApp;
+	// PERSONAL NOTE: I have to store the variables to make the entity manager work correctly.
+	pugi::xml_document configFile;
+	pugi::xml_node config;
+	pugi::xml_node configApp;
 
 	PerfTimer pTimer;
 	uint64 frameCount = 0;

@@ -9,7 +9,7 @@
 #include "Player.h"
 #include "AirEnemy.h"
 
-AirEnemy::AirEnemy() : Module()
+AirEnemy::AirEnemy() : Entity(EntityType::AIR_ENEMY)
 {
 	name.Create("airEnemy");
 
@@ -114,38 +114,41 @@ bool AirEnemy::Update(float dt)
 		if (!dead)
 		{
 			// Input
-			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != AIRENEMY_ATTACK))
+			if ((position.DistanceTo(app->scene->player->position) < 128) && (app->scene->player->godmode == false) && (app->scene->player->dead == false) && (status != AIRENEMY_ATTACK))
 			{
-				if (canAttack && attackTimer <= 0)
+				// Input
+				if ((position.DistanceTo(app->scene->player->position) < 128) && (app->scene->player->godmode == false) && (app->scene->player->dead == false) && (status != AIRENEMY_ATTACK))
 				{
-					status = AIRENEMY_ATTACK;
+					if (canAttack && attackTimer <= 0)
+					{
+						status = AIRENEMY_ATTACK;
+					}
+					else
+					{
+						status = AIRENEMY_MOVE;
+						attackTimer -= dt;
+					}
 				}
 				else
 				{
-					status = AIRENEMY_MOVE;
-					attackTimer -= dt;
+					status = AIRENEMY_IDLE;
+					attackTimer = 0;
 				}
-			}
-			else
-			{
-				status = AIRENEMY_IDLE;
-				attackTimer = 0;
-			}
 
-			if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
-			{
-				life = 0;
-			}
+				if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
+				{
+					life = 0;
+				}
 
-			if (positionPixelPerfect.y > deathLimit || life <= 0)
-			{
-				velocity.x = 0;
-				status = AIRENEMY_DEATH;
+				if (positionPixelPerfect.y > deathLimit || life <= 0)
+				{
+					velocity.x = 0;
+					status = AIRENEMY_DEATH;
+				}
+				canAttack = false;
 			}
-			canAttack = false;
+			else status = AIRENEMY_IDLE;
 		}
-		else status = AIRENEMY_IDLE;
-
 		//Status
 		switch (status)
 		{
@@ -158,7 +161,7 @@ bool AirEnemy::Update(float dt)
 			currentAnimation = &move;
 			static iPoint origin;
 			// Target is player position
-			iPoint playerPos = app->player->positionPixelPerfect;
+			iPoint playerPos = app->scene->player->positionPixelPerfect;
 
 			// Convert World position to map position
 			origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
@@ -214,7 +217,7 @@ bool AirEnemy::Update(float dt)
 		}
 		case AIRENEMY_ATTACK:
 			currentAnimation = &move;
-			app->player->Hit(damage);
+			app->scene->player->Hit(damage);
 			attackTimer = attackTimerConfig;
 			status = AIRENEMY_IDLE;
 			break;
@@ -245,11 +248,11 @@ bool AirEnemy::Update(float dt)
 			colAirEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
 			r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
 		}
-	}	
-	else ret = true;
+		else ret = true;
+	}
 
 	//Function to draw the player
-	ret = Draw(dt);
+	if (!dead) ret = Draw(dt);
 	return ret;
 }
 
@@ -277,14 +280,14 @@ bool AirEnemy::OnCollision(Collider* c1, Collider* c2)
 	if (c1 == colAirEnemy && c2->type == COLLIDER_BULLET)
 	{
 		//Take damage
-		life -= app->player->bulletDamage;
+		life -= app->scene->player->bulletDamage;
 		//Sound
 		app->audio->PlayFx(damageFx);
 
 		ret = true;
 	}
 
-	if (!app->player->godmode && (c1 == colAirEnemy && c2->type == COLLIDER_PLAYER))
+	if (!app->scene->player->godmode && (c1 == colAirEnemy && c2->type == COLLIDER_PLAYER))
 	{
 		velocity.SetToZero();
 		canAttack = true;
@@ -343,7 +346,7 @@ bool AirEnemy::LoadState(pugi::xml_node& data)
 
 	EnableAirEnemy();
 
-	if (app->player->checkpoint != 0 || !app->player->dead)
+	if (app->scene->player->checkpoint != 0 || !app->scene->player->dead)
 	{
 		dead = gEnemy.attribute("dead").as_bool();
 
