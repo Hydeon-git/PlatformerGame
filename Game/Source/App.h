@@ -145,7 +145,7 @@ private:
 	int	hCappedMs = -1;
 	int	lCappedMs = -1;
 	bool capState;					// If true cap is 60, if false cap is 30
-
+	
 	bool isCapped = true;
 
 	mutable bool saveGameRequested;

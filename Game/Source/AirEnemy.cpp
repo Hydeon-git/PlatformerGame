@@ -109,153 +109,156 @@ bool AirEnemy::CleanUp()
 bool AirEnemy::Update(float dt) 
 {
 	bool ret = false;
-
-	if (!dead) 
+	if (!app->scene->pauseMenu)
 	{
-		// Input
-		if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != AIRENEMY_ATTACK))
+		if (!dead)
 		{
-			if (canAttack && attackTimer <= 0)
+			// Input
+			if ((position.DistanceTo(app->player->position) < 128) && (app->player->godmode == false) && (app->player->dead == false) && (status != AIRENEMY_ATTACK))
 			{
-				status = AIRENEMY_ATTACK;
+				if (canAttack && attackTimer <= 0)
+				{
+					status = AIRENEMY_ATTACK;
+				}
+				else
+				{
+					status = AIRENEMY_MOVE;
+					attackTimer -= dt;
+				}
 			}
 			else
 			{
-				status = AIRENEMY_MOVE;
-				attackTimer -= dt;
+				status = AIRENEMY_IDLE;
+				attackTimer = 0;
 			}
+
+			if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
+			{
+				life = 0;
+			}
+
+			if (positionPixelPerfect.y > deathLimit || life <= 0)
+			{
+				velocity.x = 0;
+				status = AIRENEMY_DEATH;
+			}
+			canAttack = false;
 		}
-		else
+		else status = AIRENEMY_IDLE;
+
+		//Status
+		switch (status)
 		{
+		case AIRENEMY_IDLE:
+			velocity.SetToZero();
+			currentAnimation = &idle;
+			break;
+		case AIRENEMY_MOVE:
+		{
+			currentAnimation = &move;
+			static iPoint origin;
+			// Target is player position
+			iPoint playerPos = app->player->positionPixelPerfect;
+
+			// Convert World position to map position
+			origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
+			playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
+
+			// Create new path
+			app->pathfinding->CreatePath(origin, playerPos);
+			const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
+
+			velocity.SetToZero();
+
+			//worldPosition
+
+			if (path->At(1) != NULL)
+			{
+				iPoint target = app->map->MapToWorld(path->At(1)->x, path->At(1)->y);
+				// Move Enemy to Player
+				if (target.x + 9 < positionPixelPerfect.x + 9)
+				{
+					//Left
+					velocity.x = -speed;
+					flip = false;
+				}
+				else if (target.x + 7 > positionPixelPerfect.x + 9)
+				{
+					//Right
+					velocity.x = speed;
+					flip = true;
+				}
+				if (target.y + 16 < positionPixelPerfect.y + r.h)
+				{
+					//Up
+					velocity.y = -speed;
+				}
+				else if (target.y > positionPixelPerfect.y)
+				{
+					//Down
+					velocity.y = speed;
+				}
+			}
+
+			// Draw path
+			if (app->debug)
+			{
+				for (uint i = 0; i < path->Count(); ++i)
+				{
+					iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
+					SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
+					app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
+				}
+			}
+			break;
+		}
+		case AIRENEMY_ATTACK:
+			currentAnimation = &move;
+			app->player->Hit(damage);
+			attackTimer = attackTimerConfig;
 			status = AIRENEMY_IDLE;
-			attackTimer = 0;
-		}
-
-		if (app->input->GetKey(SDL_SCANCODE_J) == KEY_DOWN)
-		{
-			life = 0;
-		}
-
-		if (positionPixelPerfect.y > deathLimit || life <= 0)
-		{
-			velocity.x = 0;
-			status = AIRENEMY_DEATH;
-		}
-		canAttack = false;
-	}
-	else status = AIRENEMY_IDLE;
-	
-	//Status
-	switch (status)
-	{
-	case AIRENEMY_IDLE:
-		velocity.SetToZero();
-		currentAnimation = &idle;
-		break;
-	case AIRENEMY_MOVE:
-	{
-		currentAnimation = &move;
-		static iPoint origin;
-		// Target is player position
-		iPoint playerPos = app->player->positionPixelPerfect;
-
-		// Convert World position to map position
-		origin = app->map->WorldToMap(positionPixelPerfect.x + 9, positionPixelPerfect.y);
-		playerPos = app->map->WorldToMap(playerPos.x + 16, playerPos.y + 16);
-
-		// Create new path
-		app->pathfinding->CreatePath(origin, playerPos);
-		const DynArray<iPoint>* path = app->pathfinding->GetLastPath();
-
-		velocity.SetToZero();
-
-		//worldPosition
-
-		if (path->At(1) != NULL)
-		{
-			iPoint target = app->map->MapToWorld(path->At(1)->x, path->At(1)->y);
-			// Move Enemy to Player
-			if (target.x + 9 < positionPixelPerfect.x + 9)
+			break;
+		case AIRENEMY_DEATH:
+			currentAnimation = &death;
+			if (death.Finished())
 			{
-				//Left
-				velocity.x = -speed;
-				flip = false;
+				dead = true;
+				DisableAirEnemy();
 			}
-			else if (target.x + 7 > positionPixelPerfect.x + 9)
-			{
-				//Right
-				velocity.x = speed;
-				flip = true;
-			}
-			if (target.y + 16 < positionPixelPerfect.y + r.h)
-			{
-				//Up
-				velocity.y = -speed;
-			}
-			else if (target.y > positionPixelPerfect.y)
-			{
-				//Down
-				velocity.y = speed;
-			}
+			break;
+		default:
+			break;
 		}
 
-		// Draw path
-		if (app->debug)
+		if (!dead)
 		{
-			for (uint i = 0; i < path->Count(); ++i)
-			{
-				iPoint nextPoint = app->map->MapToWorld(path->At(i)->x, path->At(i)->y);
-				SDL_Rect pathRect = { nextPoint.x, nextPoint.y, 16, 16 };
-				app->render->DrawRectangle(pathRect, 255, 0, 0, 100);
-			}
+			if (velocity.x != 0) idle.Reset();
+
+			//Change position from velocity
+			position.x += (velocity.x * dt);
+			position.y += (velocity.y * dt);
+
+			positionPixelPerfect.x = round(position.x);
+			positionPixelPerfect.y = round(position.y);
+
+			//Collider position
+			colAirEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
+			r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
 		}
-		break;
-	}
-	case AIRENEMY_ATTACK:
-		currentAnimation = &move;
-		app->player->Hit(damage);
-		attackTimer = attackTimerConfig;
-		status = AIRENEMY_IDLE;
-		break;
-	case AIRENEMY_DEATH:
-		currentAnimation = &death;
-		if (death.Finished()) 
-		{
-			dead = true;
-			DisableAirEnemy();
-		}
-		break;
-	default:
-		break;
-	}
-
-	if (!dead)
-	{
-		if (velocity.x != 0) idle.Reset();
-
-		//Change position from velocity
-		position.x += (velocity.x * dt);
-		position.y += (velocity.y * dt);
-
-		positionPixelPerfect.x = round(position.x);
-		positionPixelPerfect.y = round(position.y);
-
-		//Collider position
-		colAirEnemy->SetPos(positionPixelPerfect.x, positionPixelPerfect.y);
-		r.x = positionPixelPerfect.x; r.y = positionPixelPerfect.y;
-
-		//Function to draw the player
-		ret = Draw(dt);
-	}
+	}	
 	else ret = true;
-	
+
+	//Function to draw the player
+	ret = Draw(dt);
 	return ret;
 }
 
 bool AirEnemy::Draw(float dt)
 {
 	bool ret = false;
+
 	r = currentAnimation->GetCurrentFrame(dt);
+	
 	if (graphics != nullptr) 
 	{
 		ret = app->render->DrawTexture(graphics, positionPixelPerfect.x, positionPixelPerfect.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);

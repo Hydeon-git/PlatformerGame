@@ -62,6 +62,7 @@ public:
 	bool loaded = false;
 	int deathLimit;
 	int gravity;
+	bool pauseMenu = false;
 
 private:
 
@@ -82,7 +83,8 @@ private:
 	SString endTexturePath;
 	SString mapLevel1;
 
-	struct newobj {
+	struct newobj 
+	{
 		iPoint pos;
 		int type;
 	};
@@ -92,7 +94,6 @@ private:
 
 	//UI	
 	bool menu = true;
-	bool pauseMenu = false;
 	bool optionsMenu = false;
 	bool fullscreen = false;
 	UI* window = nullptr;

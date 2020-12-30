@@ -4,6 +4,7 @@
 #include "Textures.h"
 #include "Objects.h"
 #include "Player.h"
+#include "Scene.h"
 
 
 #define SPAWN_MARGIN 50
@@ -162,7 +163,10 @@ bool Object::Draw(float dt)
 {
 	bool ret = false;
 
-	rect = anim.GetCurrentFrame(dt);
+	if (!app->scene->pauseMenu)
+	{
+		rect = anim.GetCurrentFrame(dt);
+	}	
 	if (texture != nullptr)
 	{
 		ret = app->render->DrawTexture(texture, position.x, position.y, &rect, 1, 1.0f, 0.0f, INT_MAX, INT_MAX);
