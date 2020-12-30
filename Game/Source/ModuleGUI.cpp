@@ -9,6 +9,8 @@
 #include "ModuleGUI.h"
 #include "Audio.h"
 
+#include "SDL_mixer/include/SDL_mixer.h"
+
 ModuleGUI::ModuleGUI() : Module()
 {
 	name.Create("gui");
@@ -26,6 +28,7 @@ bool ModuleGUI::Awake(pugi::xml_node& config)
 
 	atlasFileName = config.attribute("atlas").as_string();
 	clickSfx = app->audio->LoadFx(config.attribute("clickFx").as_string());
+	slider = config.attribute("defaultVolume").as_int();
 
 	return ret;
 }
@@ -57,16 +60,13 @@ bool ModuleGUI::PreUpdate()
 	}
 	return true;
 }
-
-// Called after all Updates
-bool ModuleGUI::PostUpdate()
+bool ModuleGUI::Update(float dt)
 {
 	for (int i = 0; i < uiElements.Count(); i++) {
-		uiElements.At(i)->data->PostUpdate();
+		uiElements.At(i)->data->Draw();
 	}
 	return true;
 }
-
 // Called before quitting
 bool ModuleGUI::CleanUp()
 {
@@ -93,26 +93,24 @@ const SDL_Texture* ModuleGUI::GetAtlas() const
 
 // class Gui ---------------------------------------------------
 
-UI* ModuleGUI::CreateUIElement(Type type, UI* parent, SDL_Rect r, SDL_Rect sprite, SString textString, SDL_Rect spritePushed, SDL_Rect spriteNormal, bool drageable, SDL_Rect dragArea, Module* s_listener)
+UI* ModuleGUI::CreateUIElement(UiType type, UI* parent, SDL_Rect r, SDL_Rect sprite, SString textString, SDL_Rect spritePushed, SDL_Rect spriteNormal, bool drageable, SDL_Rect dragArea, Module* s_listener)
 {
 	UI* ui = nullptr;
 	switch (type)
 	{
-	case Type::BUTTON:
-		ui = new ButtonUI(Type::BUTTON, parent, r, sprite, spritePushed, spriteNormal, true, true, dragArea);
+	case UiType::BUTTON:
+		ui = new ButtonUI(UiType::BUTTON, parent, r, sprite, spritePushed, spriteNormal, true, true, dragArea);
 		break;
-	case Type::IMAGE:
-		ui = new ImageUI(Type::IMAGE, parent, r, sprite, drageable, drageable, dragArea);
+	case UiType::IMAGE:
+		ui = new ImageUI(UiType::IMAGE, parent, r, sprite, drageable, drageable, dragArea);
 		break;
-	case Type::WINDOW:
-		ui = new WindowUI(Type::WINDOW, parent, r, sprite, drageable, drageable, dragArea);
+	case UiType::WINDOW:
+		ui = new WindowUI(UiType::WINDOW, parent, r, sprite, drageable, drageable, dragArea);
 		break;
-	case Type::TEXT:
-		ui = new TextUI(Type::TEXT, parent, r, textString, drageable, drageable, dragArea);
+	case UiType::TEXT:
+		ui = new TextUI(UiType::TEXT, parent, r, textString, drageable, drageable, dragArea);
 		break;
 	}
-
-	ui->name = textString;
 
 	if (s_listener)
 	{
@@ -135,13 +133,6 @@ bool ModuleGUI::DeleteUIElement(UI* ui)
 		uiElements.At(n)->data->CleanUp();
 		uiElements.Del(uiElements.At(n));
 		return true;
-	}
-}
-
-void ModuleGUI::ChangeDebug() {
-	for (int i = 0; i < uiElements.Count(); i++) 
-	{
-		uiElements.At(i)->data->debug = !uiElements.At(i)->data->debug;
 	}
 }
 
@@ -192,9 +183,8 @@ void ModuleGUI::ClearUI()
 	uiElements.Clear();
 }
 
-UI::UI(Type s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area)
+UI::UI(UiType s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area)
 {
-	name.Create("UI");
 	type = s_type;
 	drageable = d;
 	focusable = f;
@@ -209,7 +199,6 @@ UI::UI(Type s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area)
 		localRect = screenRect;
 	}
 	maskRect = screenRect;
-	debug = false;
 	focus = false;
 	dragArea = d_area;
 }
@@ -275,11 +264,14 @@ bool UI::PreUpdate()
 	return true;
 }
 
-bool UI::PostUpdate() 
+bool UI::Draw() 
 {
-	if (debug == true)
+	if (app->debug == true)
 	{
-		app->render->DrawRectangle(screenRect, 255, 0, 0, 255, false, false);
+		SDL_Rect scr = screenRect;
+		scr.w *= app->win->GetScale();
+		scr.h *= app->win->GetScale();
+		app->render->DrawRectangle(scr, 255, 0, 0, 255, false, false);
 	}
 	return true;
 }
@@ -336,7 +328,7 @@ bool UI::Move()
 	return true;
 }
 
-SDL_Rect UI::Check_Printable_Rect(SDL_Rect sprite, iPoint& dif_sprite) 
+SDL_Rect UI::CheckPrintableRect(SDL_Rect sprite, iPoint& dif_sprite) 
 {
 	if (maskRect.x > screenRect.x)
 	{
@@ -344,26 +336,25 @@ SDL_Rect UI::Check_Printable_Rect(SDL_Rect sprite, iPoint& dif_sprite)
 		sprite.x += dif_sprite.x;
 		sprite.w -= dif_sprite.x;
 	}
-	else if (maskRect.w < screenRect.w) 
+	else if (maskRect.w < screenRect.w)
 	{
 		sprite.w -= screenRect.w - maskRect.w;
 	}
-	if (maskRect.y > screenRect.y) 
+	if (maskRect.y > screenRect.y)
 	{
 		dif_sprite.y = maskRect.y - screenRect.y;
 		sprite.y += dif_sprite.y;
 		sprite.h -= dif_sprite.y;
 	}
-	else if (maskRect.h < screenRect.h) 
+	else if (maskRect.h < screenRect.h)
 	{
 		sprite.h -= screenRect.h - maskRect.h;
 	}
 	return sprite;
 }
 
-ImageUI::ImageUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) 
+ImageUI::ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) 
 {
-	name.Create("ImageUI");
 	spriteOver = sprite;
 	quad = r;
 	SDL_Rect dragArea = GetDragArea();
@@ -398,15 +389,15 @@ bool ImageUI::PreUpdate() {
 	return true;
 }
 
-bool ImageUI::PostUpdate() 
+bool ImageUI::Draw() 
 {
 	iPoint dif_sprite = { 0,0 };
-	SDL_Rect sprite = UI::Check_Printable_Rect(spriteOver, dif_sprite);
+	SDL_Rect sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
 	quad.x = GetScreenPos().x + dif_sprite.x;
 	quad.y = GetScreenPos().y + dif_sprite.y;
 
 	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
-	UI::PostUpdate();
+	UI::Draw();
 	return true;
 }
 
@@ -420,30 +411,33 @@ fPoint ImageUI::GetDragPositionNormalized()
 	return position_normalized;
 }
 
-WindowUI::WindowUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area)
+WindowUI::WindowUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area)
 {
-	name.Create("WindowUI");
 	spriteOver = sprite;
 	quad = r;
 }
 
-bool WindowUI::PostUpdate() 
+bool WindowUI::Draw() 
 {
 	iPoint dif_sprite = { 0,0 };
-	SDL_Rect sprite = UI::Check_Printable_Rect(spriteOver, dif_sprite);
-	app->render->DrawTexture((SDL_Texture*)app->gui->GetAtlas(), GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 1);
-	UI::PostUpdate();
+	SDL_Rect sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
+	//app->render->DrawTexture((SDL_Texture*)app->gui->GetAtlas(), GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 1);
+	
+	quad.x = GetScreenPos().x + dif_sprite.x;
+	quad.y = GetScreenPos().y + dif_sprite.y;
+	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
+	
+	UI::Draw();
 	return true;
 }
 
-TextUI::TextUI(Type type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area) : UI(type, r, p, d, f, d_area)
+TextUI::TextUI(UiType type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area) : UI(type, r, p, d, f, d_area)
 {
-	name.Create("TextUI");
 	stri = str;
 	quad = r;
 }
 
-bool TextUI::PostUpdate() 
+bool TextUI::Draw() 
 {
 	SDL_Rect rect = { 0,0,0,0 };
 	iPoint dif_sprite = { 0,0 };
@@ -453,18 +447,23 @@ bool TextUI::PostUpdate()
 	SDL_QueryTexture(text, NULL, NULL, &rect.w, &rect.h);
 
 
-	SDL_Rect sprite = UI::Check_Printable_Rect(rect, dif_sprite);
-	app->render->DrawTexture(text, GetScreenToWorldPos().x + dif_sprite.x, GetScreenToWorldPos().y + dif_sprite.y, &sprite, 1);
-	UI::PostUpdate();
+	SDL_Rect sprite = UI::CheckPrintableRect(rect, dif_sprite);
+
+	//app->render->DrawTexture(text, GetScreenPos().x + dif_sprite.x, GetScreenPos().y + dif_sprite.y, &sprite, 1);
+	quad.x = GetScreenPos().x + dif_sprite.x;
+	quad.y = GetScreenPos().y + dif_sprite.y;
+	quad.w = rect.w;
+	quad.h = rect.h;
+	app->render->BlitInRect(text, sprite, quad);
+	UI::Draw();
 
 	app->tex->UnLoad(text);
 
 	return true;
 }
 
-ButtonUI::ButtonUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite_over, SDL_Rect sprite_pushed, SDL_Rect sprite_normal, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) 
+ButtonUI::ButtonUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite_over, SDL_Rect sprite_pushed, SDL_Rect sprite_normal, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) 
 {
-	name.Create("ButtonUI");
 	spriteOver = sprite_over;
 	spritePushed = sprite_pushed;
 	spriteNormal = sprite_normal;
@@ -473,26 +472,26 @@ ButtonUI::ButtonUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite_over, SDL_Rect 
 	quad = r;
 }
 
-bool ButtonUI::PostUpdate() 
+bool ButtonUI::Draw() 
 {
 	SDL_Rect sprite;
 	iPoint dif_sprite = { 0,0 };
 	if (pushed == true) {
-		sprite = UI::Check_Printable_Rect(spritePushed, dif_sprite);
+		sprite = UI::CheckPrintableRect(spritePushed, dif_sprite);
 	}
 	else if (isMouseOver == true) {
-		sprite = UI::Check_Printable_Rect(spriteOver, dif_sprite);
+		sprite = UI::CheckPrintableRect(spriteOver, dif_sprite);
 	}
 	else {
-		sprite = UI::Check_Printable_Rect(spriteNormal, dif_sprite);
+		sprite = UI::CheckPrintableRect(spriteNormal, dif_sprite);
 	}
-	//App->render->Blit((SDL_Texture*)App->gui->GetAtlas(), GetScreenToWorldPos().x + dif_sprite.x, GetScreenToWorldPos().y + dif_sprite.y, &sprite, 0.f);
+	//app->render->Blit((SDL_Texture*)app->gui->GetAtlas(), GetScreenToWorldPos().x + dif_sprite.x, GetScreenToWorldPos().y + dif_sprite.y, &sprite, 0.f);
 
 	quad.x = GetScreenPos().x + dif_sprite.x;
 	quad.y = GetScreenPos().y + dif_sprite.y;
 	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
 
-	UI::PostUpdate();
+	UI::Draw();
 	return true;
 }
 
@@ -500,7 +499,6 @@ bool ButtonUI::PreUpdate()
 {
 	int x, y;
 	app->input->GetMousePosition(x, y);
-
 	if ((x >= GetScreenPos().x && x <= GetScreenPos().x + GetScreenRect().w && y >= GetScreenPos().y && y <= GetScreenPos().y + GetScreenRect().h) || focus == true)
 		isMouseOver = true;
 	else isMouseOver = false;
@@ -522,4 +520,77 @@ bool ButtonUI::PreUpdate()
 	UI::PreUpdate();
 
 	return true;
+}
+
+SliderUI::SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area) :UI(type, r, p, d, f, d_area) {
+	spriteOver = sprite;
+	sprite2 = spriten2;
+	base.x = r.x;
+	base.y = r.y;
+	base.w = r.w;
+	base.h = r.h;
+
+	quad.x = app->gui->slider + base.x;
+	quad.y = r.y - 2;
+	quad.w = spriten2.w;
+	quad.h = spriten2.h;
+
+	clickRet = false;
+}
+
+bool SliderUI::Draw()
+{
+	iPoint spirte_dif = { 0,0 };
+	iPoint spirte_dif1 = { 0,0 };
+	SDL_Rect sprite = UI::CheckPrintableRect(spriteOver, spirte_dif);
+	SDL_Rect sprite_ = UI::CheckPrintableRect(sprite2, spirte_dif1);
+	base.x = GetScreenPos().x + spirte_dif.x;
+	base.y = GetScreenPos().y + spirte_dif.y;
+
+	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, base);
+
+	if (OnClick()) {
+		int xpos;
+		int ypos;
+		app->input->GetMousePosition(xpos, ypos);
+		if (xpos<base.x + base.w - 5 && xpos>base.x + 5)
+			quad.x = xpos - 5;
+	}
+
+	app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite_, quad);
+
+	app->gui->slider = quad.x - base.x;
+
+	UI::Draw();
+	return true;
+}
+
+bool SliderUI::PreUpdate()
+{
+	Mix_VolumeMusic((int)app->gui->slider * 1.28);
+
+	ListItem<Mix_Chunk*>* item = app->audio->fx.start;
+	while (item != nullptr) {
+		Mix_VolumeChunk(item->data, (int)app->gui->slider * 1.28);
+		item = item->next;
+	}
+	UI::PreUpdate();
+	return true;
+}
+
+bool SliderUI::OnClick()
+{
+	app->input->GetMousePosition(mouse.x, mouse.y);
+	if (mouse.x<quad.x + quad.w && mouse.x>quad.x) {
+		if (mouse.y<quad.y + quad.h && mouse.y>quad.y) {
+			if (app->input->GetMouseButtonDown(SDL_BUTTON_LEFT))
+				clickRet = true;
+		}
+	}
+
+	if (!app->input->GetMouseButtonDown(SDL_BUTTON_LEFT)) {
+		clickRet = false;
+	}
+
+	return clickRet;
 }

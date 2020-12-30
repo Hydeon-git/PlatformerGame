@@ -218,6 +218,8 @@ bool Render::DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint
 void Render::BlitInRect(SDL_Texture* texture, SDL_Rect sprite, SDL_Rect quad)
 {
 	SDL_Point p = { 0, 0 };
+	quad.x *= scale;
+	quad.y *= scale;
 	quad.w *= scale;
 	quad.h *= scale;
 	SDL_RenderCopyEx(renderer, texture, &sprite, &quad, 0, &p, SDL_FLIP_NONE);

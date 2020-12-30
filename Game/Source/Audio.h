@@ -35,10 +35,10 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(unsigned int fx, int repeat = 0);
 
+	List<Mix_Chunk *> fx;
 private:
 
 	_Mix_Music* music;
-	List<Mix_Chunk *> fx;
 };
 
 #endif // __AUDIO_H__

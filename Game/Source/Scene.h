@@ -54,7 +54,9 @@ public:
 	// Detects collisions
 	bool OnCollision(Collider* c1, Collider* c2);
 
-	bool CreateUI();
+	bool PauseMenu();
+
+	void OnClick(UI* interaction);
 
 	// Public variables
 	bool loaded = false;
@@ -69,6 +71,7 @@ private:
 	SDL_Rect* fullscreenRect;
 
 	Collider* endCol = nullptr;
+	bool exitGame = false;
 
 	SString menuAudioPath;
 	SString gameAudioPath;
@@ -89,29 +92,33 @@ private:
 
 	//UI	
 	bool menu = true;
-	bool pause_menu = false;
-	bool quit = false;
+	bool pauseMenu = false;
+	bool optionsMenu = false;
 	bool fullscreen = false;
 	UI* window = nullptr;
-	UI* image = nullptr;
-	UI* image2 = nullptr;
+	UI* menuTitle = nullptr;
 	UI* startButton = nullptr;
+	UI* startText = nullptr;
 	UI* optionsButton = nullptr;
+	UI* optionsText = nullptr;
 	UI* creditsButton = nullptr;
-	UI* quitButton = nullptr;
-	UI* backButton = nullptr;
+	UI* creditsText = nullptr;
+	UI* exitButton = nullptr;
+	UI* exitText = nullptr;
 	UI* resumeButton = nullptr;
+	UI* resumeText = nullptr;
 	UI* saveButton = nullptr;
+	UI* saveText = nullptr;
 	UI* loadButton = nullptr;
+	UI* loadText = nullptr;
 	UI* menuButton = nullptr;
-	UI* fullscreeenButton = nullptr;
+	UI* menuText = nullptr;
+	UI* fullscreeenCheckbox = nullptr;
+	UI* fullscreenText = nullptr;
 	UI* audioText = nullptr;
 	UI* audioSlider = nullptr;
-	UI* tick = nullptr;
-	UI* coinImage[6];
-	int coinOffset = 5;
-	UI* lifeBar = nullptr;
-	UI* lifeUI = nullptr;
+	UI* backButton = nullptr;
+	UI* backText = nullptr;
 };
 
 #endif // __SCENE_H__

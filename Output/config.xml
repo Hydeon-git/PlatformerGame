@@ -20,7 +20,7 @@
   <fonts>
     <font file="Assets/Textures/Gui/8bitwonder.ttf" size="12"/>
   </fonts>
-  <gui atlas="Assets/Textures/Gui/gui_atlas.png" clickFx="Assets/Audio/Fx/click_sfx.ogg"/>
+  <gui atlas="Assets/Textures/Gui/gui_atlas2.png" clickFx="Assets/Audio/Fx/click_sfx.ogg"/>
   <!-- L03: Added maps folder as config option -->
   <map>
 	<folder>Assets/Maps/</folder>

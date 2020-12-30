@@ -6,7 +6,7 @@
 
 #define CURSOR_WIDTH 2
 
-enum class Type
+enum class UiType
 {
 	NONE,
 	WINDOW,
@@ -17,25 +17,19 @@ enum class Type
 	UNKNOWN
 };
 
-class UI : public Module
+class UI
 {
 public:
-	UI(Type s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area);
+	UI(UiType s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~UI() {}
-
-	// Called when before render is available
-	virtual bool Awake(pugi::xml_node&) { return true; }
-
-	// Call before first frame
-	virtual bool Start() { return true; }
 
 	// Called before all Updates
 	virtual bool PreUpdate();
 
 	// Called after all Updates
-	virtual bool PostUpdate();
+	virtual bool Draw();
 
 	// Called before quitting
 	virtual bool CleanUp() { return true; }
@@ -51,7 +45,7 @@ public:
 	bool CheckMouse();
 	bool CheckFocusable() { return focusable; }
 	SDL_Rect GetDragArea() { return dragArea; }
-	SDL_Rect Check_Printable_Rect(SDL_Rect sprite, iPoint& dif_sprite);
+	SDL_Rect CheckPrintableRect(SDL_Rect sprite, iPoint& dif_sprite);
 
 public:
 	SDL_Rect spriteOver;
@@ -59,7 +53,7 @@ public:
 	bool debug;
 	bool focus;
 	Module* listener;
-	Type type;
+	UiType type;
 
 private:
 	SDL_Rect screenRect;
@@ -73,7 +67,7 @@ private:
 class ImageUI : public UI
 {
 public:
-	ImageUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
+	ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~ImageUI() {}
@@ -82,7 +76,7 @@ public:
 	bool PreUpdate();
 
 	// Called after all Updates
-	bool PostUpdate();
+	bool Draw();
 
 	fPoint GetDragPositionNormalized();
 
@@ -93,24 +87,24 @@ public:
 class WindowUI :public UI
 {
 public:
-	WindowUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
+	WindowUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~WindowUI() {}
 
 	// Called after all Updates
-	bool PostUpdate();
+	bool Draw();
 };
 class TextUI : public UI
 {
 public:
-	TextUI(Type type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area);
+	TextUI(UiType type, UI* p, SDL_Rect r, SString str, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~TextUI() {}
 
 	// Called after all Updates
-	bool PostUpdate();
+	bool Draw();
 
 public:
 
@@ -119,7 +113,7 @@ public:
 class ButtonUI : public UI
 {
 public:
-	ButtonUI(Type type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, SDL_Rect spriten3, bool d, bool f, SDL_Rect d_area);
+	ButtonUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, SDL_Rect spriten3, bool d, bool f, SDL_Rect d_area);
 
 	// Destructor
 	virtual ~ButtonUI() {}
@@ -134,7 +128,7 @@ public:
 	bool PreUpdate();
 
 	// Called after all Updates
-	bool PostUpdate();
+	bool Draw();
 
 	// Called before quitting
 	bool CleanUp() { return true; };
@@ -145,6 +139,33 @@ public:
 	bool pushed;
 	bool isMouseOver;
 };
+class SliderUI : public UI {
+public:
+
+	SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area);
+
+	// Destructor
+	virtual ~SliderUI() {}
+
+	bool Awake(pugi::xml_node&) { return true; };
+	// Call before first frame
+	bool Start() { return true; };
+	// Called before all Updates
+	bool PreUpdate();
+	// Called after all Updates
+	bool Draw();
+	// Called before quitting
+	bool CleanUp() { return true; };
+	bool OnClick();
+
+private:
+	SDL_Rect base;
+	SDL_Rect sprite2;
+
+	iPoint mouse;
+	bool clickRet;
+};
+
 // ---------------------------------------------------
 class ModuleGUI : public Module
 {
@@ -164,17 +185,15 @@ public:
 	bool PreUpdate();
 
 	// Called after all Updates
-	bool PostUpdate();
+	bool Update(float dt);
 
 	// Called before quitting
 	bool CleanUp();
 
 	// Gui creation functions
-	UI* CreateUIElement(Type type, UI* p, SDL_Rect r, SDL_Rect sprite = { 0,0,0,0 }, SString str = "", SDL_Rect spritePushed = { 0,0,0,0 }, SDL_Rect spriteNormal = { 0,0,0,0 }, bool drageable = false,
+	UI* CreateUIElement(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite = { 0,0,0,0 }, SString str = "", SDL_Rect spritePushed = { 0,0,0,0 }, SDL_Rect spriteNormal = { 0,0,0,0 }, bool drageable = false,
 		SDL_Rect dragArea = { 0,0,0,0 }, Module* s_listener = nullptr);
 	bool DeleteUIElement(UI*);
-
-	void ChangeDebug();
 
 	void ChangeFocus();
 
@@ -192,6 +211,8 @@ private:
 public:
 	//Audio
 	int clickSfx;
+
+	int slider;
 
 };
 
