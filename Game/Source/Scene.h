@@ -79,8 +79,8 @@ public:
 private:
 
 	GameScene currentScene;	
-	SDL_Texture* introScreen;
-	SDL_Texture* endScreen;
+	SDL_Texture* introScreen = nullptr;
+	SDL_Texture* endScreen = nullptr;
 	SDL_Rect* fullscreenRect;
 
 	Collider* endCol = nullptr;

@@ -66,7 +66,7 @@ public:
 	SDL_Rect rCollider;
 
 	SString texPath;
-	SDL_Texture* graphics;
+	SDL_Texture* graphics = nullptr;
 
 	int life;
 };

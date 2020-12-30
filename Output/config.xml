@@ -22,7 +22,7 @@
     <font file="Assets/Textures/Gui/8bitwonder.ttf" size="12"/>
   </fonts>
   
-  <gui atlas="Assets/Textures/Gui/gui_atlas2.png" clickFx="Assets/Audio/Fx/click_sfx.ogg" defaultVolume="50"/>
+  <gui atlas="Assets/Textures/Gui/gui_atlas.png" clickFx="Assets/Audio/Fx/click_sfx.ogg" defaultVolume="50"/>
 
   <map>
 	  <folder>Assets/Maps/</folder>

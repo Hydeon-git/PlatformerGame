@@ -53,7 +53,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colGroundEnemy;
+	Collider* colGroundEnemy = nullptr;
 
 private:
 

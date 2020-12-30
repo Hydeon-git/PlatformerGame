@@ -22,7 +22,7 @@ public:
 	bool Draw(float dt);
 
 	ObjectType type;
-	Collider* collider;
+	Collider* collider = nullptr;
 private:
 	SDL_Rect rect = {};
 	iPoint position;
@@ -62,8 +62,8 @@ private:
 	SString healthPotionTexPath;
 
 	int diamondFx;
-	SDL_Texture* diamondTex;
-	SDL_Texture* healthPotionTex;
+	SDL_Texture* diamondTex = nullptr;
+	SDL_Texture* healthPotionTex = nullptr;
 
 	
 };

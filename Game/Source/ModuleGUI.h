@@ -204,7 +204,7 @@ public:
 
 private:
 	List <UI*> uiElements;
-	SDL_Texture* atlas;
+	SDL_Texture* atlas = nullptr;
 	SString atlasFileName;
 
 public:

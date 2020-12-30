@@ -53,7 +53,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colAirEnemy;
+	Collider* colAirEnemy = nullptr;
 
 	fPoint position;
 	iPoint positionPixelPerfect;

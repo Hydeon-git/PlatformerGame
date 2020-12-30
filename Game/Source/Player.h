@@ -40,7 +40,7 @@ private:
 	SDL_Rect rect;
 	SDL_Texture* graphics = nullptr;
 	float speed = 1.0f;
-	Collider* bulletCollider;
+	Collider* bulletCollider = nullptr;
 	int wallHitFx;
 };
 
@@ -85,7 +85,7 @@ public:
 	bool OnCollision(Collider* c1, Collider* c2);
 
 	//Public variables
-	Collider* colPlayer;
+	Collider* colPlayer = nullptr;
 
 	int checkpoint = 0;
 	int diamonds = 0;
@@ -131,14 +131,14 @@ private:
 
 	PlayerStatus status = PLAYER_IDLE;
 
-	Collider* colPlayerWalls;
+	Collider* colPlayerWalls = nullptr;
 
 	iPoint gunOffset;
 
 	//Bullet variables
 	List<Bullet*> bullets;
 	SString bulletTexPath;
-	SDL_Texture* bulletGraphics;
+	SDL_Texture* bulletGraphics = nullptr;
 	float bulletSpeed;
 public:
 	int bulletDamage;

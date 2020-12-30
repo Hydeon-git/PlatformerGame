@@ -10,13 +10,13 @@
 	<objects />
 	<entitymanager>
 		<player>
-			<player x="8" y="192" life="100" diamonds="0" />
+			<player x="503" y="176" life="90" diamonds="0" />
 		</player>
 		<airEnemy>
 			<airEnemy x="612" y="92" life="100" dead="false" />
 		</airEnemy>
 		<groundEnemy>
-			<groundEnemy x="312" y="102" life="100" dead="false" />
+			<groundEnemy x="401" y="214" life="-60" dead="true" />
 		</groundEnemy>
 		<checkpoint />
 	</entitymanager>
@@ -25,6 +25,6 @@
 	<fonts />
 	<fadetoblack />
 	<renderer>
-		<camera x="0" y="-82" />
+		<camera x="-1208" y="-66" />
 	</renderer>
 </save_state>
