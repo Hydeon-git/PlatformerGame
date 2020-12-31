@@ -49,6 +49,7 @@ private:
 	int checkpointFx;
 	float checkTime;
 	float checkTimer;
+	float animFrame;
 
 	Animation unchecked;
 	Animation checking;

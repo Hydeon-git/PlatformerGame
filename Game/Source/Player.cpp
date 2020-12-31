@@ -360,8 +360,21 @@ bool Player::Draw(float dt)
 {
 	bool ret = false;
 
-	r = currentAnimation->GetCurrentFrame(dt);		
+	if (!app->scene->pauseMenu)
+	{
+		r = currentAnimation->GetCurrentFrame(dt);
+	}
+	else
+	{
+		animFrame = 0;
+		if (animFrame = 0)
+		{
+			animFrame = dt;
+		}
+		r = currentAnimation->GetCurrentFrame(animFrame);
+	}
 	
+
 	if (graphics != nullptr) 
 	{
 		ret = app->render->DrawTexture(graphics, positionPixelPerfect.x, positionPixelPerfect.y, &r, 1, 1.0f, 0.0f, INT_MAX, INT_MAX, flip);

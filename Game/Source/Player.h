@@ -101,10 +101,11 @@ private:
 	float speed;
 	float jumpForce;
 	int gravity;
+
+	int deathLimit;
 	float deathTimerConfig;
 	float deathTimer;
-	int deathLimit;
-
+	float animFrame;
 
 	bool jumpEnable = true;
 	bool doubleJump = true;

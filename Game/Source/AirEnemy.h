@@ -71,6 +71,7 @@ private:
 	bool canAttack = false;
 	float attackTimerConfig;
 	float attackTimer;
+	float animFrame;
 
 	// Pathfinding variables
 	int pathSteps = 0;

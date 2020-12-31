@@ -10,13 +10,13 @@
 	<objects />
 	<entitymanager>
 		<player>
-			<player x="503" y="176" life="90" diamonds="0" />
+			<player x="503" y="176" life="100" diamonds="0" />
 		</player>
 		<airEnemy>
 			<airEnemy x="612" y="92" life="100" dead="false" />
 		</airEnemy>
 		<groundEnemy>
-			<groundEnemy x="401" y="214" life="-60" dead="true" />
+			<groundEnemy x="359" y="198" life="100" dead="false" />
 		</groundEnemy>
 		<checkpoint />
 	</entitymanager>
