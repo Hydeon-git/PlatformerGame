@@ -118,7 +118,7 @@ bool Scene::Update(float dt)
 			app->fade->FadeToBlk(MOVE_CHECKPOINT, SCENE_NONE, iPoint(checkpoint->position.x, checkpoint->position.y));
 		}
 
-		if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+		if ((app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN) && (!player->dead))
 		{
 			if (pauseMenu)
 			{
