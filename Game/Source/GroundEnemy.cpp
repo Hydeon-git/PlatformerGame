@@ -270,18 +270,9 @@ bool GroundEnemy::Draw(float dt)
 	bool ret = false;
 
 	if (!app->scene->pauseMenu)
-	{
 		r = currentAnimation->GetCurrentFrame(dt);
-	}
 	else
-	{
-		animFrame = 0;
-		if (animFrame = 0)
-		{
-			animFrame = dt;
-		}
-		r = currentAnimation->GetCurrentFrame(animFrame);
-	}
+		r = currentAnimation->GetCurrentFrame(0);
 		
 	if (graphics != nullptr) 
 	{
