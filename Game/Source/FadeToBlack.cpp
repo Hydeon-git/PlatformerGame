@@ -38,8 +38,9 @@ bool FadeToBlack::Update(float dt)
 	{
 	case FadeStep::FADE_TO_BLACK:
 	{
+		app->scene->canPause = false;
 		if (now >= totalTime)
-		{
+		{					
 			switch (fadeType)
 			{
 			case CHANGE_SCENE:
@@ -58,14 +59,22 @@ bool FadeToBlack::Update(float dt)
 			totalTime += totalTime;
 			startTime = SDL_GetTicks();
 			currentStep = FadeStep::FADE_FROM_BLACK;
+
 		}
 	} break;
 	case FadeStep::FADE_FROM_BLACK:
-	{
+	{		
+		app->scene->canPause = false;
 		normalized = 1.0f - normalized;
 
 		if (now >= totalTime)
+		{
 			currentStep = FadeStep::NONE;
+			app->scene->canPause = true;
+		}
+			
+			
+		
 	} break;
 	}
 
@@ -87,7 +96,7 @@ bool FadeToBlack::FadeToBlk(FadeType ft, GameScene nextScene, iPoint newPos, flo
 	
 	if (currentStep == FadeStep::NONE)
 	{
-		currentStep = FadeStep::FADE_TO_BLACK;
+		currentStep = FadeStep::FADE_TO_BLACK;		
 		startTime = SDL_GetTicks();
 		totalTime = (Uint32)(time * 0.5f * 1000.0f);
 		ret = true;

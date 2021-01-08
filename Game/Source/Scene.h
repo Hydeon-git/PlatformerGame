@@ -70,6 +70,7 @@ public:
 	int deathLimit;
 	int gravity;
 	bool pauseMenu = false;
+	bool canPause = true;
 
 	Player* player;
 	GroundEnemy* groundEnemy;
