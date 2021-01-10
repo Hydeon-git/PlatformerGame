@@ -391,8 +391,10 @@ bool Scene::PauseMenu()
 	{
 		image1 = app->gui->CreateUIElement(UiType::IMAGE, nullptr, { x_offset + 32, y_offset - 38, 80,38 }, { 82,70,40,19 });
 		//Checkbox
-		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+14, y_offset + 15, 44, 44 }, { 10, 0, 0, 0 }, "Fullscreen");
-		button1 = app->gui->CreateUIElement(UiType::CHECKBOX, nullptr, { x_offset + 54, y_offset + 34, 36, 36 }, { 48, 1, 18, 18 }, "Fullscreen", { 90, 38, 6, 5 }, { 48, 1, 18, 18 }, fullscreen, { 0,0,0,0 }, this);
+		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 21, 44, 44 }, { 7, 0, 0, 0 }, "Fullscreen");
+		button1 = app->gui->CreateUIElement(UiType::CHECKBOX, nullptr, { x_offset + 108, y_offset + 16, 19, 19 }, { 48, 1, 18, 18 }, "Fullscreen", { 90, 38, 6, 5 }, { 48, 1, 18, 18 }, fullscreen, { 0,0,0,0 }, this);
+		text6 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 16, y_offset + 49, 44, 44 }, { 7, 0, 0, 0 }, "VSync");
+		button6 = app->gui->CreateUIElement(UiType::CHECKBOX, nullptr, { x_offset + 108, y_offset + 44, 19, 19 }, { 48, 1, 18, 18 }, "VSync", { 90, 38, 6, 5 }, { 48, 1, 18, 18 }, vsync, { 0,0,0,0 }, this);
 		//Slider
 		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+45, y_offset + 75, 44, 44 }, { 10, 0, 0, 0 }, "Sound");
 		button2 = app->gui->CreateUIElement(UiType::SLIDER, nullptr, { x_offset + 14, y_offset + 98, 118, 6 }, { 79, 30, 59, 3 }, "Sound", { 79, 36, 5, 9 });
@@ -413,9 +415,9 @@ void Scene::OnClick(UI* interaction)
 		{
 			if (optionsMenu)
 			{
-				fullscreen = !fullscreen;
+				fullscreen = !fullscreen;				
 				if (fullscreen) SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_FULLSCREEN);
-				else SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_RESIZABLE);
+				else SDL_SetWindowFullscreen(app->win->window, SDL_WINDOW_RESIZABLE);							
 			}
 			else app->fade->FadeToBlk(CHANGE_SCENE, SCENE_1);
 		}
@@ -439,6 +441,15 @@ void Scene::OnClick(UI* interaction)
 				optionsMenu = false;
 				pauseMenu = false;
 				MenuUI();
+			}
+		}
+		else if (interaction == button6)
+		{
+			if (optionsMenu)
+			{
+				vsync = !vsync;
+				if (vsync) app->render->vsyncState = true;
+				else app->render->vsyncState = false;
 			}
 		}
 	}
@@ -483,6 +494,15 @@ void Scene::OnClick(UI* interaction)
 				PauseMenu();
 			}
 			else app->fade->FadeToBlk(CHANGE_SCENE, SCENE_INTRO);
+		}
+		else if (interaction == button6)
+		{
+			if (optionsMenu)
+			{
+				vsync = !vsync;
+				if (vsync) app->render->vsyncState = true;
+				else app->render->vsyncState = false;
+			}
 		}
 	}
 }

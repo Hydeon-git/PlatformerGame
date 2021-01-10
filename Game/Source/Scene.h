@@ -107,6 +107,7 @@ private:
 	//UI	
 	bool optionsMenu = false;
 	bool fullscreen = false;
+	bool vsync = false;
 	UI* image1 = nullptr;
 	UI* image2 = nullptr;
 	UI* button1 = nullptr;
@@ -119,6 +120,8 @@ private:
 	UI* text4 = nullptr;
 	UI* button5 = nullptr;
 	UI* text5 = nullptr;
+	UI* button6 = nullptr;
+	UI* text6 = nullptr;
 };
 
 #endif // __SCENE_H__

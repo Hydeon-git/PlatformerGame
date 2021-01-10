@@ -479,8 +479,8 @@ CheckboxUI::CheckboxUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect
 	base = r;
 	quad.x = r.x;
 	quad.y = r.y;
-	quad.w = spriteTick.w*2;
-	quad.h = spriteTick.h*2;
+	quad.w = spriteTick.w*1.8f;
+	quad.h = spriteTick.h*1.8f;
 }
 
 bool CheckboxUI::Draw()
@@ -494,8 +494,8 @@ bool CheckboxUI::Draw()
 	if (state) 
 	{
 		sprite = UI::CheckPrintableRect(spriteTick, dif_sprite);
-		quad.x = GetScreenPos().x + dif_sprite.x + 12;
-		quad.y = GetScreenPos().y + dif_sprite.y + 13;
+		quad.x = GetScreenPos().x + dif_sprite.x + 4;
+		quad.y = GetScreenPos().y + dif_sprite.y + 5;
 		app->render->BlitInRect((SDL_Texture*)app->gui->GetAtlas(), sprite, quad);
 	}
 
