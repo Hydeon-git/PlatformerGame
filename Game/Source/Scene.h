@@ -122,6 +122,8 @@ private:
 	UI* text5 = nullptr;
 	UI* button6 = nullptr;
 	UI* text6 = nullptr;
+	UI* button7 = nullptr;
+	UI* text7 = nullptr;
 };
 
 #endif // __SCENE_H__
