@@ -269,7 +269,7 @@ bool UI::PreUpdate()
 
 bool UI::Draw() 
 {
-	if (app->debug == true)
+	if (app->guiDebug == true)
 	{
 		SDL_Rect scr = screenRect;
 		scr.x *= app->win->GetScale();

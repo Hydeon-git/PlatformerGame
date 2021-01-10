@@ -68,6 +68,7 @@ public:
 	void SaveGameRequest() const;
 
 	bool debug = false;
+	bool guiDebug = false;
 
 private:
 

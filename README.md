@@ -62,6 +62,7 @@ Implementations to Highlight
  - F6 ​Load the previous state
 
 ### Debug controls
+ - F8​ View GUI bound rectangles
  - F9​ View colliders and pathfinding logic
  - F10​ God Mode
  - F11 Enable/Disable FPS cap (60 to 30)
