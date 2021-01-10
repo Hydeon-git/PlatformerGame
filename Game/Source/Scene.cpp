@@ -381,16 +381,16 @@ bool Scene::PauseMenu()
 		text1 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+15, 44, 44 }, { 10, 0, 0, 0 }, "Resume");
 		//Load
 		button2 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+40, 92, 28 }, { 1, 1, 46, 14 }, "Load", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+45, 44, 44 }, { 10, 0, 0, 0 }, "Load");
+		text2 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+49, y_offset+45, 44, 44 }, { 10, 0, 0, 0 }, "Load");
 		//Options
 		button3 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+70, 92, 28 }, { 1, 1, 46, 14 }, "Options", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
 		text3 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+75, 44, 44 }, { 10, 0, 0, 0 }, "Options");
 		//Menu
 		button4 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset+27, y_offset+100, 92, 28 }, { 1, 1, 46, 14 }, "Menu", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+34, y_offset+105, 44, 44 }, { 10, 0, 0, 0 }, "Menu");
+		text4 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset+46, y_offset+105, 44, 44 }, { 10, 0, 0, 0 }, "Menu");
 		//Exit
 		button5 = app->gui->CreateUIElement(UiType::BUTTON, nullptr, { x_offset + 27, y_offset+130, 92, 28 }, { 1, 1, 46, 14 }, "Exit", { 1, 17, 46, 14 }, { 1, 1, 46, 14 }, false, { 0,0,0,0 }, this);
-		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 34, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Exit");
+		text5 = app->gui->CreateUIElement(UiType::TEXT, nullptr, { x_offset + 52, y_offset + 135, 44, 44 }, { 10, 0, 0, 0 }, "Exit");
 	}
 	else
 	{
