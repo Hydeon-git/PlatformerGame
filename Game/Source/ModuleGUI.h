@@ -20,7 +20,7 @@ enum class UiType
 class UI
 {
 public:
-	UI(UiType s_type, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect d_area);
+	UI(UiType sType, SDL_Rect r, UI* p, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~UI() {}
@@ -45,7 +45,7 @@ public:
 	bool CheckMouse();
 	bool CheckFocusable() { return focusable; }
 	SDL_Rect GetDragArea() { return dragArea; }
-	SDL_Rect CheckPrintableRect(SDL_Rect sprite, iPoint& dif_sprite);
+	SDL_Rect CheckPrintableRect(SDL_Rect sprite, iPoint& difSprite);
 
 public:
 	SDL_Rect spriteOver;
@@ -67,7 +67,7 @@ private:
 class ImageUI : public UI
 {
 public:
-	ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect d_area);
+	ImageUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~ImageUI() {}
@@ -78,7 +78,7 @@ public:
 class CheckboxUI : public UI
 {
 public:
-	CheckboxUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area);
+	CheckboxUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~CheckboxUI() {}
@@ -97,7 +97,7 @@ private:
 class TextUI : public UI
 {
 public:
-	TextUI(UiType type, UI* p, SDL_Rect r, float size, SString str, bool d, bool f, SDL_Rect d_area);
+	TextUI(UiType type, UI* p, SDL_Rect r, float size, SString str, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~TextUI() {}
@@ -112,7 +112,7 @@ public:
 class ButtonUI : public UI
 {
 public:
-	ButtonUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, SDL_Rect spriten3, bool d, bool f, SDL_Rect d_area);
+	ButtonUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, SDL_Rect spriten3, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~ButtonUI() {}
@@ -141,7 +141,7 @@ public:
 class SliderUI : public UI {
 public:
 
-	SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect d_area);
+	SliderUI(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite, SDL_Rect spriten2, bool d, bool f, SDL_Rect dArea);
 
 	// Destructor
 	virtual ~SliderUI() {}
@@ -191,7 +191,7 @@ public:
 
 	// Gui creation functions
 	UI* CreateUIElement(UiType type, UI* p, SDL_Rect r, SDL_Rect sprite = { 0,0,0,0 }, SString str = "", SDL_Rect spritePushed = { 0,0,0,0 }, SDL_Rect spriteNormal = { 0,0,0,0 }, bool drageable = false,
-		SDL_Rect dragArea = { 0,0,0,0 }, Module* s_listener = nullptr);
+		SDL_Rect dragArea = { 0,0,0,0 }, Module* sListener = nullptr);
 	bool DeleteUIElement(UI*);
 
 	void ChangeFocus();
